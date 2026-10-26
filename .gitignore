@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Runtime artifacts (uploads, profiles, reports, logs)
+storage/
+
+# Secrets
+.env
+
+# Node (frontend, from M7)
+node_modules/
+.next/
