@@ -25,6 +25,8 @@ baseline models with cross-validation, and compare them without data leakage.
 | FR-ML-07 | Metrics: classification → accuracy, F1 (macro), ROC-AUC where applicable; regression → RMSE, MAE, R². Report per-fold scores, mean, and std per model. |
 | FR-ML-08 | Persist `model_runs.json` (target, problem type, per-model results, split/CV config) and set session state `modeled`. |
 | FR-ML-09 | Provide the comparison table to the Narrator (Spec 08) as **computed numbers only**. |
+| FR-ML-10 | *(M0 API, M5 use)* The target is chosen **before planning** via `PUT /sessions/{id}/target` (allowed in `profiled`/`awaiting_approval`; `null` clears it). `id_like` or unknown columns are rejected with `422`; a target that conflicts with the current plan is rejected with `422` listing the conflicting steps. The Gate then protects it (Spec 03 FR-PL-13). |
+| FR-ML-11 | *(M5)* **No leakage from cleaning.** Ops are classed *structural* (`drop_duplicates`, `drop_column`, `cast_type`, `parse_datetime`, `standardize_text`) or *statistical* (`impute`, `clip_outliers`). The Analyst replays only the approved structural ops on `upload.csv`; statistical ops are re-created inside each model's `Pipeline` (imputer, `IQRClipper`) so they are fit on training folds only. The cleaned CSV deliverable still applies all approved ops; the report states this split. |
 
 ## Interfaces
 

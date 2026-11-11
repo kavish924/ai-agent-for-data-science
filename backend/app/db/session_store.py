@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import contextlib
 import sqlite3
 import uuid
-from datetime import datetime, timedelta, timezone
+from collections.abc import Iterable, Iterator
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS sessions (
@@ -23,21 +26,47 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 """
 
+# Columns added after M2; applied to existing databases by init_db (M0)
+_ADDED_COLUMNS = {
+    "failed_stage": "TEXT",  # profile | plan | execute | ... (Spec 09 state table)
+    "target": "TEXT",  # Spec 07 FR-ML-10
+    "plan_version": "INTEGER",  # latest plan version (FR-AP-03)
+}
 
-def _connect(db_path: Path) -> sqlite3.Connection:
+_UPDATABLE = {
+    "original_filename", "state", "n_rows", "n_columns", "encoding", "delimiter",
+    "retention_expires_at", "error", *_ADDED_COLUMNS,
+}
+
+
+@contextlib.contextmanager
+def _connect(db_path: Path) -> Iterator[sqlite3.Connection]:
+    """Open, commit (or roll back) and always close a connection.
+
+    `with sqlite3.connect(...)` alone only manages the transaction - it never closes the
+    connection, which leaks handles and keeps the DB file locked on Windows.
+    """
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
 
 
 def init_db(db_path: Path) -> None:
     with _connect(db_path) as conn:
         conn.executescript(_SCHEMA)
+        existing = {row["name"] for row in conn.execute("PRAGMA table_info(sessions)")}
+        for name, sql_type in _ADDED_COLUMNS.items():
+            if name not in existing:
+                conn.execute(f"ALTER TABLE sessions ADD COLUMN {name} {sql_type}")
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def new_id() -> str:
@@ -57,26 +86,16 @@ def create_session(
     retention_days: int = 7,
 ) -> None:
     now = _now()
-    expires = (
-        datetime.now(timezone.utc) + timedelta(days=retention_days)
-    ).isoformat(timespec="seconds")
+    expires = (datetime.now(UTC) + timedelta(days=retention_days)).isoformat(
+        timespec="seconds"
+    )
     with _connect(db_path) as conn:
         conn.execute(
             "INSERT INTO sessions (id, original_filename, state, n_rows, n_columns,"
             " encoding, delimiter, created_at, updated_at, retention_expires_at, error)"
             " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)",
-            (
-                session_id,
-                original_filename,
-                state,
-                n_rows,
-                n_columns,
-                encoding,
-                delimiter,
-                now,
-                now,
-                expires,
-            ),
+            (session_id, original_filename, state, n_rows, n_columns, encoding, delimiter,
+             now, now, expires),
         )
 
 
@@ -86,13 +105,71 @@ def get_session(db_path: Path, session_id: str) -> dict | None:
     return dict(row) if row else None
 
 
-def update_session(db_path: Path, session_id: str, **fields) -> None:
+def _assignments(fields: dict[str, Any]) -> tuple[str, tuple]:
+    unknown = set(fields) - _UPDATABLE - {"updated_at"}
+    if unknown:  # column names are interpolated into SQL: whitelist them
+        raise ValueError(f"unknown session fields: {sorted(unknown)}")
+    fields = {**fields, "updated_at": _now()}
+    return ", ".join(f"{key} = ?" for key in fields), tuple(fields.values())
+
+
+def update_session(db_path: Path, session_id: str, **fields: Any) -> None:
     if not fields:
         return
-    fields = {**fields, "updated_at": _now()}
-    assignments = ", ".join(f"{key} = ?" for key in fields)
+    assignments, values = _assignments(fields)
     with _connect(db_path) as conn:
-        conn.execute(
-            f"UPDATE sessions SET {assignments} WHERE id = ?",
-            (*fields.values(), session_id),
+        conn.execute(f"UPDATE sessions SET {assignments} WHERE id = ?", (*values, session_id))
+
+
+def transition(db_path: Path, session_id: str, from_states: Iterable[str], **fields: Any) -> bool:
+    """Atomically update a session only if its state is one of `from_states`.
+
+    Returns True when this caller won the transition (Spec 09 AC-7): two concurrent
+    requests can both pass a read-then-check, but only one conditional UPDATE matches.
+    """
+    states = list(from_states)
+    assignments, values = _assignments(fields)
+    placeholders = ", ".join("?" for _ in states)
+    with _connect(db_path) as conn:
+        cursor = conn.execute(
+            f"UPDATE sessions SET {assignments} WHERE id = ? AND state IN ({placeholders})",
+            (*values, session_id, *states),
         )
+        return cursor.rowcount == 1
+
+
+def recover_inflight(db_path: Path, has_profile: Any) -> list[str]:
+    """Startup recovery (Spec 10 NFR-07); `has_profile(session_id) -> bool`."""
+    recovered: list[str] = []
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT id, state, error FROM sessions WHERE state IN ('executing', 'uploaded')"
+        ).fetchall()
+    for row in rows:
+        if row["state"] == "executing":
+            update_session(
+                db_path, row["id"], state="awaiting_approval", failed_stage="execute",
+                error="execution was interrupted by a server restart; approve and run it again",
+            )
+            recovered.append(row["id"])
+        elif row["error"] is None and not has_profile(row["id"]):
+            update_session(
+                db_path, row["id"], failed_stage="profile",
+                error="profiling was interrupted by a server restart; retry profiling",
+            )
+            recovered.append(row["id"])
+    return recovered
+
+
+def list_expired(db_path: Path, now: datetime | None = None) -> list[str]:
+    cutoff = (now or datetime.now(UTC)).isoformat(timespec="seconds")
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT id FROM sessions WHERE retention_expires_at <= ?", (cutoff,)
+        ).fetchall()
+    return [row["id"] for row in rows]
+
+
+def delete_session(db_path: Path, session_id: str) -> None:
+    with _connect(db_path) as conn:
+        conn.execute("DELETE FROM sessions WHERE id = ?", (session_id,))

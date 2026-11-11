@@ -105,3 +105,34 @@ def test_missing_file_422(client):
     response = client.post("/api/v1/sessions")
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "validation_error"
+
+
+# --- M0 (Spec 01 FR-UP-11/12) -------------------------------------------------
+
+def test_up_ac7_oversized_upload_writes_nothing(client, monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "max_file_size_mb", 0.00001)
+    response = upload_csv(client, SAMPLE_CSV * 10)
+    assert response.status_code == 413
+    sessions_dir = settings.storage_root / "sessions"
+    assert not sessions_dir.exists() or not any(sessions_dir.iterdir())
+
+
+def test_up_ac8_profiling_retry(client, monkeypatch):
+    from app.config import settings
+    from app.db import session_store
+    from app.storage.artifacts import profile_path
+
+    session_id = upload_csv(client, SAMPLE_CSV).json()["id"]
+    profile_path(settings.storage_root, session_id).unlink()
+    session_store.update_session(
+        settings.db_path, session_id, state="uploaded", error="boom", failed_stage="profile"
+    )
+    response = client.post(f"/api/v1/sessions/{session_id}/profile")
+    assert response.status_code == 202
+    status = client.get(f"/api/v1/sessions/{session_id}").json()
+    assert status["state"] == "profiled"
+    assert status["error"] is None and status["failed_stage"] is None
+    # any other state -> 409
+    assert client.post(f"/api/v1/sessions/{session_id}/profile").status_code == 409

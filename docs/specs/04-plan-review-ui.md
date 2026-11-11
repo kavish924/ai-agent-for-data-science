@@ -24,11 +24,15 @@ rationales, allow toggling and parameter edits, and require explicit approval.
 | FR-RV-06 | Record per-step status transitions: `proposed → approved / disabled / edited → executed`. |
 | FR-RV-07 | Show a warning affordance for destructive steps (`drop_column`, `drop_duplicates`) including what will be lost (e.g., column names, row counts). |
 | FR-RV-08 | Validation errors from edited parameters are shown inline and block approval until resolved. |
+| FR-RV-09 | *(M0, server side)* Each step carries a stable `step_id`. Saved reviews are reconciled against the generated plan by `step_id`: a toggled-off step becomes `disabled`; a step whose column/params changed becomes `edited`; a step with an unknown or missing id becomes `user_added`; rationales of proposed steps cannot be rewritten by the client; omitting a proposed step is rejected (disable it instead). |
+| FR-RV-10 | *(M0, server side)* Approval is rejected while any step is still `proposed`. |
 
 ## Interfaces
 
 - Reads `plan.json` (Spec 03) via `GET /sessions/{id}/plan` (see `09-api-contracts.md`)
-- Submits the approved/edited step list with `POST /sessions/{id}/execute` (Spec 05)
+- Saves review edits with `PUT /sessions/{id}/plan`, approves with
+  `POST /sessions/{id}/plan/approve` (optionally carrying the final edits), then starts
+  execution with a body-less `POST /sessions/{id}/execute` (Spec 05)
 - Server re-validates every submitted step through the Gate — client-side checks are
   UX only, never the security boundary
 
@@ -42,8 +46,9 @@ rationales, allow toggling and parameter edits, and require explicit approval.
   submitted, then an inline error blocks approval (server rejects too).
 - **AC-4** Given an edited valid step, when executed, then the execution log records the
   step as `edited` with the final parameters used.
-- **AC-5** Given no Approve action, when the user attempts to proceed, then execution
-  cannot start (UI prevents; API rejects `execute` while state is `awaiting_approval`).
+- **AC-5** *(rev. M0)* Given no Approve action, when the user attempts to proceed, then
+  execution cannot start: the UI prevents it, and the API rejects `execute` unless the
+  state is `approved` (set only by `POST /plan/approve`).
 - **AC-6** Given Regenerate is clicked, then a new plan is fetched and displayed, and
   the prior plan remains retrievable in session history.
 

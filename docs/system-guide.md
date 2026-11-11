@@ -63,11 +63,13 @@ are stored and associated with the session.
 stateDiagram-v2
     [*] --> uploaded: CSV accepted
     uploaded --> profiled: profiling complete
-    profiled --> planned: plan generated & validated
-    planned --> awaiting_approval: plan presented
-    awaiting_approval --> planned: plan regenerated or edited
-    awaiting_approval --> executing: user approves
+    profiled --> awaiting_approval: plan generated & validated
+    awaiting_approval --> awaiting_approval: plan regenerated or edited
+    awaiting_approval --> approved: user approves
+    approved --> awaiting_approval: plan edited (approval revoked)
+    approved --> executing: user runs execution
     executing --> executed: all steps applied
+    executing --> awaiting_approval: a step failed (error recorded)
     executed --> modeled: target confirmed, baselines trained
     modeled --> reported: report assembled
     executed --> reported: no target selected

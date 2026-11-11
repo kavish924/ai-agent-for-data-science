@@ -4,9 +4,13 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-# Session states (system-guide.md §4); later states arrive with M2+/M3+
+# Session states: normative table in docs/specs/09-api-contracts.md
 STATE_UPLOADED = "uploaded"
 STATE_PROFILED = "profiled"
+STATE_AWAITING_APPROVAL = "awaiting_approval"
+STATE_APPROVED = "approved"
+STATE_EXECUTING = "executing"
+STATE_EXECUTED = "executed"
 
 
 class SessionOut(BaseModel):
@@ -21,7 +25,14 @@ class SessionOut(BaseModel):
     updated_at: str
     retention_expires_at: str
     error: str | None = None
+    failed_stage: str | None = None  # Spec 09 state table
+    target: str | None = None  # Spec 07 FR-ML-10
+    plan_version: int | None = None
 
     @classmethod
-    def from_row(cls, row: dict) -> "SessionOut":
-        return cls(**row)
+    def from_row(cls, row: dict) -> SessionOut:
+        return cls.model_validate({key: row[key] for key in cls.model_fields if key in row})
+
+
+class TargetIn(BaseModel):
+    target: str | None = None

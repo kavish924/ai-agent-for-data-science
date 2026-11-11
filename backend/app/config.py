@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     # PRD §7 privacy: upload retention window (Spec 10)
     retention_days: int = 7
+    retention_sweep_minutes: int = 60  # Spec 10 NFR-08
 
     # Storage (design D5: SQLite + filesystem behind thin interfaces)
     db_path: Path = ROOT_DIR / "storage" / "app.db"

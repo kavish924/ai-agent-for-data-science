@@ -40,7 +40,7 @@ def test_sniff_delimiter_fallback_comma():
 
 
 def test_parse_upload_happy_path():
-    df, encoding, delimiter = parse_upload("name,age\nann,30\nbob,25\n".encode("utf-8"))
+    df, encoding, delimiter = parse_upload(b"name,age\nann,30\nbob,25\n")
     assert list(df.columns) == ["name", "age"]
     assert len(df) == 2
     assert delimiter == ","

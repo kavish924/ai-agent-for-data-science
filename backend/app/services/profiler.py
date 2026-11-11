@@ -8,10 +8,13 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from pathlib import Path
 
 import pandas as pd
+
+from .numeric import parse_numeric
 
 logger = logging.getLogger("profiler")
 
@@ -24,6 +27,10 @@ CATEGORICAL_MAX_RATIO = 0.05
 TOP_K = 10
 OUTLIER_FACTOR = 1.5
 BOOL_LIKE = {"true", "false", "yes", "no", "y", "n", "0", "1"}
+ID_MONOTONIC_MIN_ROWS = 20
+_CAMEL_ID = re.compile(r"([a-z]Id|ID)$")
+LLM_TOP_K = 10
+LLM_VALUE_MAX_CHARS = 40
 
 INFERENCE_META = {
     "numeric_parse_ratio": NUMERIC_PARSE_RATIO,
@@ -34,7 +41,33 @@ INFERENCE_META = {
     "top_k": TOP_K,
     "outlier_method": {"name": "iqr", "factor": OUTLIER_FACTOR},
     "boolean_like_values": sorted(BOOL_LIKE),
+    "id_like_integer_rule": {"monotonic_min_rows": ID_MONOTONIC_MIN_ROWS, "name_hint": True},
 }
+
+
+def _has_id_name(name: object) -> bool:
+    text = str(name)
+    lowered = text.lower()
+    if lowered == "id" or lowered.endswith(("_id", "-id", " id")):
+        return True
+    if lowered.startswith(("id_", "id-", "id ")):
+        return True
+    return bool(_CAMEL_ID.search(text))  # camelCase only: "PassengerId", "customerID" - not "paid"
+
+
+def _is_integer_id(name: object, nn: pd.Series) -> bool:
+    """FR-PR-11: unique integers that are monotonic (enough rows) or identifier-named."""
+    if pd.api.types.is_bool_dtype(nn):
+        return False
+    values, unparseable = parse_numeric(nn)
+    if unparseable.any() or values.isna().any() or len(values) < 2:
+        return False
+    if not (values == values.round()).all() or values.nunique() != len(values):
+        return False
+    if _has_id_name(name):
+        return True
+    monotonic = values.is_monotonic_increasing or values.is_monotonic_decreasing
+    return len(values) >= ID_MONOTONIC_MIN_ROWS and monotonic
 
 
 def infer_column_type(s: pd.Series) -> tuple[str, list[str]]:
@@ -59,22 +92,25 @@ def infer_column_type(s: pd.Series) -> tuple[str, list[str]]:
         parsed = pd.to_datetime(nn, errors="coerce", format="mixed")
         if parsed.notna().any() and parsed.notna().mean() >= DATETIME_PARSE_RATIO:
             return "datetime", flags
-    # 3. numeric
+    # 3. integer identifiers (FR-PR-11) - before numeric
+    if _is_integer_id(s.name, nn):
+        return "id_like", flags
+    # 4. numeric (shared parser, FR-PR-10)
     if pd.api.types.is_numeric_dtype(s):
         return "numeric", flags
-    as_num = pd.to_numeric(nn.astype(str).str.replace(",", "", regex=False), errors="coerce")
-    if as_num.notna().mean() >= NUMERIC_PARSE_RATIO:
+    _, unparseable = parse_numeric(nn)
+    if 1.0 - unparseable.mean() >= NUMERIC_PARSE_RATIO:
         return "numeric", flags
-    # 4. id_like
+    # 5. id_like (strings)
     if nn.nunique() / len(nn) >= ID_LIKE_UNIQUE_RATIO:
         return "id_like", flags
-    # 5. categorical
+    # 6. categorical
     nunique = int(nn.nunique())
     if nunique <= CATEGORICAL_MAX_UNIQUE or (
         len(s) > 0 and nunique <= CATEGORICAL_MAX_RATIO * len(s)
     ):
         return "categorical", flags
-    # 6. text
+    # 7. text
     return "text", flags
 
 
@@ -101,7 +137,7 @@ def _profile_column(name: str, s: pd.Series) -> dict:
             {"value": value, "count": int(count)} for value, count in value_counts.items()
         ]
     if col_type == "numeric":
-        as_num = pd.to_numeric(nn, errors="coerce").dropna()
+        as_num = parse_numeric(nn)[0].dropna()
         if not as_num.empty:
             q1, q3 = as_num.quantile(0.25), as_num.quantile(0.75)
             iqr = q3 - q1
@@ -163,7 +199,7 @@ def run_profiling(db_path: Path, storage_root: Path, session_id: str) -> None:
     except Exception as exc:  # session stays in last good state + error (Spec 01/02)
         duration_ms = int((time.perf_counter() - started) * 1000)
         session_store.update_session(
-            db_path, session_id, error=f"profiling failed: {exc}"
+            db_path, session_id, error=f"profiling failed: {exc}", failed_stage="profile"
         )
         logger.error(
             "profile.failed",
@@ -177,8 +213,41 @@ def run_profiling(db_path: Path, storage_root: Path, session_id: str) -> None:
         return
 
     duration_ms = int((time.perf_counter() - started) * 1000)
-    session_store.update_session(db_path, session_id, state="profiled", error=None)
+    session_store.update_session(
+        db_path, session_id, state="profiled", error=None, failed_stage=None
+    )
     logger.info(
         "profile.completed",
         extra={"session_id": session_id, "stage": "profile", "duration_ms": duration_ms},
     )
+
+
+_LLM_COLUMN_KEYS = ("name", "type", "nulls", "null_pct", "unique", "outliers_iqr", "stats", "flags")
+_LLM_TOP_VALUE_TYPES = {"categorical", "boolean"}
+
+
+def llm_profile(profile: dict, target: str | None = None) -> dict:
+    """Privacy projection of a profile: the only profile shape allowed in a prompt (FR-PR-12).
+
+    Keeps aggregates; keeps top values only for categorical/boolean columns (capped and
+    truncated); never includes values of text or id_like columns, nor the session id.
+    """
+    columns = []
+    for column in profile.get("columns", []):
+        projected = {key: column[key] for key in _LLM_COLUMN_KEYS if column.get(key) is not None}
+        if column.get("type") in _LLM_TOP_VALUE_TYPES and column.get("top_values"):
+            projected["top_values"] = [
+                {"value": str(item["value"])[:LLM_VALUE_MAX_CHARS], "count": item["count"]}
+                for item in column["top_values"][:LLM_TOP_K]
+            ]
+        columns.append(projected)
+    return {
+        "n_rows": profile.get("n_rows"),
+        "n_columns": profile.get("n_columns"),
+        "duplicate_rows": profile.get("duplicate_rows"),
+        "total_null_cells": profile.get("total_null_cells"),
+        "outlier_method": profile.get("inference", {}).get("outlier_method"),
+        "target": target,
+        "columns": columns,
+        "issues": profile.get("issues", {}),
+    }

@@ -65,9 +65,10 @@ def test_schema_alias_accepted():
     assert plan.schema_version == "v1"
 
 
-def test_default_status_is_approved():
+def test_default_status_is_proposed():
+    """A step without an explicit decision never counts as approved (Spec 04 FR-RV-10)."""
     plan = PlanIn.model_validate({"steps": [_step()]})
-    assert plan.steps[0].status == "approved"
+    assert plan.steps[0].status == "proposed"
 
 
 def test_rationale_optional_at_schema_level():
@@ -123,3 +124,50 @@ def test_disabled_steps_not_checked():
 def test_issue_includes_step_index():
     issues = _issues([_step(), _step(column="nope")])
     assert issues[0]["step"] == 1
+
+
+# --- M0: running schema + target protection (Spec 03 FR-PL-12/13) -------------
+
+def test_pl_ac7_column_dropped_earlier_is_rejected():
+    issues = _issues([
+        {"op": "drop_column", "params": {"columns": ["age"]}},
+        _step(column="age"),
+    ])
+    assert len(issues) == 1
+    assert issues[0]["step"] == 1
+    assert "dropped by step 0" in issues[0]["issue"]
+
+
+def test_pl_ac7_cast_changes_type_for_later_steps():
+    assert _issues([
+        {"op": "cast_type", "column": "age", "params": {"to": "str"}},
+        {"op": "standardize_text", "column": "age", "params": {"ops": ["trim"]}},
+    ]) == []
+
+
+def test_pl_fr12_disabled_drop_does_not_remove_column():
+    assert _issues([
+        {"op": "drop_column", "params": {"columns": ["age"]}, "status": "disabled"},
+        _step(column="age"),
+    ]) == []
+
+
+def _target_issues(steps: list[dict], target: str) -> list[dict]:
+    return validate_plan(PlanIn.model_validate({"steps": steps}), PROFILE, target=target)
+
+
+def test_pl_ac8_target_cannot_be_imputed():
+    issues = _target_issues([_step(column="age")], target="age")
+    assert len(issues) == 1
+    assert "target" in issues[0]["issue"]
+
+
+def test_pl_ac8_target_cannot_be_dropped():
+    issues = _target_issues([{"op": "drop_column", "params": {"columns": ["city", "age"]}}], "age")
+    assert len(issues) == 1
+
+
+def test_pl_fr13_other_ops_on_target_allowed():
+    assert _target_issues(
+        [{"op": "standardize_text", "column": "city", "params": {"ops": ["trim"]}}], "city"
+    ) == []

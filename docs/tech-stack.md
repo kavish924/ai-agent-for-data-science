@@ -17,7 +17,6 @@
 | Artifact store | **Filesystem** | — | `storage/sessions/{id}/…`; interface allows object-store swap |
 | Jobs | **FastAPI BackgroundTasks** | — | Stage execution + UI progress polling (queue = upgrade path) |
 | Config | **pydantic-settings** | 2.x | Typed env config |
-| LLM client | **openai** (Python SDK) | 1.x | Official SDK; JSON mode + retries |
 
 ## 2. Tooling & Quality
 
@@ -45,6 +44,7 @@ ai-agent-for-datascience/
 │   │   ├── schemas/           # Pydantic models: profile, plan ops (whitelist), reports
 │   │   ├── db/                # SQLite session store, models, migrations
 │   │   └── storage/           # artifact store interface + filesystem impl
+│   ├── pyproject.toml         # backend package, pytest/ruff/mypy config
 │   └── tests/
 │       ├── unit/              # gate, profiler, executor rules (no LLM)
 │       └── integration/       # API + pipeline with mocked LLM
@@ -53,7 +53,7 @@ ai-agent-for-datascience/
 ├── storage/                   # artifact root (gitignored)
 ├── samples/                   # Titanic / Housing / Telco for evals (PRD §9)
 ├── .env.example
-└── pyproject.toml
+└── CLAUDE.md                  # spec-driven workflow rules
 ```
 
 ## 4. Environment Variables

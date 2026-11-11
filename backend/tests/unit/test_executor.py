@@ -37,7 +37,8 @@ def test_impute_median():
 
 def test_impute_constant():
     df = pd.DataFrame({"a": [1.0, None]})
-    out, notes = apply_step(df, {"op": "impute", "column": "a", "params": {"strategy": "constant", "value": 0}})
+    step = {"op": "impute", "column": "a", "params": {"strategy": "constant", "value": 0}}
+    out, notes = apply_step(df, step)
     assert out["a"].tolist() == [1.0, 0.0]
     assert notes["filled"] == 1
 
@@ -62,11 +63,11 @@ def test_clip_outliers_iqr():
     assert notes["clipped"] == 1
 
 
-def test_cast_type_int_dry_run_fails_on_nulls():
-    df = pd.DataFrame({"a": [1.0, None]})
+def test_cast_type_int_dry_run_failure_leaves_frame_untouched():
+    df = pd.DataFrame({"a": [1.5, None]})
     with pytest.raises(StepError, match="would fail"):
         apply_step(df, {"op": "cast_type", "column": "a", "params": {"to": "int"}})
-    assert df["a"].isna().tolist() == [False, True]  # frame untouched (FR-EX-04)
+    assert df["a"].tolist()[0] == 1.5  # frame untouched (FR-EX-04)
 
 
 def test_cast_type_str_to_int_fails_dry_run():
@@ -117,3 +118,56 @@ def test_snapshot_counts():
     assert snap["cols"] == 2
     assert snap["null_cells"] == 1
     assert snap["outliers"] == 1
+
+
+# --- M0 (Spec 05 FR-EX-12/13) -------------------------------------------------
+
+def _cast(values, to):
+    df = pd.DataFrame({"a": values})
+    return apply_step(df, {"op": "cast_type", "column": "a", "params": {"to": to}})
+
+
+def test_ex_ac8_bool_cast_maps_values_not_truthiness():
+    out, _ = _cast(["True", "False", "no"], "bool")
+    assert out["a"].tolist() == [True, False, False]
+
+
+def test_ex_ac8_bool_cast_rejects_unknown_values():
+    with pytest.raises(StepError, match="would fail"):
+        _cast(["yes", "maybe"], "bool")
+
+
+def test_ex_ac9_int_cast_allows_nulls():
+    out, _ = _cast([1.0, None], "int")
+    assert out["a"].iloc[0] == 1
+    assert pd.isna(out["a"].iloc[1])
+    assert str(out["a"].dtype) == "Int64"
+
+
+def test_ex_ac9_int_cast_rejects_fractions():
+    with pytest.raises(StepError, match="would fail"):
+        _cast([1.5], "int")
+
+
+def test_ex_fr12_int_cast_from_numeric_strings():
+    out, _ = _cast(["10", "20"], "int")
+    assert out["a"].tolist() == [10, 20]
+
+
+def test_ex_ac10_clip_keeps_unparseable_values():
+    values = ["1,000"] + [str(i) for i in range(1, 11)] + ["n/a"]
+    df = pd.DataFrame({"a": values})
+    out, notes = apply_step(df, {"op": "clip_outliers", "column": "a", "params": {}})
+    assert out["a"].iloc[-1] == "n/a"
+    assert notes["unparseable_kept"] == 1
+    assert notes["clipped"] == 1
+    assert float(out["a"].iloc[0]) < 1000
+
+
+def test_ex_fr13_impute_median_ignores_unparseable_and_keeps_them():
+    df = pd.DataFrame({"a": ["1", "3", None, "oops"]})
+    out, notes = apply_step(df, {"op": "impute", "column": "a", "params": {"strategy": "median"}})
+    assert out["a"].iloc[3] == "oops"
+    assert float(out["a"].iloc[2]) == 2.0
+    assert notes["filled"] == 1
+    assert notes["unparseable_kept"] == 1
