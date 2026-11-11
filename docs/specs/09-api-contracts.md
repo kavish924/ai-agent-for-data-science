@@ -20,7 +20,7 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 |---|---|
 | FR-AP-01 | `POST /sessions` — multipart CSV upload; starts profiling in the background. `201 SessionOut` · `413` limits · `415/422` non-CSV or empty. |
 | FR-AP-02 | `GET /sessions/{id}/profile` — `200 profile.json` · `404` unknown session · `409` if not yet profiled. |
-| FR-AP-03 | *(rev. M0)* `POST /sessions/{id}/plan` — create a new plan version. M0: the body is a plan (manual); M3: no body, the LLM generates it. Server assigns `step_id`s (`s1..sN`), forces every status to `proposed`, Gate-validates, stores `plans/v{n}.generated.json`, sets state `awaiting_approval`. `201 PlanOut` · `409` wrong state · `422` Gate rejection · `502` planner failed (M3). From `approved` this revokes the approval. |
+| FR-AP-03 | *(rev. M0)* `POST /sessions/{id}/plan` — create a new plan version. With no body the LLM generates it (M3, Spec 03 FR-PL-14); with a body it stores a manual plan. Server assigns `step_id`s (`s1..sN`), forces every status to `proposed`, Gate-validates, stores `plans/v{n}.generated.json`, sets state `awaiting_approval`. `201 PlanOut` · `409` wrong state · `422` Gate rejection · `502 planner_failed` after retries · `503 llm_not_configured` when generation is requested without an API key. From `approved` this revokes the approval. |
 | FR-AP-04 | *(rev. M0)* `POST /sessions/{id}/execute` — **no body**; runs the frozen approved plan. `202` · `409` unless state `approved`. Exactly one of two concurrent calls succeeds (conditional state transition). |
 | FR-AP-05 | `POST /sessions/{id}/model` — body `{target: "col"}`. `200 model_runs.json` · `409` unless `executed` · `422` invalid target. *(M5)* |
 | FR-AP-06 | `GET /sessions/{id}/report` — `200 text/html` · `404` until the report exists. *(M6)* |
@@ -136,3 +136,4 @@ Violations return `409` with the current state in `details`.
 - 2026-11-11 — M0: explicit approve step; body-less execute; versioned plans; target,
   profile-retry and cleaned-CSV endpoints; normative state table (`planned` merged into
   `awaiting_approval`; failures recorded via `error` + `failed_stage`).
+- 2026-11-11 — M3: `POST /plan` body is optional (LLM generation); added `502 planner_failed` and `503 llm_not_configured`.

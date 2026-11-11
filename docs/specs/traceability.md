@@ -23,6 +23,15 @@
 | 02 | AC-7 | `test_pr_ac7_titanic_passenger_id_is_id_like`, `test_pr_fr11_id_name_hint_with_unique_integers` | `services/profiler.py` |
 | 02 | AC-8 | `test_pr_ac8_comma_numbers_parsed_consistently`, `test_pr_fr10_strips_thousands_separators_and_spaces` | `services/numeric.py` |
 | 02 | AC-9 | `test_pr_ac9_llm_profile_excludes_text_and_id_values` | `services/profiler.py` (`llm_profile`) |
+| 03 | AC-1 | `test_pl_ac1_valid_plan_on_first_attempt`, `test_pl_ac1_generate_titanic_plan` (fake LLM; live plan quality is measured in M8) | `services/planner.py` |
+| 03 | AC-2 | `test_pl_ac2_unknown_op_rejected_and_reprompted` | `services/planner.py` |
+| 03 | AC-3 | `test_pl_ac3_typo_column_rejected_and_reprompted` | `services/planner.py` |
+| 03 | AC-4 | `test_pl_ac4_retry_budget_is_exact` | `services/planner.py` |
+| 03 | AC-5 | `test_pl_ac5_llm_calls_hold_metadata_not_content` | `db/session_store.py` (`llm_calls`) |
+| 03 | AC-6 | `test_pl_ac6_same_responses_same_plan`, `test_pl_ac6_execution_never_calls_the_llm` | `services/planner.py` |
+| 03 | AC-9 | `test_pl_ac9_no_api_key_is_503_and_changes_nothing` | `routers/plans.py` |
+| 03 | AC-10 | `test_pl_ac10_prompt_has_no_raw_text_or_id_values`, `test_pl_ac10_retry_prompt_lists_previous_issues` | `llm/prompts.py` |
+| 03 | AC-11 | `test_pl_ac11_transport_error_then_success` | `services/planner.py` |
 | 03 | AC-7 | `test_pl_ac7_column_dropped_earlier_is_rejected`, `test_pl_ac7_cast_changes_type_for_later_steps` | `services/gate.py` |
 | 03 | AC-8 | `test_pl_ac8_target_cannot_be_imputed`, `test_pl_ac8_target_cannot_be_dropped`, `test_pl_ac8_plan_cannot_touch_target` | `services/gate.py` |
 | 04 | AC-5 | `test_ap_ac6_execute_before_approve_is_409` | `routers/sessions.py` |
@@ -47,9 +56,9 @@
 | 09 | AC-8 | `test_ap_ac8_history_keeps_every_version` | `storage/artifacts.py` |
 | 09 | AC-9 | `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
 | 10 | AC-1 | pending (M5) | — |
-| 10 | AC-2 | pending (M3) | — |
+| 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |
 | 10 | AC-4 | pending (M6) | — |
-| 10 | AC-5 | pending (M3) | — |
+| 10 | AC-5 | `test_nfr_ac5_llm_failure_is_visible_and_recoverable` | `routers/plans.py` |
 | 10 | AC-6 | pending (M8) | — |
 | 10 | AC-7 | `test_nfr_ac7_inflight_sessions_recovered_on_startup` | `db/session_store.py` (`recover_inflight`) |

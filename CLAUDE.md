@@ -27,7 +27,7 @@ All from `backend/` with the venv's tools; CI (`.github/workflows/ci.yml`) runs 
 - `pytest -m "not live"` green (LLM always mocked; live tests are `@pytest.mark.live`)
 - `ruff check .` and `mypy` green
 - `python scripts/check_traceability.py` green
-- `python scripts/smoke_mN.py` passes on all `samples/*.csv` (latest: `smoke_m0.py`)
+- `python scripts/smoke_mN.py` passes on all `samples/*.csv` (latest: `smoke_m3.py`; `--live` uses real Gemini)
 
 ## Branching & progress tracking
 

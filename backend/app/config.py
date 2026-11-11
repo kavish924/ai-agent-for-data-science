@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # LLM: Google Gemini, used from M3 (Spec 03)
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-2.5-flash"
+    llm_timeout_s: float = 60.0  # per LLM call
 
 
 settings = Settings()

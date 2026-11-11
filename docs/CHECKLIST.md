@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-11 · **Current branch:** `m0-hardening` (pushed, PR not opened)
+> **Last updated:** 2026-11-11 · **Current branch:** `m3-llm-planner` (not pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -14,8 +14,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 |---|---|---|
 | M1 Ingestion + profiler | `main` (initial commit) | ✅ done |
 | M2 Whitelisted executor + Gate | `main` (initial commit) | ✅ done |
-| M0 Hardening | `m0-hardening` | ✅ done · awaiting PR → `main` |
-| M3 LLM planner (Gemini) | `m3-llm-planner` | ⬜ not started |
+| M0 Hardening | `m0-hardening` | ✅ done · merged to `main` (PR #1) |
+| M3 LLM planner (Gemini) | `m3-llm-planner` | ✅ done · awaiting PR → `main` |
 | M3.5 Thin UI slice | `m3.5-thin-ui` | ⬜ not started |
 | M4 Charts | `m4-charts` | ⬜ not started |
 | M5 ML baselines | `m5-ml-baselines` | ⬜ not started |
@@ -33,7 +33,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Revised milestone order in Spec 00
 - [x] Branching rule: never commit/push to `main`; one branch per milestone, merged by PR
 - [x] This checklist
-- [ ] Open PR `m0-hardening` → `main` and merge it (user)
+- [x] Open PR `m0-hardening` → `main` and merge it (PR #1)
 - [ ] First green CI run on GitHub
 
 ## M1 — Ingestion + profiler *(done before M0)*
@@ -78,16 +78,19 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
 ## M3 — LLM planner · branch `m3-llm-planner`
 
-- [ ] Spec 03 FR-PL-01, 06–10 approved (prompt contract, retry loop, `llm_calls`)
-- [ ] Add `google-genai` dependency; `GEMINI_API_KEY` handling
-- [ ] `app/llm/`: `LLMClient` protocol, `GeminiClient` (JSON schema output, temperature 0)
-- [ ] Prompt built from `llm_profile()` only; target named as protected
-- [ ] `services/planner.py`: generate → Gate → feed issues back → retry ≤ `PLAN_MAX_RETRIES`
-- [ ] `llm_calls` table (attempt, valid, error, tokens, duration — no payloads)
-- [ ] `POST /plan` without a body generates via LLM; manual plans still possible for tests
-- [ ] Mocked-LLM tests for Spec 03 AC-1..8; one optional `@pytest.mark.live` test
-- [ ] Spec 10 AC-2 (no data in logs) and AC-5 (LLM failure is recoverable)
-- [ ] `smoke_m3.py`
+- [x] Split `routers/sessions.py` into per-stage routers (`sessions`, `plans`, `execution`)
+- [x] Spec 03 FR-PL-14..16 + AC-9..11 approved; Spec 09/10 updated
+- [x] Add `google-genai` dependency; `GEMINI_API_KEY`, `LLM_TIMEOUT_S` settings
+- [x] `app/llm/`: `LLMClient` protocol, `GeminiClient` (JSON mode, temperature 0, seed)
+- [x] Prompt built from `llm_profile()` only; target named as protected; injection guard
+- [x] `services/planner.py`: generate → schema → rationale → Gate → feed issues back → retry ≤ `PLAN_MAX_RETRIES`
+- [x] `llm_calls` table (attempt, valid, error class, tokens, duration — no payloads)
+- [x] `POST /plan` without a body generates via LLM (503 without key, 502 after retries); manual plans still work
+- [x] Fake-LLM tests for Spec 03 AC-1..11; optional `@pytest.mark.live` Gemini test
+- [x] Spec 10 AC-2 (no data in logs) and AC-5 (LLM failure is recoverable)
+- [x] `smoke_m3.py` (offline fake by default, `--live` for Gemini); added to CI
+- [ ] Run `pytest -m live` and `smoke_m3.py --live` with a real `GEMINI_API_KEY` (user)
+- [ ] Open PR `m3-llm-planner` → `main` and merge it (user)
 
 ## M3.5 — Thin UI slice · branch `m3.5-thin-ui`
 
@@ -146,4 +149,5 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [ ] SQLite open/close per call is slow on Windows (~1 s per API flow in tests); consider WAL or a pooled connection
 - [ ] Rotating log handler keeps `app.log` open (temp-dir cleanup on Windows)
 - [ ] Titanic `Name` is typed `id_like` (every name is unique) — confirm this is desired
-- [ ] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts
+- [x] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts (M3)
+- [ ] Profile doesn't count non-numeric values in numeric columns (Telco `TotalCharges` has 11 blanks), so the planner can't see or fix them — add an `unparseable` count per column
