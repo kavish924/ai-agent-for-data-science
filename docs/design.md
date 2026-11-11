@@ -39,7 +39,10 @@
 |---|---|---|
 | `id` | UUID | Session ID returned by `POST /sessions` |
 | `original_filename` | text | Display only |
-| `state` | enum | `uploaded → profiled → planned → awaiting_approval → executing → executed → modeled → reported` (+ per-stage `error` fields) |
+| `state` | enum | `uploaded → profiled → awaiting_approval → approved → executing → executed → modeled → reported`; normative table in Spec 09 |
+| `error`, `failed_stage` | text | Last failure and the stage it happened in; cleared by the next successful transition |
+| `target` | text \| null | Target column chosen before planning (Spec 07 FR-ML-10); protected by the Gate |
+| `plan_version` | int | Latest plan version; versions live in `plans/v{n}.{generated,approved}.json` |
 | `n_rows`, `n_columns` | int | From ingestion |
 | `created_at`, `updated_at` | timestamp | Retention clock runs from `created_at` |
 | `retention_expires_at` | timestamp | Upload deletion time (privacy, PRD §7) |
@@ -54,7 +57,8 @@
 | `column` | text \| null | Target column (null for frame-wide ops like `drop_duplicates`) |
 | `params` | JSON | Constrained per op (§4) |
 | `rationale` | text | LLM-provided, shown in review UI |
-| `status` | enum | `proposed → approved / disabled / edited → executed` |
+| `step_id` | text | `s1..sN` for generated steps, `u1..` for user-added ones (Spec 04 FR-RV-09) |
+| `status` | enum | `proposed → approved / edited / disabled / user_added`; execution outcome lives in the execution log |
 | `before` / `after` | JSON | Row/col counts, null count, outlier count — filled at execution |
 
 ### 3.3 Other Records

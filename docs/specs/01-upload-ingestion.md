@@ -1,6 +1,6 @@
 # Spec 01 — Upload & Ingestion
 
-> **Status:** Draft v0.1 · **Source:** PRD §6.1 · **Milestone:** M1 · **Agent:** Orchestrator/Profiler (ingestion duties)
+> **Status:** Done · **Source:** PRD §6.1 · **Milestone:** M1 · **Agent:** Orchestrator/Profiler (ingestion duties)
 
 ## Purpose
 
@@ -26,6 +26,8 @@ delimiter, and create an immutable session for all downstream stages.
 | FR-UP-08 | Reject non-CSV content (by content sniff, not extension alone) with a specific error message. |
 | FR-UP-09 | Set `retention_expires_at = created_at + RETENTION_DAYS` on session creation. |
 | FR-UP-10 | Return `201` with `{session_id, state, n_rows, n_columns}` after successful parse of a header row and at least one data row. |
+| FR-UP-11 | *(M0)* The upload body is read in chunks and rejected with `413` as soon as it passes `MAX_FILE_SIZE_MB`; the whole file is never buffered before the size check. |
+| FR-UP-12 | *(M0)* A session whose profiling failed or was interrupted (state `uploaded` with an error) can retry profiling via `POST /sessions/{id}/profile` without re-uploading. |
 
 ## Interfaces
 
@@ -48,6 +50,11 @@ delimiter, and create an immutable session for all downstream stages.
   or `422` with a content-sniff explanation.
 - **AC-6** Given any accepted upload, when any later stage runs, then the byte content
   and mtime of `upload.csv` are unchanged (immutability).
+- **AC-7** *(M0)* Given a file over the limit, the 413 is raised by the chunked reader
+  (FR-UP-11) and no file is written under `storage/sessions/`.
+- **AC-8** *(M0)* Given a session in `uploaded` with a recorded profiling error, when
+  `POST /sessions/{id}/profile` is called, then profiling re-runs and the state becomes
+  `profiled`; in any other state the call returns `409`.
 
 ## Dependencies
 
@@ -68,3 +75,14 @@ delimiter, and create an immutable session for all downstream stages.
 ## Open Questions
 
 - ~~Default limits~~ **Resolved:** 25 MB / 100k rows accepted as v1 defaults.
+
+## Tasks
+
+- [x] FR-UP-01..10 (M1)
+- [x] FR-UP-11 chunked size cap
+- [x] FR-UP-12 profiling retry endpoint
+
+## Changelog
+
+- 2026-11-11 — M0: added FR-UP-11 (chunked size cap), FR-UP-12 (profiling retry), AC-7/AC-8.
+- 2026-11-11 — M0 complete: all ACs pass (see `traceability.md`).

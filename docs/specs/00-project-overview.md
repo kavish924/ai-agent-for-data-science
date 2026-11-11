@@ -43,15 +43,20 @@ output execute or reach raw data is out of scope by definition.
 
 | Stage | Spec | Milestone |
 |---|---|---|
-| Upload & ingestion | `01-upload-ingestion.md` | M1 |
-| Data profiler | `02-data-profiler.md` | M1 |
-| Cleaning executor | `05-cleaning-executor.md` | M2 |
+| Upload & ingestion | `01-upload-ingestion.md` | M1 ✅ |
+| Data profiler | `02-data-profiler.md` | M1 ✅ |
+| Cleaning executor | `05-cleaning-executor.md` | M2 ✅ |
+| Hardening: approval flow, Gate/executor fixes, privacy projection, state table | 01, 02, 05, 09, 10 | **M0** (new) |
 | Cleaning planner (LLM) | `03-cleaning-planner.md` | M3 |
+| Thin UI slice: upload → target → review → approve → execute → download | `04-plan-review-ui.md` | **M3.5** (new) |
 | Chart generation | `06-chart-generation.md` | M4 |
 | ML baselines | `07-ml-baselines.md` | M5 |
 | Report generation | `08-report-generation.md` | M6 |
-| Plan review UI | `04-plan-review-ui.md` | M7 |
+| UI polish | `04-plan-review-ui.md` | M7 |
 | Evaluation & polish | all (success metrics, PRD §9) | M8 |
+
+Order revised 2026-11-11: hardening (M0) runs before M3 and a thin UI follows M3, so the
+flow can be demoed end to end early. The PRD order is preserved otherwise.
 
 Cross-cutting: `09-api-contracts.md` (API), `10-nfr-observability.md` (NFRs).
 
@@ -69,7 +74,7 @@ Open PRD questions (§13) resolved by default for v1 — revisit before launch:
 
 | Question | Default |
 |---|---|
-| LLM provider | **Google Gemini** (`google-genai`), behind a provider-agnostic client interface |
+| LLM provider | **Google Gemini** (`google-genai`), behind a provider-agnostic client interface. *Deliberate deviation from PRD §8, which names OpenAI.* |
 | Target column | User confirms; system suggests candidates (Spec 07) |
 | Model scope | Tabular classification + regression only |
 | Data privacy | Aggregate profile only to the LLM — no sample values |

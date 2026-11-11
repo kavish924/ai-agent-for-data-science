@@ -1,6 +1,6 @@
 # Spec 02 — Data Profiler
 
-> **Status:** Draft v0.1 · **Source:** PRD §6.2 · **Milestone:** M1 · **Agent:** Profiler (deterministic, no LLM)
+> **Status:** Done · **Source:** PRD §6.2 · **Milestone:** M1 · **Agent:** Profiler (deterministic, no LLM)
 
 ## Purpose
 
@@ -26,15 +26,19 @@ network access.
 | FR-PR-07 | Emit the profile as compact JSON at `storage/sessions/{id}/profile.json`, sized for an LLM prompt (no raw values beyond top-K categories). |
 | FR-PR-08 | On completion, set session state `profiled` and record duration. |
 | FR-PR-09 | All-empty columns and single-value columns are profiled and flagged (they are valid profile output, not errors). |
+| FR-PR-10 | *(M0)* Numeric parsing uses one shared helper (`services/numeric.py`) for type inference, stats, and the executor, so a value counted as numeric here (e.g. `"1,234"`) is numeric everywhere. |
+| FR-PR-11 | *(M0)* Integer columns that are fully unique and either monotonic (≥ 20 rows) or named like an identifier (`id`, `*_id`, `*Id`, `*ID`) are typed `id_like`, not `numeric`. |
+| FR-PR-12 | *(M0, privacy)* The LLM never receives `profile.json` directly; it receives `llm_profile()`, a projection that keeps aggregates and keeps top values **only** for `categorical`/`boolean` columns (≤ 10 values, each ≤ 40 chars). `text` and `id_like` values are never included. |
 
 ### Type inference rules (priority order)
 
 1. All values boolean-like → `boolean`
 2. Parseable as datetime (with/without format inference) → `datetime`
-3. Numeric parseable (≥ 90% of non-nulls) → `numeric`
-4. Near-unique strings (unique/non-null ≥ 0.95) → `id_like`
-5. Low cardinality relative to length (e.g., unique ≤ 50 or ≤ 5% of rows) → `categorical`
-6. Otherwise → `text`
+3. Integer, fully unique, and monotonic or identifier-named → `id_like` (FR-PR-11)
+4. Numeric parseable (≥ 90% of non-nulls) → `numeric`
+5. Near-unique strings (unique/non-null ≥ 0.95) → `id_like`
+6. Low cardinality relative to length (e.g., unique ≤ 50 or ≤ 5% of rows) → `categorical`
+7. Otherwise → `text`
 
 Exact thresholds live in code, are constants, and are recorded inside the profile for
 auditability.
@@ -59,6 +63,12 @@ auditability.
   design D2) — only aggregates and top-K values.
 - **AC-6** Given a file with an entirely empty column, profiling succeeds and the column
   is flagged (no crash, PRD §7 Reliability).
+- **AC-7** *(M0)* Given Titanic, `PassengerId` is typed `id_like`; `Pclass`, `SibSp` and
+  `Survived` are not.
+- **AC-8** *(M0)* Given a column of `"1,234"`-style values, the profiler types it
+  `numeric` and its stats use the parsed values (min 1234, not NaN).
+- **AC-9** *(M0)* Given a profile with `text`/`id_like` columns, `llm_profile()` contains
+  none of their values; categorical top values are capped at 10 entries of ≤ 40 chars.
 
 ## Dependencies
 
@@ -80,3 +90,17 @@ auditability.
 
 - None blocking. Datetime inference with mixed formats may need a `parse_datetime`
   plan step to resolve (Spec 03 covers the fix path).
+
+## Tasks
+
+- [x] FR-PR-01..09 (M1)
+- [x] FR-PR-10 shared numeric parsing
+- [x] FR-PR-11 integer id_like detection
+- [x] FR-PR-12 `llm_profile()` privacy projection
+
+## Changelog
+
+- 2026-11-11 — M0: added FR-PR-10..12 and AC-7..9 (numeric consistency, numeric IDs,
+  privacy projection). Fixes a privacy contradiction: top values of text/id_like
+  columns were in the profile that the planner would have sent.
+- 2026-11-11 — M0 complete: all ACs pass (see `traceability.md`).

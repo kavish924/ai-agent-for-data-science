@@ -23,7 +23,10 @@ WhitelistOp = Literal[
     "standardize_text",
 ]
 
-StepStatus = Literal["proposed", "approved", "edited", "disabled"]
+# proposed: awaiting a decision (never executes) · approved / edited / user_added: run
+# disabled: recorded but skipped (Spec 04 FR-RV-06/09)
+StepStatus = Literal["proposed", "approved", "edited", "disabled", "user_added"]
+EXECUTABLE_STATUSES = frozenset({"approved", "edited", "user_added"})
 
 
 class _Strict(BaseModel):
@@ -43,7 +46,7 @@ class ImputeParams(_Strict):
     value: str | int | float | bool | None = None
 
     @model_validator(mode="after")
-    def _constant_value_rule(self) -> "ImputeParams":
+    def _constant_value_rule(self) -> ImputeParams:
         if self.strategy == "constant" and self.value is None:
             raise ValueError("'value' is required when strategy is 'constant'")
         if self.strategy != "constant" and self.value is not None:
@@ -81,16 +84,34 @@ PARAM_MODELS: dict[str, type[BaseModel]] = {
 # Ops that target a single column; the others are frame-level
 COLUMN_OPS = {"impute", "clip_outliers", "cast_type", "parse_datetime", "standardize_text"}
 
+# Spec 07 FR-ML-11: statistical ops are fit on data, so modeling re-creates them inside
+# the sklearn Pipeline instead of replaying them on the full dataset (no leakage).
+OP_CLASS: dict[str, Literal["structural", "statistical"]] = {
+    "drop_duplicates": "structural",
+    "drop_column": "structural",
+    "cast_type": "structural",
+    "parse_datetime": "structural",
+    "standardize_text": "structural",
+    "impute": "statistical",
+    "clip_outliers": "statistical",
+}
+
+
+def normalized_params(op: str, params: dict[str, Any]) -> dict[str, Any]:
+    """Params with defaults filled in, for comparing two versions of a step."""
+    return PARAM_MODELS[op].model_validate(params).model_dump()
+
 
 class PlanStep(BaseModel):
+    step_id: str | None = Field(default=None, max_length=32)  # assigned by the server
     op: WhitelistOp
     column: str | None = None
     params: dict[str, Any] = Field(default_factory=dict)
-    status: StepStatus = "approved"  # LLM proposals use "proposed" (M3); default = approved
-    rationale: str | None = None
+    status: StepStatus = "proposed"  # no explicit decision => never approved (FR-RV-10)
+    rationale: str | None = Field(default=None, max_length=1000)
 
     @model_validator(mode="after")
-    def _validate_shape(self) -> "PlanStep":
+    def _validate_shape(self) -> PlanStep:
         if self.op == "drop_duplicates" and self.column is not None:
             raise ValueError("'drop_duplicates' is frame-level; 'column' must be null")
         if self.op == "drop_column" and self.column is not None:
@@ -110,6 +131,7 @@ class PlanIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     schema_version: Literal["v1"] = "v1"
+    version: int | None = None  # plan version number, set by the server (FR-AP-03)
     steps: list[PlanStep] = Field(default_factory=list)
 
     @model_validator(mode="before")

@@ -6,7 +6,7 @@ import json
 
 import pandas as pd
 
-from app.services.profiler import profile_dataframe, infer_column_type
+from app.services.profiler import infer_column_type, profile_dataframe
 
 
 def test_boolean_from_zero_one():
@@ -103,3 +103,75 @@ def test_top_k_capping_not_full_column_dump():
     # (FR-PR-04 top-K + FR-PR-07 compact profile; design D2).
     assert "v99" not in text
     assert text.count('"value"') == 10
+
+
+# --- M0 (Spec 02 FR-PR-10..12) ------------------------------------------------
+
+from pathlib import Path  # noqa: E402
+
+from app.services.profiler import llm_profile  # noqa: E402
+
+SAMPLES = Path(__file__).resolve().parents[3] / "samples"
+
+
+def test_pr_ac7_titanic_passenger_id_is_id_like():
+    df = pd.read_csv(SAMPLES / "titanic.csv")
+    types = {c["name"]: c["type"] for c in profile_dataframe("sid", df)["columns"]}
+    assert types["PassengerId"] == "id_like"
+    assert types["Pclass"] == "numeric"
+    assert types["SibSp"] == "numeric"
+    assert types["Survived"] == "boolean"
+
+
+def test_pr_fr11_unique_integers_without_hint_stay_numeric_when_short():
+    assert infer_column_type(pd.Series([3, 1, 2], name="count"))[0] == "numeric"
+
+
+def test_pr_fr11_id_name_hint_with_unique_integers():
+    assert infer_column_type(pd.Series([7, 3, 9], name="user_id"))[0] == "id_like"
+
+
+def test_pr_fr11_monotonic_unique_integers_are_id_like():
+    assert infer_column_type(pd.Series(range(1, 31), name="row"))[0] == "id_like"
+
+
+def test_pr_ac8_comma_numbers_parsed_consistently():
+    s = pd.Series(["1,234", "2,000", "3,500", "4,100"])
+    col = _column(s)
+    assert col["type"] == "numeric"
+    assert col["stats"]["min"] == 1234.0
+    assert col["stats"]["max"] == 4100.0
+
+
+def test_pr_ac9_llm_profile_excludes_text_and_id_values():
+    df = pd.DataFrame(
+        {
+            "uid": [f"user-{i:04d}" for i in range(120)],
+            "note": [f"private note {i} for topic {i % 3}" for i in range(60)] * 2,  # text
+            "colour": ["red", "blue"] * 60,
+            "long_cat": ["x" * 60, "y"] * 60,
+        }
+    )
+    full = profile_dataframe("sid", df)
+    llm = llm_profile(full, target="colour")
+    text = json.dumps(llm)
+    assert "user-00" not in text
+    assert "private note" not in text
+    assert "red" in text  # categorical top values allowed
+    cols = {c["name"]: c for c in llm["columns"]}
+    assert "top_values" not in cols["uid"]
+    assert cols["note"]["type"] == "text"
+    assert "top_values" not in cols["note"]
+    assert all(len(v["value"]) <= 40 for v in cols["long_cat"]["top_values"])
+    assert llm["target"] == "colour"
+    assert "session_id" not in llm
+
+
+def test_pr_ac1_titanic_age_and_sex():
+    df = pd.read_csv(SAMPLES / "titanic.csv")
+    cols = {c["name"]: c for c in profile_dataframe("sid", df)["columns"]}
+    assert cols["Age"]["type"] == "numeric"
+    assert cols["Age"]["nulls"] == 177
+    assert cols["Age"]["null_pct"] == 19.9
+    assert cols["Sex"]["type"] == "categorical"
+    assert {v["value"] for v in cols["Sex"]["top_values"]} == {"male", "female"}

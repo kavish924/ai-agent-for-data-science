@@ -1,6 +1,6 @@
 # Spec 10 — Non-Functional Requirements & Observability
 
-> **Status:** Draft v0.1 · **Source:** PRD §7, §9, §10 · **Milestone:** cross-cutting (M1–M8)
+> **Status:** In progress (M0) · **Source:** PRD §7, §9, §10 · **Milestone:** cross-cutting (M1–M8)
 
 ## Purpose
 
@@ -24,6 +24,8 @@ measurable against PRD §9 success metrics.
 | NFR-04 **Performance** | Profiling and cleaning complete in seconds for files up to the size limit; full pipeline (upload → report) in minutes; each stage records `duration_ms`. |
 | NFR-05 **Reliability** | Graceful handling of malformed CSVs, empty columns, LLM failures, and invalid targets: specific errors, session stays recoverable, no silent data changes. |
 | NFR-06 **Observability** | Structured JSON logs for every pipeline stage and LLM call (catalog below); log level from `LOG_LEVEL`; no data content in logs. |
+| NFR-07 **Recovery** | *(M0)* On startup, sessions left in an in-flight state by a crash or restart are recovered: `executing` → `awaiting_approval` with `failed_stage=execute`; `uploaded` without a profile → recorded error, `failed_stage=profile` (retryable per Spec 01 FR-UP-12). |
+| NFR-08 **Retention sweep** | *(M0)* The retention sweep runs at startup and then every `RETENTION_SWEEP_MINUTES` (default 60); it deletes the DB row and the whole session directory and logs `retention.sweep`. |
 
 ### Log event catalog
 
@@ -61,6 +63,9 @@ measurable against PRD §9 success metrics.
 - **AC-4** Every stage transition emits exactly one stage log line with `duration_ms`.
 - **AC-5** Forced LLM failure during planning: user-visible error, no data mutation,
   session retryable (NFR-05).
+- **AC-7** *(M0)* Given a session stored in `executing` and one in `uploaded` with no
+  profile, when the app starts, then the first is `awaiting_approval` with
+  `failed_stage=execute` and the second has an error with `failed_stage=profile`.
 - **AC-6** Profiling + execution of the max-size fixture completes within the stated
   seconds budget on the dev machine baseline (recorded, not hard-enforced in CI).
 
@@ -83,3 +88,14 @@ measurable against PRD §9 success metrics.
 ## Open Questions
 
 - ~~Log destination~~ **Resolved:** stdout + rotating file under `storage/logs/`.
+
+## Tasks
+
+- [x] NFR-06 JSON logging (M1)
+- [x] NFR-07 startup recovery sweep (M0)
+- [x] NFR-08 retention sweep, startup + periodic (M0)
+- [ ] NFR-01/02/04/05 harnesses (M5–M8)
+
+## Changelog
+
+- 2026-11-11 — M0: added NFR-07 (recovery), NFR-08 (retention schedule), AC-7.
