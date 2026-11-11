@@ -29,6 +29,17 @@ All from `backend/` with the venv's tools; CI (`.github/workflows/ci.yml`) runs 
 - `python scripts/check_traceability.py` green
 - `python scripts/smoke_mN.py` passes on all `samples/*.csv` (latest: `smoke_m0.py`)
 
+## Branching & progress tracking
+
+- **Never commit or push to `main`.** All work happens on a branch; `main` changes only
+  by a reviewed PR merge.
+- One branch per milestone, named as in `docs/CHECKLIST.md` (`m3-llm-planner`, …).
+  Cut it from the latest `main` after the previous milestone's PR is merged. If the
+  previous PR is still open, branch from that branch and rebase onto `main` after it merges.
+- Unrelated fixes found mid-milestone go on their own short branch (`fix/<topic>`).
+- Update `docs/CHECKLIST.md` in the same branch as the work: tick a task only when it is
+  done and verified, and refresh "Last updated" / "Current branch".
+
 ## Guardrails
 
 - Never modify `storage/sessions/*/upload.csv`; every stage writes new artifacts.
