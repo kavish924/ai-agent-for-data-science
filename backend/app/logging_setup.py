@@ -13,6 +13,7 @@ from pathlib import Path
 _EXTRA_FIELDS = (
     "session_id", "stage", "duration_ms", "error", "step_id", "op",
     "plan_version", "deleted_sessions", "freed_bytes", "recovered",
+    "attempt", "valid", "model", "prompt_tokens", "output_tokens", "issue_count",
 )
 
 

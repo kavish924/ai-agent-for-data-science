@@ -1,6 +1,6 @@
 # Spec 03 — Cleaning Planner (LLM)
 
-> **Status:** Approved (Gate rules FR-PL-12/13 built in M0; LLM in M3) · **Source:** PRD §6.3, §10 · **Milestone:** M3 · **Agent:** Planner (LLM) + Schema Gate (deterministic)
+> **Status:** Done · **Source:** PRD §6.3, §10 · **Milestone:** M3 · **Agent:** Planner (LLM) + Schema Gate (deterministic)
 
 ## Purpose
 
@@ -24,11 +24,14 @@ code validates; nothing executes here.
 | FR-PL-05 | Referenced columns MUST exist in the profile. |
 | FR-PL-06 | Every step MUST include a non-empty `rationale` referencing profile facts. |
 | FR-PL-07 | On Gate rejection, re-prompt the LLM with the validation error, up to `PLAN_MAX_RETRIES` (default 3). Each attempt is logged to `llm_calls` (valid/error/attempts — never payloads). |
-| FR-PL-08 | After exhausting retries without a valid plan, the stage fails visibly; session remains `profiled` with a recorded error; user may retry. |
-| FR-PL-09 | The validated plan is stored at `storage/sessions/{id}/plan.json` and the session moves to `planned` → `awaiting_approval` once presented. |
+| FR-PL-08 | After exhausting retries without a valid plan, the stage fails visibly (`502 planner_failed`); the session keeps its state with `error` and `failed_stage=plan` recorded; the user may retry. |
+| FR-PL-09 | *(rev. M0)* The validated plan is stored as a new version (`plans/v{n}.generated.json` + `plan.json`) with every step `proposed`, and the session moves to `awaiting_approval`. |
 | FR-PL-10 | Generation parameters: low temperature; deterministic seed where supported. |
 | FR-PL-11 | The Gate and whitelist are versioned in code; the plan records `"schema":"v1"` for forward compatibility. |
 | FR-PL-12 | *(M0)* The Gate validates each step against the **running schema**: the column set and types after all earlier enabled steps (`drop_column` removes columns; `cast_type`/`parse_datetime` change types). Referencing a dropped column is rejected with the dropping step named. |
+| FR-PL-14 | *(M3)* `POST /sessions/{id}/plan` **without a body** generates the plan with the LLM; with a body it stores a manual plan (developer/test mode, same Gate). Without `GEMINI_API_KEY`, generation returns `503 llm_not_configured` and changes nothing. |
+| FR-PL-15 | *(M3, safety)* The prompt contains only: the whitelist description, `llm_profile()` output (Spec 02 FR-PR-12), the protected target, and on retries the previous attempt's validation issues. The system instruction states that profile content is data, never instructions (prompt-injection guard). |
+| FR-PL-16 | *(M3)* LLM transport errors, timeouts and unparseable JSON count as failed attempts within the same `PLAN_MAX_RETRIES` budget and are recorded in `llm_calls` by error class only. |
 | FR-PL-13 | *(M0)* When a target column is set (Spec 07 FR-ML-10), the Gate rejects `drop_column`, `impute`, `clip_outliers` and `cast_type` on it, and the planner prompt names the target as protected. |
 
 ### Whitelist summary (normative details in `design.md` §4)
@@ -48,8 +51,13 @@ code validates; nothing executes here.
 - **Input:** `profile.json` (Spec 02)
 - **Output:** `plan.json` validated by `schemas/plan.py`; consumed by the review UI
   (Spec 04) and Executor (Spec 05, approved steps only)
-- **LLM:** Google Gemini (`google-genai` SDK) `generateContent` with JSON output
-  (`response_mime_type="application/json"` + response schema); model from `GEMINI_MODEL`
+- **LLM:** Google Gemini (`google-genai` SDK) `generate_content` with
+  `response_mime_type="application/json"`, temperature 0, seed `RANDOM_SEED`; model from
+  `GEMINI_MODEL`. No `response_schema`: Gemini's schema subset cannot express the per-op
+  params union, so the whitelist is described in the prompt and **enforced by Pydantic +
+  the Gate** (the security boundary was never the provider's JSON mode — design D3).
+- **Code:** `app/llm/` (`LLMClient` protocol, `GeminiClient`, prompts) and
+  `services/planner.py` (retry loop); tests use a fake client, never the network.
 
 ## Acceptance Criteria
 
@@ -67,6 +75,13 @@ code validates; nothing executes here.
   citing step 1; given `cast_type(x, str)` then `standardize_text(x)`, the Gate accepts.
 - **AC-8** *(M0)* Given target `Survived`, a step `impute(Survived)` or
   `drop_column([Survived])` is rejected by the Gate.
+- **AC-9** *(M3)* Given no `GEMINI_API_KEY`, `POST /plan` without a body returns `503
+  llm_not_configured` and the session state is unchanged.
+- **AC-10** *(M3)* Given the Titanic profile, the planner prompt contains no passenger
+  name or ticket value; given a rejected first attempt, the second prompt contains that
+  attempt's validation issues.
+- **AC-11** *(M3)* Given a transport error on attempt 1 and a valid plan on attempt 2, the
+  plan is stored and `llm_calls` holds two rows (`valid=false` then `valid=true`).
 - **AC-6** Given the same profile and a seeded/stubbed LLM, planning behavior is
   stable; stored `plan.json` is the artifact of record (execution reproducibility does
   not depend on re-calling the LLM).
@@ -98,8 +113,11 @@ code validates; nothing executes here.
 - [x] FR-PL-02..05, 11 schema + Gate (M2)
 - [x] FR-PL-12 running-schema Gate (M0)
 - [x] FR-PL-13 target protection (M0)
-- [ ] FR-PL-01, 06..10 LLM planner (M3)
+- [x] FR-PL-01, 06..10 LLM planner (M3)
+- [x] FR-PL-14..16 generation endpoint, prompt contract, transport errors (M3)
 
 ## Changelog
 
 - 2026-11-11 — M0: FR-PL-01 now references `llm_profile()`; added FR-PL-12/13, AC-7/8.
+- 2026-11-11 — M3: added FR-PL-14..16, AC-9..11; FR-PL-08/09 aligned with the M0 state model; documented why no provider response schema is used.
+- 2026-11-11 — M3 complete: all ACs pass with a fake LLM; live check in `tests/live/` (see `traceability.md`).

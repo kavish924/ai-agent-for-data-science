@@ -28,4 +28,6 @@ jobs:
       - name: Spec traceability
         run: python scripts/check_traceability.py
       - name: Smoke on sample datasets
-        run: python scripts/smoke_m0.py
+        run: |
+          python scripts/smoke_m0.py
+          python scripts/smoke_m3.py

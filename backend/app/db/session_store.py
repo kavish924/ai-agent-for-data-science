@@ -24,6 +24,23 @@ CREATE TABLE IF NOT EXISTS sessions (
     retention_expires_at TEXT NOT NULL,
     error TEXT
 );
+
+-- Spec 03 FR-PL-07 / Spec 10 NFR-03: one row per LLM attempt, metadata only - never
+-- prompt or response content. Feeds the PRD §9 "schema validity rate" metric.
+CREATE TABLE IF NOT EXISTS llm_calls (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    stage TEXT NOT NULL,
+    attempt INTEGER NOT NULL,
+    valid INTEGER NOT NULL,
+    error TEXT,
+    model TEXT,
+    prompt_tokens INTEGER,
+    output_tokens INTEGER,
+    duration_ms INTEGER NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS llm_calls_session ON llm_calls (session_id);
 """
 
 # Columns added after M2; applied to existing databases by init_db (M0)
@@ -172,4 +189,37 @@ def list_expired(db_path: Path, now: datetime | None = None) -> list[str]:
 
 def delete_session(db_path: Path, session_id: str) -> None:
     with _connect(db_path) as conn:
+        conn.execute("DELETE FROM llm_calls WHERE session_id = ?", (session_id,))
         conn.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+
+
+def record_llm_call(
+    db_path: Path,
+    *,
+    session_id: str,
+    stage: str,
+    attempt: int,
+    valid: bool,
+    error: str | None,
+    model: str | None,
+    prompt_tokens: int | None,
+    output_tokens: int | None,
+    duration_ms: int,
+) -> None:
+    """Persist one LLM attempt. `error` is a short error class, never content."""
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO llm_calls (session_id, stage, attempt, valid, error, model,"
+            " prompt_tokens, output_tokens, duration_ms, created_at)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (session_id, stage, attempt, int(valid), error, model, prompt_tokens,
+             output_tokens, duration_ms, _now()),
+        )
+
+
+def list_llm_calls(db_path: Path, session_id: str) -> list[dict]:
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT * FROM llm_calls WHERE session_id = ? ORDER BY id", (session_id,)
+        ).fetchall()
+    return [dict(row) for row in rows]
