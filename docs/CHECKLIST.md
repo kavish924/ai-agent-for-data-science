@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m4-charts` (stacked on `m3.5-thin-ui`; not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m4-charts` (on top of `main`; pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -17,8 +17,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M0 Hardening | `m0-hardening` | ✅ done · merged to `main` (PR #1) |
 | M3 LLM planner (Gemini) | `m3-llm-planner` | ✅ done · merged to `main` (PR #2) |
 | graphify tooling | `chore/graphify` | ✅ merged to `main` (PR #3) |
-| M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · pushed, awaiting PR → `main` |
-| M4 Charts | `m4-charts` | ✅ done · stacked on M3.5; rebase onto `main` after its PR merges |
+| M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · in `main` (fast-forward push, user-approved; no PR) |
+| M4 Charts | `m4-charts` | ✅ done · pushed, awaiting PR → `main` |
 | M5 ML baselines | `m5-ml-baselines` | ⬜ not started |
 | M6 Report + narration | `m6-report` | ⬜ not started |
 | M7 UI polish | `m7-ui-polish` | ⬜ not started |
@@ -35,7 +35,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Branching rule: never commit/push to `main`; one branch per milestone, merged by PR
 - [x] This checklist
 - [x] Open PR `m0-hardening` → `main` and merge it (PR #1)
-- [ ] First green CI run on GitHub
+- [ ] First green CI run on GitHub (M3.5 reached `main` without a PR, so check the Actions tab for its push run)
 
 ## M1 — Ingestion + profiler *(done before M0)*
 
@@ -106,9 +106,9 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Spec 04 component tests (12, Vitest); traceability checker reads frontend tests (67 ACs)
 - [x] Verified end to end in the browser on titanic.csv (desktop + 375 px phone width)
 - [x] CI: frontend job (lint, typecheck, tests, build)
-- [ ] Open PR `m3.5-thin-ui` → `main` and merge it (user)
+- [x] Into `main` by a user-approved fast-forward push (the PR route was blocked by a signed-out browser)
 
-## M4 — Charts · branch `m4-charts` (stacked on `m3.5-thin-ui`)
+## M4 — Charts · branch `m4-charts`
 
 - [x] Spec 06 FR-CH-02 revised (one distribution chart = histogram + box strip), FR-CH-06 priority from the original profile, FR-CH-10..13 + AC-6..10; Spec 09 FR-AP-17..19 + AC-11
 - [x] Tests written first (backend and frontend), watched fail, then implemented
@@ -120,7 +120,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Endpoints: `GET /charts`, `GET /charts/{file}` (manifest-whitelisted), `GET /profile/after`
 - [x] UI gallery on the Download screen: thumbnails, enlarge with shared-layout animation, Escape to close, skipped list
 - [x] Verified in the browser on titanic.csv (9 charts, before overlay on Age, enlarge/close)
-- [ ] Rebase onto `main` after the M3.5 PR merges, then open PR `m4-charts` → `main` (user merges)
+- [x] No rebase needed: `main` fast-forwarded to M3.5, which `m4-charts` sits on
+- [ ] Open PR `m4-charts` → `main` and merge it (user)
 
 ## M5 — ML baselines · branch `m5-ml-baselines`
 
