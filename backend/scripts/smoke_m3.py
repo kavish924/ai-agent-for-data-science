@@ -50,6 +50,11 @@ def run_case(client: TestClient, name: str, target: str) -> None:
     stored = (settings.storage_root / "sessions" / sid / "upload.csv").read_bytes()
     assert hashlib.sha256(stored).digest() == hashlib.sha256(raw).digest(), "upload modified!"
 
+    assert client.post(f"{base}/model").status_code == 202  # M5: baselines for the target
+    runs = client.get(f"{base}/model").json()
+    assert client.get(base).json()["state"] == "modeled", runs
+    assert runs["best_model"] != "dummy"
+
     charts = client.get(f"{base}/charts").json()  # M4: charts come with every run
     assert charts["status"] == "completed" and charts["charts"], charts
     assert client.get(f"{base}/profile/after").status_code == 200
@@ -58,7 +63,8 @@ def run_case(client: TestClient, name: str, target: str) -> None:
     ops = ", ".join(f"{s['op']}({s.get('column') or ''})" for s in plan["steps"]) or "no steps"
     ms = int((time.perf_counter() - started) * 1000)
     print(f"[ok] {name:16} attempts={len(calls)} valid_first={bool(calls[0]['valid'])} "
-          f"charts={len(charts['charts'])} {ms} ms")
+          f"charts={len(charts['charts'])} best={runs['best_model']} "
+          f"{runs['primary_metric']}={runs['models'][-1]['cv'][runs['primary_metric']]['mean']} {ms} ms")
     print(f"     plan: {ops}")
 
 

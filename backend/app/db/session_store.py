@@ -160,13 +160,19 @@ def recover_inflight(db_path: Path, has_profile: Any) -> list[str]:
     recovered: list[str] = []
     with _connect(db_path) as conn:
         rows = conn.execute(
-            "SELECT id, state, error FROM sessions WHERE state IN ('executing', 'uploaded')"
+            "SELECT id, state, error FROM sessions WHERE state IN ('executing', 'uploaded', 'modeling')"
         ).fetchall()
     for row in rows:
         if row["state"] == "executing":
             update_session(
                 db_path, row["id"], state="awaiting_approval", failed_stage="execute",
                 error="execution was interrupted by a server restart; approve and run it again",
+            )
+            recovered.append(row["id"])
+        elif row["state"] == "modeling":
+            update_session(
+                db_path, row["id"], state="executed", failed_stage="model",
+                error="training was interrupted by a server restart; train again",
             )
             recovered.append(row["id"])
         elif row["error"] is None and not has_profile(row["id"]):

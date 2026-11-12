@@ -1,8 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { api, type ChartManifest, type ExecutionLog, type Session } from "@/lib/api/client";
+import {
+  api,
+  type ChartManifest,
+  type ExecutionLog,
+  type ModelRuns,
+  type Session,
+  type TargetSuggestion,
+} from "@/lib/api/client";
 import { ChartGallery } from "./ChartGallery";
+import { ModelPanel } from "./ModelPanel";
 import { Spinner } from "./Shell";
 
 const fmt = (n: number | undefined) => (n === undefined ? "—" : n.toLocaleString());
@@ -29,10 +37,16 @@ export function DoneScreen({
   session,
   log,
   charts,
+  runs = null,
+  suggestions = [],
+  onTrain = () => undefined,
 }: {
   session: Session;
   log: ExecutionLog;
   charts: ChartManifest | null;
+  runs?: ModelRuns | null;
+  suggestions?: TargetSuggestion[];
+  onTrain?: (target: string) => void;
 }) {
   const ran = log.steps.filter((s) => s.status === "executed");
   const skipped = log.steps.filter((s) => s.status === "disabled");
@@ -105,6 +119,8 @@ export function DoneScreen({
           </table>
         </div>
 
+        <ModelPanel session={session} runs={runs} suggestions={suggestions} onTrain={onTrain} />
+
         {charts && <ChartGallery sessionId={session.id} manifest={charts} />}
       </section>
 
@@ -136,7 +152,7 @@ export function DoneScreen({
         </section>
         <section className="rounded-xl border border-line bg-surface p-5 text-[13px] leading-relaxed text-ink-soft">
           <p className="mb-1.5 text-sm font-semibold text-ink">Coming next</p>
-          Baseline models and a full process report arrive in later milestones.
+          A full process report with a narrated summary arrives in the next milestone.
         </section>
       </aside>
     </main>

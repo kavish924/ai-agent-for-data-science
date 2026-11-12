@@ -97,6 +97,23 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "ModelIn": {
+        "properties": {
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          }
+        },
+        "title": "ModelIn",
+        "type": "object"
+      },
       "NumericStats": {
         "properties": {
           "max": {
@@ -810,6 +827,109 @@
         ]
       }
     },
+    "/api/v1/sessions/{session_id}/model": {
+      "get": {
+        "operationId": "get_model_runs_api_v1_sessions__session_id__model_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Model Runs Api V1 Sessions  Session Id  Model Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Latest baseline comparison (FR-AP-20)",
+        "tags": [
+          "models"
+        ]
+      },
+      "post": {
+        "operationId": "train_models_api_v1_sessions__session_id__model_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ModelIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Train Models Api V1 Sessions  Session Id  Model Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Train and compare baseline models in the background (FR-AP-05)",
+        "tags": [
+          "models"
+        ]
+      }
+    },
     "/api/v1/sessions/{session_id}/plan": {
       "get": {
         "operationId": "get_plan_api_v1_sessions__session_id__plan_get",
@@ -1237,6 +1357,50 @@
         "summary": "Choose (or clear) the target column before planning (FR-AP-13)",
         "tags": [
           "sessions"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/targets": {
+      "get": {
+        "operationId": "get_target_suggestions_api_v1_sessions__session_id__targets_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Target Suggestions Api V1 Sessions  Session Id  Targets Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ranked target suggestions (FR-AP-21)",
+        "tags": [
+          "models"
         ]
       }
     }

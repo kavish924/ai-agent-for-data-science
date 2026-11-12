@@ -24,7 +24,7 @@ measurable against PRD §9 success metrics.
 | NFR-04 **Performance** | Profiling and cleaning complete in seconds for files up to the size limit; full pipeline (upload → report) in minutes; each stage records `duration_ms`. |
 | NFR-05 **Reliability** | Graceful handling of malformed CSVs, empty columns, LLM failures, and invalid targets: specific errors, session stays recoverable, no silent data changes. |
 | NFR-06 **Observability** | Structured JSON logs for every pipeline stage and LLM call (catalog below); log level from `LOG_LEVEL`; no data content in logs. |
-| NFR-07 **Recovery** | *(M0)* On startup, sessions left in an in-flight state by a crash or restart are recovered: `executing` → `awaiting_approval` with `failed_stage=execute`; `uploaded` without a profile → recorded error, `failed_stage=profile` (retryable per Spec 01 FR-UP-12). |
+| NFR-07 **Recovery** | *(M0)* On startup, sessions left in an in-flight state by a crash or restart are recovered: `executing` → `awaiting_approval` with `failed_stage=execute`; *(M5)* `modeling` → `executed` with `failed_stage=model`; `uploaded` without a profile → recorded error, `failed_stage=profile` (retryable per Spec 01 FR-UP-12). |
 | NFR-08 **Retention sweep** | *(M0)* The retention sweep runs at startup and then every `RETENTION_SWEEP_MINUTES` (default 60); it deletes the DB row and the whole session directory and logs `retention.sweep`. |
 
 ### Log event catalog

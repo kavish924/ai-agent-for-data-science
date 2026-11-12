@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # PRD §6.6 chart cap (Spec 06, used from M4)
     max_charts: int = 12
 
+    # Spec 07 FR-ML-13: larger datasets are down-sampled (seeded) before training
+    model_max_rows: int = 50_000
+
     # PRD §6.3 bounded LLM retries (Spec 03, used from M3)
     plan_max_retries: int = 3
 

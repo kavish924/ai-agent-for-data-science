@@ -61,5 +61,7 @@ describe("Spec 04 screens", () => {
     expect(screenFor({ ...session, state: "approved" })).toBe("Review plan");
     expect(screenFor({ ...session, state: "executing" })).toBe("Run");
     expect(screenFor({ ...session, state: "executed" })).toBe("Download");
+    expect(screenFor({ ...session, state: "modeling" })).toBe("Download");
+    expect(screenFor({ ...session, state: "modeled" })).toBe("Download");
   });
 });

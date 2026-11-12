@@ -50,6 +50,38 @@ export interface ChartManifest {
   error?: string;
 }
 
+/** GET /targets (Spec 07 FR-ML-01). */
+export interface TargetSuggestion {
+  column: string;
+  problem_type: "classification" | "regression";
+  reason: string;
+}
+
+export interface MetricSummary {
+  folds: (number | null)[];
+  mean: number | null;
+  std: number | null;
+}
+
+/** model_runs.json (Spec 07). */
+export interface ModelRuns {
+  target: string;
+  problem_type: "classification" | "regression";
+  primary_metric: string;
+  best_model: string;
+  beats_dummy: boolean;
+  margin_over_dummy: number | null;
+  models: {
+    name: string;
+    cv: Record<string, MetricSummary>;
+    holdout: Record<string, number | null>;
+    fit_seconds: number;
+  }[];
+  rows: { total: number; dropped_missing_target: number; used: number; sampled: boolean; train: number; test: number };
+  features: { numeric: string[]; categorical: string[]; excluded: string[] };
+  note: string;
+}
+
 export interface GateIssue {
   step: number;
   issue: string;
@@ -127,6 +159,11 @@ export const api = {
   executionLog: (id: string) => request<ExecutionLog>(`/sessions/${id}/execution-log`),
   cleanedCsvUrl: (id: string) => `${BASE}/sessions/${id}/cleaned.csv`,
   charts: (id: string) => request<ChartManifest>(`/sessions/${id}/charts`),
+  targets: (id: string) =>
+    request<{ suggestions: TargetSuggestion[] }>(`/sessions/${id}/targets`).then((r) => r.suggestions),
+  train: (id: string, target: string) =>
+    request<{ state: string }>(`/sessions/${id}/model`, json("POST", { target })),
+  modelRuns: (id: string) => request<ModelRuns>(`/sessions/${id}/model`),
   chartUrl: (id: string, file: string) =>
     `${BASE}/sessions/${id}/charts/${encodeURIComponent(file)}`,
 };

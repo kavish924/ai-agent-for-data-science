@@ -8,9 +8,11 @@ import {
   ApiError,
   type ChartManifest,
   type ExecutionLog,
+  type ModelRuns,
   type Plan,
   type Profile,
   type Session,
+  type TargetSuggestion,
 } from "@/lib/api/client";
 import { PlanReview } from "./PlanReview";
 import { ProfileScreen } from "./ProfileScreen";
@@ -19,7 +21,7 @@ import { ErrorNote, Shell, Spinner, type StepName } from "./Shell";
 import { UploadScreen } from "./UploadScreen";
 
 const POLL_MS = 800;
-const EXECUTED = new Set(["executed", "modeled", "reported"]);
+const EXECUTED = new Set(["executed", "modeling", "modeled", "reported"]);
 
 /** Which screen a session state belongs to (Spec 04 FR-RV-12). */
 export function screenFor(session: Session | null): StepName {
@@ -41,6 +43,8 @@ export function AgentFlow() {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [log, setLog] = useState<ExecutionLog | null>(null);
   const [charts, setCharts] = useState<ChartManifest | null>(null);
+  const [runs, setRuns] = useState<ModelRuns | null>(null);
+  const [suggestions, setSuggestions] = useState<TargetSuggestion[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const openSession = useCallback(
@@ -59,12 +63,17 @@ export function AgentFlow() {
       setSession(next);
       setError(null);
       const screen = screenFor(next);
-      if (next.state !== "uploaded" && screen !== "Upload") setProfile(await api.profile(sessionId));
+      if (next.state !== "uploaded" && screen !== "Upload") {
+        setProfile(await api.profile(sessionId));
+        setSuggestions(await api.targets(sessionId).catch(() => []));
+      }
       if (screen === "Review plan") setPlan(await api.getPlan(sessionId));
       if (screen === "Download") {
         setLog(await api.executionLog(sessionId));
         // charts are optional: an old run (or a failed render) must not block the download
         setCharts(await api.charts(sessionId).catch(() => null));
+        // model runs exist only after training; a 404 simply means "not trained yet"
+        setRuns(await api.modelRuns(sessionId).catch(() => null));
       }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't load this session.");
@@ -77,11 +86,16 @@ export function AgentFlow() {
     setProfile(null);
     setLog(null);
     setCharts(null);
+    setRuns(null);
     void refresh();
   }, [refresh]);
 
   // Poll while background work runs (profiling, execution).
-  const waiting = session && ((session.state === "uploaded" && !session.error) || session.state === "executing");
+  const waiting =
+    session &&
+    ((session.state === "uploaded" && !session.error) ||
+      session.state === "executing" ||
+      session.state === "modeling");
   useEffect(() => {
     if (!waiting) return;
     const timer = setInterval(() => void refresh(), POLL_MS);
@@ -89,7 +103,8 @@ export function AgentFlow() {
   }, [waiting, refresh]);
 
   const screen = screenFor(session);
-  const key = `${screen}-${session?.state}-${session?.plan_version ?? 0}`;
+  // The Download screen stays mounted while training moves executed -> modeling -> modeled
+  const key = `${screen}-${screen === "Download" ? "" : session?.state}-${session?.plan_version ?? 0}`;
 
   let body: React.ReactNode;
   if (!session) {
@@ -111,7 +126,10 @@ export function AgentFlow() {
       </main>
     );
   } else if (screen === "Profile" && profile) {
-    body = <ProfileScreen session={session} profile={profile} onPlanned={() => void refresh()} />;
+    body = (
+      <ProfileScreen session={session} profile={profile} suggestions={suggestions}
+        onPlanned={() => void refresh()} />
+    );
   } else if (screen === "Review plan" && plan) {
     body =
       session.state === "approved" ? (
@@ -135,7 +153,20 @@ export function AgentFlow() {
   } else if (screen === "Run") {
     body = <RunningScreen />;
   } else if (screen === "Download" && log) {
-    body = <DoneScreen session={session} log={log} charts={charts} />;
+    body = (
+      <DoneScreen
+        session={session}
+        log={log}
+        charts={charts}
+        runs={runs}
+        suggestions={suggestions}
+        onTrain={(target) =>
+          void api.train(session.id, target).then(refresh, (err: unknown) =>
+            setError(err instanceof ApiError ? err.message : "Couldn't start training."),
+          )
+        }
+      />
+    );
   } else {
     body = (
       <main className="flex flex-1 items-center justify-center">

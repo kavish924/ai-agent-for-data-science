@@ -92,6 +92,11 @@ def charts_manifest_path(storage_root: Path, session_id: str) -> Path:
     return session_dir(storage_root, session_id) / "charts_manifest.json"
 
 
+def model_runs_path(storage_root: Path, session_id: str) -> Path:
+    """Baseline comparison for the latest training run (Spec 07 FR-ML-08)."""
+    return session_dir(storage_root, session_id) / "model_runs.json"
+
+
 def after_profile_path(storage_root: Path, session_id: str) -> Path:
     """Profile of the cleaned dataset (Spec 06 FR-CH-10)."""
     return session_dir(storage_root, session_id) / "profile.after.json"

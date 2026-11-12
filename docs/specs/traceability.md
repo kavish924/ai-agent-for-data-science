@@ -66,6 +66,17 @@
 | 06 | AC-8 | `test_ch_ac8_before_overlay_only_on_changed_columns`, `test_ch_ac8_imputed_column_has_before_overlay` | `services/charts.py`, `services/orchestrator.py` |
 | 06 | AC-9 | `test_ch_ac9_chart_files_are_whitelisted` | `routers/execution.py` |
 | 06 | AC-10 | `test_ch_ac10_gallery_shows_each_chart_and_skips`, `test_ch_fr13_chart_opens_large_and_closes_with_escape` | `frontend: ChartGallery.tsx` |
+| 07 | AC-1 | `test_ml_ac1_titanic_is_classification_with_three_baselines` | `services/analyst.py` |
+| 07 | AC-2 | `test_ml_ac2_continuous_target_is_regression` | `services/analyst.py` |
+| 07 | AC-3 | `test_ml_ac3_identifier_target_rejected` | `services/analyst.py` |
+| 07 | AC-4 | `test_ml_ac4_preprocessing_lives_inside_the_pipeline` | `services/analyst.py` (`build_pipeline`) |
+| 07 | AC-5 | `test_ml_ac5_scores_are_reproducible` | `services/analyst.py` |
+| 07 | AC-6 | `test_ml_ac6_feature_nulls_are_handled_in_pipeline` | `services/analyst.py` |
+| 07 | AC-7 | `test_ml_ac7_statistical_steps_are_not_replayed` | `services/analyst.py`, `services/transformers.py` |
+| 07 | AC-8 | `test_ml_ac8_target_suggestions_for_titanic`, `test_ml_fr01_profile_screen_offers_the_top_suggestion` | `services/analyst.py`; `frontend: ProfileScreen.tsx` |
+| 07 | AC-9 | `test_ml_ac9_training_flow`, `test_ml_ac9_invalid_targets_rejected`, `test_ml_ac9_training_failure_returns_to_executed` | `routers/models.py` |
+| 07 | AC-10 | `test_ml_ac10_best_model_is_never_the_dummy` | `services/analyst.py` |
+| 07 | AC-11 | `test_ml_ac11_results_table_marks_the_best_model`, `test_ml_ac11_train_sends_the_chosen_target` | `frontend: ModelPanel.tsx` |
 | 09 | AC-1 | `test_file_too_large_413`, `test_get_plan_before_created_409`, `test_ap_ac6_execute_before_approve_is_409`, `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
 | 09 | AC-2 | `test_unknown_session_404_with_envelope`, `test_missing_file_422` | `errors.py` |
 | 09 | AC-3 | `test_ap_ac3_review_edits_are_regated` | `routers/sessions.py` |
@@ -77,7 +88,8 @@
 | 09 | AC-9 | `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
 | 09 | AC-10 | `test_ap_ac10_execution_log_endpoint` | `routers/execution.py` |
 | 09 | AC-11 | `test_ap_ac11_chart_endpoints` | `routers/execution.py` |
-| 10 | AC-1 | pending (M5) | — |
+| 09 | AC-12 | `test_ap_ac12_model_and_targets_endpoints` | `routers/models.py` |
+| 10 | AC-1 | pending (M8 harness); parts covered today: cleaned CSV by `test_deterministic_outputs_across_sessions`, chart bytes by `test_ch_ac4_png_bytes_are_deterministic`, model scores by `test_ml_ac5_scores_are_reproducible` | — |
 | 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |
 | 10 | AC-4 | pending (M6) | — |

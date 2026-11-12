@@ -13,6 +13,7 @@ dependencies = [
     "charset-normalizer>=3.3",
     "google-genai>=1.0",
     "matplotlib>=3.9",
+    "scikit-learn>=1.5",
 ]
 
 [project.optional-dependencies]

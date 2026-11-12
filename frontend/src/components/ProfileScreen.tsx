@@ -2,7 +2,14 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { api, ApiError, type ColumnProfile, type Profile, type Session } from "@/lib/api/client";
+import {
+  api,
+  ApiError,
+  type ColumnProfile,
+  type Profile,
+  type Session,
+  type TargetSuggestion,
+} from "@/lib/api/client";
 import { ErrorNote, Spinner } from "./Shell";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -31,16 +38,19 @@ function Stat({ value, label }: { value: string | number; label: string }) {
 export function ProfileScreen({
   session,
   profile,
+  suggestions = [],
   onPlanned,
 }: {
   session: Session;
   profile: Profile;
+  suggestions?: TargetSuggestion[];
   onPlanned: () => void;
 }) {
   const [target, setTarget] = useState<string>(session.target ?? "");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const candidates = targetCandidates(profile);
+  const top = suggestions[0];
 
   async function generate() {
     setError(null);
@@ -131,6 +141,26 @@ export function ProfileScreen({
                 <option key={column.name} value={column.name}>{column.name}</option>
               ))}
             </select>
+            {top && target !== top.column && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-accent-soft px-3 py-2.5 text-[13px] text-accent-ink"
+              >
+                <span>
+                  <span className="font-semibold">Suggested: </span>
+                  <span className="font-mono">{top.column}</span> · {top.reason}.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setTarget(top.column)}
+                  aria-label={`Use ${top.column} as the target`}
+                  className="shrink-0 rounded-md border border-accent/40 bg-surface px-2.5 py-1 text-xs font-semibold hover:border-accent"
+                >
+                  Use it
+                </button>
+              </motion.div>
+            )}
           </section>
 
           <section className="flex gap-2.5 rounded-xl border border-dashed border-line-strong p-4 text-xs leading-relaxed text-ink-soft">

@@ -22,7 +22,7 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | FR-AP-02 | `GET /sessions/{id}/profile` — `200 profile.json` · `404` unknown session · `409` if not yet profiled. |
 | FR-AP-03 | *(rev. M0)* `POST /sessions/{id}/plan` — create a new plan version. With no body the LLM generates it (M3, Spec 03 FR-PL-14); with a body it stores a manual plan. Server assigns `step_id`s (`s1..sN`), forces every status to `proposed`, Gate-validates, stores `plans/v{n}.generated.json`, sets state `awaiting_approval`. `201 PlanOut` · `409` wrong state · `422` Gate rejection · `502 planner_failed` after retries · `503 llm_not_configured` when generation is requested without an API key. From `approved` this revokes the approval. |
 | FR-AP-04 | *(rev. M0)* `POST /sessions/{id}/execute` — **no body**; runs the frozen approved plan. `202` · `409` unless state `approved`. Exactly one of two concurrent calls succeeds (conditional state transition). |
-| FR-AP-05 | `POST /sessions/{id}/model` — body `{target: "col"}`. `200 model_runs.json` · `409` unless `executed` · `422` invalid target. *(M5)* |
+| FR-AP-05 | *(rev. M5)* `POST /sessions/{id}/model` — body `{target?: "col"}` (defaults to the session target). Starts baseline training in the background: `202` · `409` unless `executed`/`modeled` · `422` invalid target (unknown, identifier/text/date, one class, or changed by an executed plan step). Poll `GET /sessions/{id}`; results via `GET /sessions/{id}/model`. |
 | FR-AP-06 | `GET /sessions/{id}/report` — `200 text/html` · `404` until the report exists. *(M6)* |
 | FR-AP-07 | `GET /sessions/{id}` — session status for polling: `SessionOut` incl. `state`, `error`, `failed_stage`, `target`, `plan_version`. |
 | FR-AP-08 | All errors use a common envelope: `{"error": {"code", "message", "details"?}}`; messages are user-presentable. |
@@ -37,6 +37,8 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | FR-AP-17 | *(M4)* `GET /sessions/{id}/charts` — `charts_manifest.json` (Spec 06). `200` · `404 charts_not_ready` before a run has produced one. |
 | FR-AP-18 | *(M4)* `GET /sessions/{id}/charts/{file}` — one chart PNG, only if `file` is listed in the manifest. `200 image/png` · `404 chart_not_found`. |
 | FR-AP-19 | *(M4)* `GET /sessions/{id}/profile/after` — the cleaned data's profile (Spec 06 FR-CH-10). `200 ProfileOut` · `404 after_profile_not_found` before a successful run. |
+| FR-AP-20 | *(M5)* `GET /sessions/{id}/model` — `model_runs.json` (Spec 07). `200` · `404 model_not_ready`. |
+| FR-AP-21 | *(M5)* `GET /sessions/{id}/targets` — ranked target suggestions `[{column, problem_type, reason}]` (Spec 07 FR-ML-01). `200` once profiled. |
 
 ### Session state table (normative)
 
@@ -48,7 +50,9 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | `approved` | plan frozen; ready to execute | `POST /plan/approve` |
 | `executing` | background execution running | `POST /execute` |
 | `executed` | cleaned CSV + execution log ready | execution success |
-| `modeled` / `reported` | M5 / M6 | — |
+| `modeling` | background baseline training running | `POST /model` |
+| `modeled` | `model_runs.json` ready | training success |
+| `reported` | M6 | — |
 
 `planned` from earlier drafts is merged into `awaiting_approval`. Failures never add a
 state: the session stays in (or returns to) its last good state with `error` and
@@ -86,7 +90,9 @@ code and the generated OpenAPI spec, not in docs (docs link, never duplicate).
 | `GET /cleaned.csv` | `executed` and later |
 | `GET /execution-log` | any state, once a run has happened |
 | `GET /charts`, `GET /charts/{file}`, `GET /profile/after` | once a successful run has produced them |
-| `POST /model` | `executed` and later |
+| `POST /model` | `executed`, `modeled` |
+| `GET /model` | once a training run has finished |
+| `GET /targets` | `profiled` and later |
 | `GET /report` | `reported` only |
 
 Violations return `409` with the current state in `details`.
@@ -114,6 +120,8 @@ Violations return `409` with the current state in `details`.
 - **AC-11** *(M4)* After a run, `GET /charts` lists the charts, each listed file is served
   as `image/png`, and `GET /profile/after` returns the cleaned profile; before a run all
   three are `404`.
+- **AC-12** *(M5)* `GET /model` is `404` until training finishes; `GET /targets` lists
+  suggestions after profiling.
 
 ## Dependencies
 
@@ -140,7 +148,8 @@ Violations return `409` with the current state in `details`.
 - [x] FR-AP-01, 02, 07, 08 (M1)
 - [x] FR-AP-03, 04 revised plan/execute contract (M0)
 - [x] FR-AP-10..15 history, review, approve, target, profile retry, cleaned.csv (M0)
-- [ ] FR-AP-05, 06 (M5, M6)
+- [x] FR-AP-05, FR-AP-20, FR-AP-21 (M5)
+- [ ] FR-AP-06 (M6)
 
 ## Changelog
 
@@ -150,3 +159,4 @@ Violations return `409` with the current state in `details`.
 - 2026-11-11 — M3: `POST /plan` body is optional (LLM generation); added `502 planner_failed` and `503 llm_not_configured`.
 - 2026-11-12 — M3.5: added FR-AP-16 `GET /execution-log` (AC-10) for the UI's run summary.
 - 2026-11-12 — M4: added FR-AP-17..19 (charts manifest, chart files, after-cleaning profile) and AC-11.
+- 2026-11-12 — M5: FR-AP-05 background training (`modeling` state); added FR-AP-20/21 and AC-12.

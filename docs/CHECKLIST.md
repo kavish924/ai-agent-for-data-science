@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m4-charts` (on top of `main`; pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m5-ml-baselines` (not pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -18,8 +18,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M3 LLM planner (Gemini) | `m3-llm-planner` | ✅ done · merged to `main` (PR #2) |
 | graphify tooling | `chore/graphify` | ✅ merged to `main` (PR #3) |
 | M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · in `main` (fast-forward push, user-approved; no PR) |
-| M4 Charts | `m4-charts` | ✅ done · pushed, awaiting PR → `main` |
-| M5 ML baselines | `m5-ml-baselines` | ⬜ not started |
+| M4 Charts | `m4-charts` | ✅ done · merged to `main` (PR #4) |
+| M5 ML baselines | `m5-ml-baselines` | ✅ done · awaiting PR → `main` |
 | M6 Report + narration | `m6-report` | ⬜ not started |
 | M7 UI polish | `m7-ui-polish` | ⬜ not started |
 | M8 Evaluation + demo | `m8-eval-demo` | ⬜ not started |
@@ -121,18 +121,24 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] UI gallery on the Download screen: thumbnails, enlarge with shared-layout animation, Escape to close, skipped list
 - [x] Verified in the browser on titanic.csv (9 charts, before overlay on Age, enlarge/close)
 - [x] No rebase needed: `main` fast-forwarded to M3.5, which `m4-charts` sits on
-- [ ] Open PR `m4-charts` → `main` and merge it (user)
+- [x] Merged to `main` (PR #4)
 
 ## M5 — ML baselines · branch `m5-ml-baselines`
 
-- [ ] Spec 07 approved; add `scikit-learn`
-- [ ] Candidate-target suggestions (FR-ML-01)
-- [ ] Rule-based problem-type detection; id_like targets rejected
-- [ ] Structural-op replay on the upload (FR-ML-11) — no leakage from cleaning
-- [ ] Pipelines: imputer + `IQRClipper` + encoders/scalers inside each model
-- [ ] Dummy floor + 2 baselines; 80/20 holdout + 5-fold CV; fixed seed
-- [ ] `model_runs.json` with params fingerprint; `POST /model`
-- [ ] Spec 10 AC-1 determinism harness (scores); UI results table
+- [x] Spec 07 FR-ML-02 small-integer rule, FR-ML-08 background job, FR-ML-12..14 + AC-7..11; Spec 09 FR-AP-05 rev., FR-AP-20/21 + AC-12; `modeling` state + restart recovery
+- [x] Tests written first (backend and frontend), watched fail, then implemented
+- [x] Add `scikit-learn`; candidate-target suggestions with reasons (`GET /targets`)
+- [x] Rule-based problem type; identifier / text / date / one-class targets rejected
+- [x] Structural-op replay on the upload (FR-ML-11): impute/clip never applied before the split
+- [x] Per-column pipelines: plan's imputer choice, `IQRClipper`, scaling (linear models), one-hot encoding
+- [x] Dummy floor + logistic/linear regression + random forest; 80/20 hold-out + 5-fold CV; fixed seed
+- [x] `model_runs.json` with fingerprint, best model (never the dummy), margin over the floor; `POST /model`, `GET /model`
+- [x] Large data sampled to `MODEL_MAX_ROWS` (seeded, stratified)
+- [x] UI: suggested target on the Profile screen; Baseline models panel (train, progress, comparison table, best marked)
+- [x] Verified through the API on titanic.csv (RF F1 0.801 vs dummy 0.381, 2.3 s)
+- [x] Clicked through in the browser pane: suggestion "Use it" → plan → approve & run → Train → results table (RF Best 0.801, dummy floor 0.381); screen stayed mounted during training
+- [ ] Screenshot review of the model panel layout (the app window stopped drawing before it could be captured)
+- [ ] Open PR `m5-ml-baselines` → `main` and merge it (user)
 
 ## M6 — Report + narration · branch `m6-report`
 
