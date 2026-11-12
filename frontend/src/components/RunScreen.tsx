@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/client";
 import { ChartGallery } from "./ChartGallery";
 import { ModelPanel } from "./ModelPanel";
+import { ReportPanel } from "./ReportPanel";
 import { Spinner } from "./Shell";
 
 const fmt = (n: number | undefined) => (n === undefined ? "—" : n.toLocaleString());
@@ -40,6 +41,7 @@ export function DoneScreen({
   runs = null,
   suggestions = [],
   onTrain = () => undefined,
+  report = { source: null, busy: false, onCreate: () => undefined },
 }: {
   session: Session;
   log: ExecutionLog;
@@ -47,6 +49,7 @@ export function DoneScreen({
   runs?: ModelRuns | null;
   suggestions?: TargetSuggestion[];
   onTrain?: (target: string) => void;
+  report?: { source: "llm" | "template" | null; busy: boolean; onCreate: (renarrate: boolean) => void };
 }) {
   const ran = log.steps.filter((s) => s.status === "executed");
   const skipped = log.steps.filter((s) => s.status === "disabled");
@@ -150,10 +153,7 @@ export function DoneScreen({
             Download cleaned CSV
           </a>
         </section>
-        <section className="rounded-xl border border-line bg-surface p-5 text-[13px] leading-relaxed text-ink-soft">
-          <p className="mb-1.5 text-sm font-semibold text-ink">Coming next</p>
-          A full process report with a narrated summary arrives in the next milestone.
-        </section>
+        <ReportPanel session={session} source={report.source} busy={report.busy} onCreate={report.onCreate} />
       </aside>
     </main>
   );

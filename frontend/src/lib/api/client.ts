@@ -164,6 +164,11 @@ export const api = {
   train: (id: string, target: string) =>
     request<{ state: string }>(`/sessions/${id}/model`, json("POST", { target })),
   modelRuns: (id: string) => request<ModelRuns>(`/sessions/${id}/model`),
+  createReport: (id: string, renarrate = false) =>
+    request<{ state: string; narration_source: "llm" | "template" }>(
+      `/sessions/${id}/report`, json("POST", { renarrate })),
+  reportUrl: (id: string) => `${BASE}/sessions/${id}/report`,
+  bundleUrl: (id: string) => `${BASE}/sessions/${id}/bundle.zip`,
   chartUrl: (id: string, file: string) =>
     `${BASE}/sessions/${id}/charts/${encodeURIComponent(file)}`,
 };

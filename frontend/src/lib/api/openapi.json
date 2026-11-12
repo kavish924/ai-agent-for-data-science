@@ -301,6 +301,17 @@
         "title": "ProfileOut",
         "type": "object"
       },
+      "ReportIn": {
+        "properties": {
+          "renarrate": {
+            "default": false,
+            "title": "Renarrate",
+            "type": "boolean"
+          }
+        },
+        "title": "ReportIn",
+        "type": "object"
+      },
       "SessionOut": {
         "properties": {
           "created_at": {
@@ -613,6 +624,41 @@
         "summary": "Session status for progress polling (FR-AP-07)",
         "tags": [
           "sessions"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/bundle.zip": {
+      "get": {
+        "operationId": "get_bundle_api_v1_sessions__session_id__bundle_zip_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "All deliverables in one zip (FR-AP-22)",
+        "tags": [
+          "reports"
         ]
       }
     },
@@ -1305,6 +1351,107 @@
         "summary": "Profile of the cleaned dataset (FR-AP-19)",
         "tags": [
           "execution"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/report": {
+      "get": {
+        "operationId": "get_report_api_v1_sessions__session_id__report_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "The process report (FR-AP-06)",
+        "tags": [
+          "reports"
+        ]
+      },
+      "post": {
+        "operationId": "create_report_api_v1_sessions__session_id__report_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ReportIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Report Api V1 Sessions  Session Id  Report Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Build report.html from the stored artifacts (FR-AP-06)",
+        "tags": [
+          "reports"
         ]
       }
     },

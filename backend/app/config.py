@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     # PRD §6.3 bounded LLM retries (Spec 03, used from M3)
     plan_max_retries: int = 3
+    narration_max_retries: int = 2  # Spec 08 FR-RP-11
 
     # PRD §7 privacy: upload retention window (Spec 10)
     retention_days: int = 7

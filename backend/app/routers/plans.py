@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 
 from fastapi import APIRouter, Body, Depends
 
@@ -82,6 +83,7 @@ def create_plan(
     body: PlanIn | None = Body(default=None),
     llm: LLMClient | None = Depends(get_llm),
 ) -> PlanIn:
+    started = time.perf_counter()
     row = get_row_or_404(session_id)
     require_state(row, PLANNABLE, "not_plannable",
                    "A plan can only be created after profiling and before execution.")
@@ -114,8 +116,8 @@ def create_plan(
     write_plan(artifacts.plan_path(settings.storage_root, session_id), plan)
     transition_or_409(session_id, PLANNABLE, state="awaiting_approval", plan_version=version,
                        error=None, failed_stage=None)
-    logger.info("plan.validated", extra={"session_id": session_id, "stage": "plan",
-                                         "plan_version": version})
+    logger.info("plan.validated", extra={"session_id": session_id, "stage": "plan", "plan_version": version,
+                                         "duration_ms": int((time.perf_counter() - started) * 1000)})
     return plan
 
 

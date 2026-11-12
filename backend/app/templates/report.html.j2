@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Process report · {{ file_name }}</title>
+<style>
+  :root { --ground:#f7f7f4; --surface:#fff; --line:#e4e4df; --ink:#16181d; --soft:#33363d;
+          --muted:#5b5f68; --accent:#0f766e; --accent-soft:#e6f2f0; --warn:#8a3b0b; --warn-soft:#fdf3e7; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+         font: 15px/1.55 Inter, "Segoe UI", system-ui, -apple-system, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 40px 20px 64px; }
+  header.top { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 28px; }
+  h1 { font-size: 30px; margin: 4px 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 20px; margin: 0 0 12px; }
+  h3 { font-size: 15px; margin: 16px 0 6px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .06em; font-size: 12px; color: var(--muted); margin: 0; }
+  .muted { color: var(--muted); }
+  .mono { font-family: "JetBrains Mono", Consolas, monospace; font-size: 13px; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+            padding: 22px 24px; margin-bottom: 18px; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .05em;
+       color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line); padding: 8px 10px; }
+  td { border-bottom: 1px solid #f0f0ec; padding: 8px 10px; vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600;
+          background: #f0f0ec; color: var(--soft); }
+  .pill.ok { background: var(--accent-soft); color: #0b5d57; }
+  .pill.best { background: var(--accent); color: #fff; }
+  .note { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+  .empty { color: var(--muted); font-style: italic; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  figure { margin: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #fff; }
+  figure img { width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13px; color: var(--soft); margin-top: 6px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 14px; }
+  .stats b { display: block; font-size: 22px; }
+  .stats span { font-size: 12px; color: var(--muted); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 28px; line-height: 1.7; }
+  @media print { body { background: #fff; } section { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <p class="eyebrow">Process report · AI Data Science Agent</p>
+  <h1>{{ file_name }}</h1>
+  <p class="muted">Profiled, cleaned under an approved plan{% if runs %}, and modeled{% endif %}. Every number below comes from the run's stored artifacts.</p>
+</header>
+
+<section id="sec-snapshot">
+  <h2>1. Dataset snapshot</h2>
+  <div class="stats">
+    <div><b>{{ fmt(rows_before) }} → {{ fmt(rows_after) }}</b><span>rows</span></div>
+    <div><b>{{ fmt(cols_before) }} → {{ fmt(cols_after) }}</b><span>columns</span></div>
+    <div><b>{{ fmt(nulls_before) }} → {{ fmt(nulls_after) }}</b><span>missing cells</span></div>
+  </div>
+  <h3>Columns and types</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Column</th><th>Type before</th><th>Type after</th></tr></thead>
+    <tbody>
+    {% for c in columns %}
+      <tr><td class="mono">{{ c.name }}</td><td>{{ c.before }}</td>
+          <td>{% if c.after %}{{ c.after }}{% else %}<span class="pill">dropped</span>{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</section>
+
+<section id="sec-issues">
+  <h2>2. Issues found</h2>
+  {% if issues %}
+  <ul>
+    {% for issue in issues %}<li>{{ issue }}</li>{% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">No issues found: no missing values, duplicates, outliers or constant columns.</p>
+  {% endif %}
+</section>
+
+<section id="sec-cleaning">
+  <h2>3. Cleaning plan and actions</h2>
+  <p class="muted">Plan version {{ plan_version }} · proposed by the planner, reviewed and approved by the user.</p>
+  {% if not executed_steps %}<p class="empty">No changes applied: every step was skipped, so the cleaned file matches the upload.</p>{% endif %}
+  {% if steps %}
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Step</th><th>Why</th><th>Decision</th><th class="num">Rows</th><th class="num">Missing cells</th></tr></thead>
+    <tbody>
+    {% for s in steps %}
+      <tr id="step-{{ s.step_id }}">
+        <td class="num">{{ loop.index }}</td>
+        <td><span class="mono">{{ s.op }}</span>{% if s.column %} · <span class="mono">{{ s.column }}</span>{% endif %}
+            {% if s.params %}<br><span class="muted mono">{{ s.params }}</span>{% endif %}</td>
+        <td>{{ s.rationale or "" }}</td>
+        <td><span class="pill {% if s.executed %}ok{% endif %}">{{ s.decision }}</span>
+            {% if s.result != s.decision %}<br><span class="muted">{{ s.result }}</span>{% endif %}</td>
+        <td class="num">{% if s.before %}{{ fmt(s.before.rows) }} → {{ fmt(s.after.rows) }}{% else %}—{% endif %}</td>
+        <td class="num">{% if s.before %}{{ fmt(s.before.null_cells) }} → {{ fmt(s.after.null_cells) }}{% else %}—{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <p class="empty">The plan had no steps.</p>
+  {% endif %}
+</section>
+
+<section id="sec-comparison">
+  <h2>4. Before vs after</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Measure</th><th class="num">Before</th><th class="num">After</th></tr></thead>
+    <tbody>
+    {% for m in comparison %}
+      <tr><td>{{ m.label }}</td><td class="num">{{ fmt(m.before) }}</td><td class="num">{{ fmt(m.after) }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% if column_changes %}
+  <h3>Missing values by column</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Column</th><th class="num">Before</th><th class="num">After</th></tr></thead>
+    <tbody>
+    {% for c in column_changes %}
+      <tr><td class="mono">{{ c.name }}</td><td class="num">{{ fmt(c.before) }}</td>
+          <td class="num">{% if c.after is none %}dropped{% else %}{{ fmt(c.after) }}{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% endif %}
+</section>
+
+<section id="sec-charts">
+  <h2>5. Charts</h2>
+  {% if charts %}
+  <p class="muted">From the cleaned data. Grey/dark outlines show the column before cleaning.</p>
+  <div class="grid">
+    {% for c in charts %}
+    <figure><img src="data:image/png;base64,{{ c.data }}" alt="{{ c.title }}"><figcaption>{{ c.title }}</figcaption></figure>
+    {% endfor %}
+  </div>
+  {% if skipped_charts %}<p class="muted">Not charted: {{ skipped_charts }}.</p>{% endif %}
+  {% else %}
+  <p class="empty">Charts are unavailable for this run.</p>
+  {% endif %}
+</section>
+
+<section id="sec-ml">
+  <h2>6. Machine-learning analysis</h2>
+  {% if runs %}
+  <p>Target <span class="mono">{{ runs.target }}</span> · {{ runs.problem_type }} ·
+     {{ fmt(runs.rows.used) }} rows ({{ fmt(runs.rows.train) }} train / {{ fmt(runs.rows.test) }} hold-out) ·
+     {{ runs.cv.folds }}-fold {{ runs.cv.kind }}, seed {{ runs.cv.seed }}.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Model</th><th class="num">{{ metric_label(runs.primary_metric) }} · CV</th>
+      <th class="num">{{ metric_label(runs.primary_metric) }} · hold-out</th>
+      <th class="num">{{ metric_label(secondary) }} · CV</th></tr></thead>
+    <tbody>
+    {% for m in runs.models %}
+      <tr><td>{{ model_label(m.name) }}
+            {% if m.name == runs.best_model %}<span class="pill best">Best</span>{% endif %}
+            {% if m.name == "dummy" %}<span class="muted"> (floor)</span>{% endif %}</td>
+          <td class="num">{{ score(m.cv[runs.primary_metric].mean) }} ± {{ score(m.cv[runs.primary_metric].std) }}</td>
+          <td class="num">{{ score(m.holdout[runs.primary_metric]) }}</td>
+          <td class="num">{{ score(m.cv[secondary].mean) }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  <h3>How cleaning reached the models</h3>
+  <p>Replayed on the original upload before splitting: {{ replayed or "none" }}.
+     Learned inside each model's pipeline, on training folds only: {{ in_pipeline or "none" }}.
+     This keeps statistics such as medians and outlier fences from leaking from the evaluation rows.</p>
+  {% if runs.features.excluded %}<p class="muted">Not used as features: {{ runs.features.excluded | join(", ") }}.</p>{% endif %}
+  <p class="note">{{ runs.note }}</p>
+  {% else %}
+  <p class="empty">Model training was skipped: no baseline models were trained for this session.</p>
+  {% endif %}
+</section>
+
+<section id="sec-summary">
+  <h2>7. Summary</h2>
+  <p class="muted">{% if narration_source == "llm" %}Written by the AI from the numbers above{% if narration_model %} ({{ narration_model }}){% endif %}; every figure is filled in from the artifacts.{% else %}Template summary (the AI narration was unavailable); every figure is filled in from the artifacts.{% endif %}</p>
+  {% for title, text in summary %}
+  <h3>{{ title }}</h3>
+  <p>{{ text }}</p>
+  {% endfor %}
+</section>
+
+<footer>
+  Session <span class="mono">{{ session_id }}</span> · plan schema {{ schema_version }}, version {{ plan_version }} ·
+  Python {{ versions.python }} · pandas {{ versions.pandas }} · numpy {{ versions.numpy }} ·
+  scikit-learn {{ versions.sklearn }} · matplotlib {{ versions.matplotlib }}<br>
+  Reproducible: the same upload, approved plan and tool versions give the same cleaned file, charts and scores.
+</footer>
+</main>
+</body>
+</html>
