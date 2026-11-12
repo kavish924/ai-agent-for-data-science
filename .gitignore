@@ -13,3 +13,6 @@ __pycache__/
 # Node (frontend, from M7)
 node_modules/
 .next/
+
+# graphify knowledge graph (local, rebuild with `graphify update .`)
+graphify-out/
