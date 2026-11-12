@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m5-ml-baselines` (pushed: `a031735`, `1d89cd8`)
+> **Last updated:** 2026-11-12 · **Current branch:** `m6-report` (not pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -19,8 +19,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | graphify tooling | `chore/graphify` | ✅ merged to `main` (PR #3) |
 | M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · in `main` (fast-forward push, user-approved; no PR) |
 | M4 Charts | `m4-charts` | ✅ done · merged to `main` (PR #4) |
-| M5 ML baselines | `m5-ml-baselines` | ✅ done · pushed, awaiting PR → `main` |
-| M6 Report + narration | `m6-report` | ⬜ not started |
+| M5 ML baselines | `m5-ml-baselines` | ✅ done · in `main` (fast-forward push `62d4c5e..6707cec`, user-approved; no PR) |
+| M6 Report + narration | `m6-report` | ✅ done · awaiting PR → `main` |
 | M7 UI polish | `m7-ui-polish` | ⬜ not started |
 | M8 Evaluation + demo | `m8-eval-demo` | ⬜ not started |
 
@@ -141,16 +141,23 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [ ] Screenshot review of the model panel layout (the app window stopped drawing before it could be captured)
 - [x] Gemini model fix: `gemini-2.5-flash` returns 404 for new keys → default `gemini-3.5-flash` (`1d89cd8`); `gemini-3.8-flash` was overloaded (503) at the time
 - [x] `.claude/launch.json`: `backend` follows `.env` (Gemini), `backend-offline` for key-free demos
-- [ ] Open PR `m5-ml-baselines` → `main` and merge it (user)
+- [x] Into `main` by a user-approved fast-forward push (`62d4c5e..6707cec`); no PR record
 
 ## M6 — Report + narration · branch `m6-report`
 
-- [ ] Spec 08 approved
-- [ ] Narrator: placeholder JSON, numeral validator, template fallback
-- [ ] Reporter: Jinja2 HTML in PRD section order; tool versions; "ML skipped" path
-- [ ] `POST /report`, `GET /report`; optional zip bundle
-- [ ] Report states the structural/statistical split (FR-ML-11)
-- [ ] Spec 10 AC-4 (one log line per stage)
+- [x] Spec 08 FR-RP-07 revised (report from executed/modeled/reported), FR-RP-11..16 + AC-8..11; Spec 09 FR-AP-06 rev. + FR-AP-22 + AC-13; Spec 10 AC-4
+- [x] Tests written first (backend and frontend), watched fail, then implemented
+- [x] Narrator: named facts → `{{fact_id}}` placeholders; digit validator (known names allowed); retries; template fallback; `llm_calls` stage `narrator`
+- [x] Reporter: Jinja2, seven sections in PRD order, self-contained HTML (charts embedded, no external requests), sparse paths, friendly type labels, version footer, no timestamps
+- [x] Narration stored with a facts hash and reused → byte-identical re-renders; `renarrate` to force
+- [x] ML section states replayed vs in-pipeline steps (FR-ML-11)
+- [x] `POST /report`, `GET /report`, `GET /bundle.zip` (fixed zip timestamps → reproducible); `POST /model` allowed from `reported`
+- [x] Spec 10 AC-4: one completion log line with `duration_ms` per stage (`plan.validated` gained its duration)
+- [x] Fix: cleaned CSV download returned 404 while a model was training (`modeling` added to the allowed states)
+- [x] UI: Process report card (Create report → Open report / Download all (.zip), summary source, Rewrite summary)
+- [x] Live with real Gemini on titanic.csv: plan 9.8 s, narration passed the gate first try (7.3 s); every figure matches the artifacts
+- [ ] Click-through of the report card in the app UI (the pane was hidden; the report page itself was checked visually)
+- [ ] Open PR `m6-report` → `main` and merge it (user)
 
 ## M7 — UI polish · branch `m7-ui-polish`
 
@@ -178,4 +185,6 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts (M3)
 - [ ] Model panel offers targets the executed plan changed (e.g. imputed `Embarked`); the server rejects them with `target_changed_by_plan` — filter them out of the list
 - [ ] Consider moving to `gemini-3.8-flash` once its 503 "high demand" errors stop (one `GEMINI_MODEL` change in `.env`)
+- [ ] Narration wording can still be inaccurate without a wrong number (live run said the charts cover "model evaluation results"; they don't) — tighten the prompt or add a facts-only phrasing check
+- [ ] Reproducible Python script of the executed steps (Spec 08 FR-RP-06 stretch)
 - [ ] Profile doesn't count non-numeric values in numeric columns (Telco `TotalCharges` has 11 blanks), so the planner can't see or fix them — add an `unparseable` count per column

@@ -55,15 +55,21 @@ def run_case(client: TestClient, name: str, target: str) -> None:
     assert client.get(base).json()["state"] == "modeled", runs
     assert runs["best_model"] != "dummy"
 
+    report = client.post(f"{base}/report")  # M6: the process report + bundle
+    assert report.status_code == 201, report.json()
+    assert client.get(f"{base}/report").status_code == 200
+    assert client.get(f"{base}/bundle.zip").status_code == 200
+    narration = report.json()["narration_source"]  # offline fake can't narrate: template
+
     charts = client.get(f"{base}/charts").json()  # M4: charts come with every run
     assert charts["status"] == "completed" and charts["charts"], charts
     assert client.get(f"{base}/profile/after").status_code == 200
 
-    calls = session_store.list_llm_calls(settings.db_path, sid)
+    calls = [c for c in session_store.list_llm_calls(settings.db_path, sid) if c["stage"] == "planner"]
     ops = ", ".join(f"{s['op']}({s.get('column') or ''})" for s in plan["steps"]) or "no steps"
     ms = int((time.perf_counter() - started) * 1000)
     print(f"[ok] {name:16} attempts={len(calls)} valid_first={bool(calls[0]['valid'])} "
-          f"charts={len(charts['charts'])} best={runs['best_model']} "
+          f"charts={len(charts['charts'])} summary={narration} best={runs['best_model']} "
           f"{runs['primary_metric']}={runs['models'][-1]['cv'][runs['primary_metric']]['mean']} {ms} ms")
     print(f"     plan: {ops}")
 

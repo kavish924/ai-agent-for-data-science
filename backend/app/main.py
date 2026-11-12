@@ -14,7 +14,7 @@ from .config import settings
 from .db import session_store
 from .errors import install_error_handlers
 from .logging_setup import configure_logging
-from .routers import execution, models, plans, sessions
+from .routers import execution, models, plans, reports, sessions
 from .services import retention
 from .storage.artifacts import profile_path
 
@@ -65,7 +65,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     install_error_handlers(app)
-    for module in (sessions, plans, execution, models):
+    for module in (sessions, plans, execution, models, reports):
         app.include_router(module.router, prefix=settings.api_v1_prefix)
 
     @app.get(settings.api_v1_prefix + "/health", tags=["meta"])

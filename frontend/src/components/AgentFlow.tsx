@@ -45,6 +45,8 @@ export function AgentFlow() {
   const [charts, setCharts] = useState<ChartManifest | null>(null);
   const [runs, setRuns] = useState<ModelRuns | null>(null);
   const [suggestions, setSuggestions] = useState<TargetSuggestion[]>([]);
+  const [reportSource, setReportSource] = useState<"llm" | "template" | null>(null);
+  const [reportBusy, setReportBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const openSession = useCallback(
@@ -87,6 +89,7 @@ export function AgentFlow() {
     setLog(null);
     setCharts(null);
     setRuns(null);
+    setReportSource(null);
     void refresh();
   }, [refresh]);
 
@@ -160,6 +163,24 @@ export function AgentFlow() {
         charts={charts}
         runs={runs}
         suggestions={suggestions}
+        report={{
+          source: reportSource,
+          busy: reportBusy,
+          onCreate: (renarrate) => {
+            setReportBusy(true);
+            setError(null);
+            void api
+              .createReport(session.id, renarrate)
+              .then((created) => setReportSource(created.narration_source))
+              .catch((err: unknown) =>
+                setError(err instanceof ApiError ? err.message : "Couldn't create the report."),
+              )
+              .finally(() => {
+                setReportBusy(false);
+                void refresh();
+              });
+          },
+        }}
         onTrain={(target) =>
           void api.train(session.id, target).then(refresh, (err: unknown) =>
             setError(err instanceof ApiError ? err.message : "Couldn't start training."),

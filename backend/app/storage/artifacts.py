@@ -97,6 +97,16 @@ def model_runs_path(storage_root: Path, session_id: str) -> Path:
     return session_dir(storage_root, session_id) / "model_runs.json"
 
 
+def narration_path(storage_root: Path, session_id: str) -> Path:
+    """Stored Narrator output + its facts hash (Spec 08 FR-RP-13)."""
+    return session_dir(storage_root, session_id) / "narration.json"
+
+
+def report_path(storage_root: Path, session_id: str) -> Path:
+    """Deliverable 2: the self-contained process report (Spec 08)."""
+    return session_dir(storage_root, session_id) / "report.html"
+
+
 def after_profile_path(storage_root: Path, session_id: str) -> Path:
     """Profile of the cleaned dataset (Spec 06 FR-CH-10)."""
     return session_dir(storage_root, session_id) / "profile.after.json"

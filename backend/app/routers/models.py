@@ -18,7 +18,7 @@ logger = logging.getLogger("models")
 
 router = APIRouter(prefix="/sessions", tags=["models"])
 
-_TRAINABLE = ("executed", "modeled")
+_TRAINABLE = ("executed", "modeled", "reported")
 # Executed ops that change a column's values: such a column can't become the target later
 _TARGET_CHANGING_OPS = {"impute", "clip_outliers", "cast_type", "drop_column"}
 

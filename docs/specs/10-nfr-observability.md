@@ -95,7 +95,8 @@ measurable against PRD §9 success metrics.
 - [x] NFR-07 startup recovery sweep (M0)
 - [x] NFR-08 retention sweep, startup + periodic (M0)
 - [x] NFR-03/06 privacy of logs and `llm_calls` (AC-2), LLM failure recovery (AC-5) (M3)
-- [ ] NFR-01/04 harnesses (M5–M8)
+- [x] NFR-06 AC-4: one completion log line with `duration_ms` per stage (M6)
+- [ ] NFR-01/04 harnesses (M8)
 
 ## Changelog
 

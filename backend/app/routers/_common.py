@@ -20,7 +20,7 @@ from ..storage import artifacts
 PLANNABLE = ("profiled", "awaiting_approval", "approved")
 REVIEWABLE = ("awaiting_approval", "approved")
 TARGET_SETTABLE = ("profiled", "awaiting_approval")
-EXECUTED_OR_LATER = ("executed", "modeled", "reported")
+EXECUTED_OR_LATER = ("executed", "modeling", "modeled", "reported")
 
 
 # --- shared helpers ------------------------------------------------------------------

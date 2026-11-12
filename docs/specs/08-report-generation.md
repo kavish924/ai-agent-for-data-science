@@ -1,6 +1,6 @@
 # Spec 08 — Report Generation & Deliverables
 
-> **Status:** Draft v0.1 · **Source:** PRD §6.8, §6.9 · **Milestone:** M6 · **Agents:** Narrator (LLM) + Reporter (deterministic)
+> **Status:** Done · **Source:** PRD §6.8, §6.9 · **Milestone:** M6 · **Agents:** Narrator (LLM) + Reporter (deterministic)
 
 ## Purpose
 
@@ -23,9 +23,15 @@ dataset and the HTML report — with the LLM narrating findings from computed nu
 | FR-RP-04 | If narration fails, a deterministic template summary is used and the report still completes. |
 | FR-RP-05 | The cleaned dataset `cleaned_<original_name>.csv` (Spec 05 output) is offered for download alongside `report.html`. |
 | FR-RP-06 | Optional extras: `.zip` bundle (cleaned CSV + report + optionally charts and a reproducible Python script of executed steps). |
-| FR-RP-07 | Report is available at `GET /sessions/{id}/report` once state = `reported`; earlier requests return `404` with current status. |
+| FR-RP-07 | *(rev. M6)* `POST /sessions/{id}/report` builds the report from `executed`, `modeled` or `reported` (training is optional) and sets state `reported`. `GET /sessions/{id}/report` serves it only in state `reported`; otherwise `404` with the current status. Retraining after a report moves the state on, so a stale report is never served. |
 | FR-RP-09 | The report footer records tool versions (pandas/sklearn/matplotlib) and the plan `schema` version — reproducibility metadata (PRD §7). |
 | FR-RP-10 | PDF export is a stretch goal; v1 is HTML-only. |
+| FR-RP-11 | *(M6, numbers-only gate)* The Narrator receives a list of named **facts** (computed numbers and labels from the artifacts) and returns JSON sections (`overview`, `cleaning`, `modeling`, `next_steps`) that refer to numbers only as `{{fact_id}}` placeholders. A validator rejects unknown placeholders and **any digit** outside placeholders and known names (column names, model and metric labels); rejected output is re-prompted with the issues (`NARRATION_MAX_RETRIES`, default 2), then the template summary is used (FR-RP-04). Every attempt is logged to `llm_calls` with stage `narrator` (no content). |
+| FR-RP-12 | *(M6)* `report.html` is a single self-contained file: styles inline, charts embedded as data URIs, no external requests, all text HTML-escaped. It renders the facts' values into the narration placeholders. |
+| FR-RP-13 | *(M6, determinism)* The narration is stored in `narration.json` with a hash of its facts and reused while the facts are unchanged (`renarrate: true` forces a new one), so re-rendering is byte-identical. The report carries no timestamps. |
+| FR-RP-14 | *(M6)* Sparse paths render explicitly: no issues → "No issues found"; no executed steps → "No changes applied"; no model run → "Model training was skipped"; charts failed → "Charts are unavailable". The ML section states which plan steps were replayed and which ran inside the model pipelines (Spec 07 FR-ML-11). |
+| FR-RP-15 | *(M6)* `GET /sessions/{id}/bundle.zip` (state `reported`) contains `report.html`, the cleaned CSV, `charts/*.png`, `model_runs.json` (if any), `execution_log.json` and the approved plan, with fixed entry timestamps so identical inputs give an identical zip. |
+| FR-RP-16 | *(M6, UI)* The Download screen offers **Create report**, then **Open report** (new tab) and **Download all (.zip)**, and says whether the summary was written by the AI or by the template. |
 
 ## Interfaces
 
@@ -51,6 +57,16 @@ dataset and the HTML report — with the LLM narrating findings from computed nu
   and opens cleanly.
 - **AC-7** Given a session where the user disabled all steps, then sections render with
   "no changes applied" content (AC-08 stability).
+- **AC-8** *(M6)* Given a Narrator answer containing a digit (e.g. "891 rows"), it is
+  rejected and re-prompted; given only invalid answers, the template summary is used and
+  `llm_calls` records each attempt with stage `narrator`.
+- **AC-9** *(M6)* Given the same artifacts and stored narration, rendering twice gives
+  byte-identical `report.html`; the report makes no external requests (no `http` URLs in
+  `src`/`href`).
+- **AC-10** *(M6)* Given no model run, the ML section says training was skipped and the
+  report still completes.
+- **AC-11** *(M6, UI)* The Download screen creates the report, then shows Open report and
+  Download all links and the summary's source.
 
 ## Dependencies
 
@@ -72,3 +88,18 @@ dataset and the HTML report — with the LLM narrating findings from computed nu
 
 - ~~Script in bundle?~~ **Resolved:** reproducible Python script ships as a separate
   optional download in v1, keeping the default bundle minimal.
+
+## Tasks
+
+- [x] FR-RP-11 Narrator: facts, placeholders, digit validator, retries, template fallback
+- [x] FR-RP-01/02/08/12/14 Reporter: seven sections, self-contained HTML, sparse paths
+- [x] FR-RP-07/13 endpoints, state, narration reuse
+- [x] FR-RP-09 version footer
+- [x] FR-RP-05/06/15 bundle
+- [x] FR-RP-16 UI
+
+## Changelog
+
+- 2026-11-12 — M6: FR-RP-07 revised (POST builds from executed/modeled/reported); added
+  FR-RP-11..16 and AC-8..11. Reproducible Python script stays a stretch goal.
+- 2026-11-12 — M6 complete: AC-1..11 pass. Live on titanic.csv with gemini-3.5-flash: summary passed the numbers-only gate first try; re-render byte-identical with no new LLM call.
