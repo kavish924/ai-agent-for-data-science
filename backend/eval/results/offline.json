@@ -1,0 +1,235 @@
+{
+  "provider": "offline",
+  "model": "rule-based-fake",
+  "summary": {
+    "datasets": 3,
+    "schema_validity": 1.0,
+    "mean_planner_attempts": 1,
+    "plan_quality": 1.0,
+    "approval_rate": 1.0,
+    "mean_time_to_report_ms": 8554
+  },
+  "datasets": [
+    {
+      "name": "titanic.csv",
+      "target": "Survived",
+      "status": "ok",
+      "session_id": "6c3a8c04aa5040619c5c9934e594e01f",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Cabin"
+            ]
+          }
+        },
+        {
+          "step_id": "s2",
+          "op": "impute",
+          "column": "Age",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Embarked",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 1.0,
+        "missing": [],
+        "forbidden_hits": [],
+        "sensible": true,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_column",
+            "columns": [
+              "Cabin"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "impute",
+            "columns": [
+              "Age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Embarked"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "random_forest",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 0.801478,
+      "dummy_cv": 0.381407,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 179,
+        "plan": 31,
+        "execute": 1429,
+        "model": 2735,
+        "report": 147,
+        "total": 4568
+      },
+      "reproducibility": {
+        "replay_session": "145c4f659ef1413fbedfef2e1a9cdfd0",
+        "cleaned_csv": true,
+        "charts": true,
+        "chart_count": 9,
+        "model_scores": true,
+        "report_rerender": true,
+        "report_cross_session": true
+      }
+    },
+    {
+      "name": "housing.csv",
+      "target": "median_house_value",
+      "status": "ok",
+      "session_id": "812ca1ce24914306bcc4c6a997393361",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "impute",
+          "column": "total_bedrooms",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 1.0,
+        "missing": [],
+        "forbidden_hits": [],
+        "sensible": true,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "impute",
+            "columns": [
+              "total_bedrooms"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 1,
+        "proposed": 1,
+        "approval_rate": 1.0
+      },
+      "best_model": "random_forest",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 49281.126643,
+      "dummy_cv": 115617.185265,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 505,
+        "plan": 20,
+        "execute": 1749,
+        "model": 8641,
+        "report": 157,
+        "total": 11114
+      },
+      "reproducibility": {
+        "replay_session": "8a8962d18f9c4dc9a3279fb2e1df2767",
+        "cleaned_csv": true,
+        "charts": true,
+        "chart_count": 11,
+        "model_scores": true,
+        "report_rerender": true,
+        "report_cross_session": true
+      }
+    },
+    {
+      "name": "telco_churn.csv",
+      "target": "Churn",
+      "status": "ok",
+      "session_id": "f627bfc04b2f48c6a35e911e9a4f53e1",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [],
+      "score": {
+        "expected_recall": 1.0,
+        "missing": [],
+        "forbidden_hits": [],
+        "sensible": true,
+        "review": [],
+        "approved": 0,
+        "proposed": 0,
+        "approval_rate": null
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 0.731337,
+      "dummy_cv": 0.423513,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 874,
+        "plan": 24,
+        "execute": 1775,
+        "model": 7115,
+        "report": 148,
+        "total": 9980
+      },
+      "reproducibility": {
+        "replay_session": "f70787417b0f4c218b714af94027e8ff",
+        "cleaned_csv": true,
+        "charts": true,
+        "chart_count": 12,
+        "model_scores": true,
+        "report_rerender": true,
+        "report_cross_session": true
+      }
+    }
+  ],
+  "perf": {
+    "rows": 100000,
+    "columns": 21,
+    "size_mb": 13.14,
+    "upload_profile_ms": 11259,
+    "execute_ms": 19642,
+    "budget_s": 60,
+    "within_budget": true
+  },
+  "environment": "Python 3.11.6 on Windows 10"
+}

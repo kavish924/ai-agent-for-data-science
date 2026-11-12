@@ -30,3 +30,12 @@ def upload_csv(client: TestClient, content: str, name: str = "test.csv"):
         "/api/v1/sessions",
         files={"file": (name, content.encode("utf-8"), "text/csv")},
     )
+
+
+@pytest.fixture(autouse=True)
+def _no_llm_backoff(monkeypatch):
+    """Spec 03 FR-PL-18: transport retries back off; tests never really sleep."""
+    import app.llm.client as llm_client
+
+    if hasattr(llm_client, "_sleep"):
+        monkeypatch.setattr(llm_client, "_sleep", lambda seconds: None)

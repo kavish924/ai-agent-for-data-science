@@ -31,6 +31,7 @@ dataset and the HTML report — with the LLM narrating findings from computed nu
 | FR-RP-13 | *(M6, determinism)* The narration is stored in `narration.json` with a hash of its facts and reused while the facts are unchanged (`renarrate: true` forces a new one), so re-rendering is byte-identical. The report carries no timestamps. |
 | FR-RP-14 | *(M6)* Sparse paths render explicitly: no issues → "No issues found"; no executed steps → "No changes applied"; no model run → "Model training was skipped"; charts failed → "Charts are unavailable". The ML section states which plan steps were replayed and which ran inside the model pipelines (Spec 07 FR-ML-11). |
 | FR-RP-15 | *(M6)* `GET /sessions/{id}/bundle.zip` (state `reported`) contains `report.html`, the cleaned CSV, `charts/*.png`, `model_runs.json` (if any), `execution_log.json` and the approved plan, with fixed entry timestamps so identical inputs give an identical zip. |
+| FR-RP-17 | *(M8)* Narrator retries after a transport failure use the planner's backoff and error recording (Spec 03 FR-PL-18). |
 | FR-RP-16 | *(M6, UI)* The Download screen offers **Create report**, then **Open report** (new tab) and **Download all (.zip)**, and says whether the summary was written by the AI or by the template. |
 
 ## Interfaces
@@ -65,6 +66,8 @@ dataset and the HTML report — with the LLM narrating findings from computed nu
   `src`/`href`).
 - **AC-10** *(M6)* Given no model run, the ML section says training was skipped and the
   report still completes.
+- **AC-12** *(M8)* Given a 503 on attempt 1 and a valid summary on attempt 2, the narrator
+  waits `LLM_RETRY_BACKOFF_S`, uses the LLM summary, and records `transport:503`.
 - **AC-11** *(M6, UI)* The Download screen creates the report, then shows Open report and
   Download all links and the summary's source.
 
@@ -97,9 +100,12 @@ dataset and the HTML report — with the LLM narrating findings from computed nu
 - [x] FR-RP-09 version footer
 - [x] FR-RP-05/06/15 bundle
 - [x] FR-RP-16 UI
+- [x] FR-RP-17 narrator transport backoff (M8)
 
 ## Changelog
 
 - 2026-11-12 — M6: FR-RP-07 revised (POST builds from executed/modeled/reported); added
   FR-RP-11..16 and AC-8..11. Reproducible Python script stays a stretch goal.
 - 2026-11-12 — M6 complete: AC-1..11 pass. Live on titanic.csv with gemini-3.5-flash: summary passed the numbers-only gate first try; re-render byte-identical with no new LLM call.
+- 2026-11-12 — M8 (Approved): added FR-RP-17 / AC-12 (transport backoff, shared with the planner).
+- 2026-11-12 — M8 complete: AC-12 passes.

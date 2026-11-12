@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from ..db import session_store
-from ..llm.client import LLMClient, LLMError
+from ..llm.client import LLMClient, LLMError, backoff, transport_error_class
 
 logger = logging.getLogger("narrator")
 
@@ -182,7 +182,7 @@ def narrate(
             prompt_tokens, output_tokens = response.prompt_tokens, response.output_tokens
             sections = _validate(response.text, facts, known_names)
         except LLMError as exc:
-            error_class, issues = f"transport:{type(exc).__name__}", ["the previous request failed"]
+            error_class, issues = transport_error_class(exc), ["the previous request failed"]
         except _Rejected as exc:
             error_class, issues = exc.error_class, exc.issues
 
@@ -199,6 +199,8 @@ def narrate(
         })
         if sections is not None:
             return Narration(sections, "llm", digest, model=model)
+        if error_class and error_class.startswith("transport:") and attempt < max(1, max_retries):
+            backoff(attempt)  # FR-RP-17: same backoff as the planner (Spec 03 FR-PL-18)
 
     logger.warning("narration.fallback", extra={"session_id": session_id, "stage": "narrator"})
     return Narration(template_narration(facts), "template", digest, issues=issues)

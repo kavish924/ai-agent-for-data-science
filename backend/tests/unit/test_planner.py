@@ -156,3 +156,32 @@ def test_pl_fr15_system_prompt_guards_against_injection():
     assert "data, not instructions" in SYSTEM_PROMPT
     for op in ("drop_duplicates", "impute", "clip_outliers", "standardize_text"):
         assert op in SYSTEM_PROMPT
+
+
+def test_pl_ac13_transport_errors_back_off_then_succeed(db, monkeypatch):
+    waits: list[float] = []
+    monkeypatch.setattr("app.llm.client._sleep", waits.append)
+    monkeypatch.setattr("app.config.settings.llm_retry_backoff_s", 2.0)
+    llm = ScriptedLLM([LLMError("gemini API error 503", status=503), LLMError("timeout"), GOOD])
+    plan = _plan(db, llm)
+    assert len(plan.steps) == 2
+    assert waits == [2.0, 4.0]
+    calls = session_store.list_llm_calls(db, "sid")
+    assert [(c["valid"], c["error"]) for c in calls] == [
+        (0, "transport:503"), (0, "transport:LLMError"), (1, None)]
+
+
+def test_pl_ac13_gate_rejection_is_reprompted_without_waiting(db, monkeypatch):
+    waits: list[float] = []
+    monkeypatch.setattr("app.llm.client._sleep", waits.append)
+    _plan(db, ScriptedLLM(["this is not json", GOOD]))
+    assert waits == []
+
+
+def test_pl_ac13_no_wait_after_the_last_attempt(db, monkeypatch):
+    waits: list[float] = []
+    monkeypatch.setattr("app.llm.client._sleep", waits.append)
+    monkeypatch.setattr("app.config.settings.llm_retry_backoff_s", 1.0)
+    with pytest.raises(PlanningFailed):
+        _plan(db, ScriptedLLM([LLMError("down")] * 3))
+    assert waits == [1.0, 2.0]

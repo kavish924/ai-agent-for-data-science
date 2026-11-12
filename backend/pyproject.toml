@@ -43,7 +43,7 @@ ignore = ["B008"]  # FastAPI's File(...)/Body(...) defaults are idiomatic
 
 [tool.mypy]
 python_version = "3.11"
-files = ["app"]
+files = ["app", "eval"]
 ignore_missing_imports = true
 warn_unused_ignores = true
 check_untyped_defs = true
