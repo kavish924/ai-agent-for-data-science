@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-11 · **Current branch:** `m3-llm-planner` (not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m3.5-thin-ui` (not pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -15,8 +15,9 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M1 Ingestion + profiler | `main` (initial commit) | ✅ done |
 | M2 Whitelisted executor + Gate | `main` (initial commit) | ✅ done |
 | M0 Hardening | `m0-hardening` | ✅ done · merged to `main` (PR #1) |
-| M3 LLM planner (Gemini) | `m3-llm-planner` | ✅ done · awaiting PR → `main` |
-| M3.5 Thin UI slice | `m3.5-thin-ui` | ⬜ not started |
+| M3 LLM planner (Gemini) | `m3-llm-planner` | ✅ done · merged to `main` (PR #2) |
+| graphify tooling | `chore/graphify` | ✅ merged to `main` (PR #3) |
+| M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · awaiting PR → `main` |
 | M4 Charts | `m4-charts` | ⬜ not started |
 | M5 ML baselines | `m5-ml-baselines` | ⬜ not started |
 | M6 Report + narration | `m6-report` | ⬜ not started |
@@ -90,16 +91,22 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Spec 10 AC-2 (no data in logs) and AC-5 (LLM failure is recoverable)
 - [x] `smoke_m3.py` (offline fake by default, `--live` for Gemini); added to CI
 - [ ] Run `pytest -m live` and `smoke_m3.py --live` with a real `GEMINI_API_KEY` (user)
-- [ ] Open PR `m3-llm-planner` → `main` and merge it (user)
+- [x] Open PR `m3-llm-planner` → `main` and merge it (PR #2)
 
 ## M3.5 — Thin UI slice · branch `m3.5-thin-ui`
 
-- [ ] Scaffold `frontend/` (Next.js 15 + Tailwind), API client typed from OpenAPI
-- [ ] Upload page with limit/error messages and an LLM privacy notice
-- [ ] Profile summary + target picker (suggested candidates)
-- [ ] Plan review: toggle, edit params, inline Gate errors, destructive-step warnings
-- [ ] Approve → execute with progress polling → download cleaned CSV
-- [ ] Spec 04 component tests
+- [x] Screens designed on a Claude Design canvas ("Data Science Agent UI": Upload, Plan review, Run & download)
+- [x] Spec 04 FR-RV-11..16 + AC-1..10; Spec 09 FR-AP-16 (`GET /execution-log`); Spec 03 FR-PL-17 (`LLM_PROVIDER=offline`)
+- [x] Scaffold `frontend/` (Next.js 15.5 + Tailwind 4 + Framer Motion), `/api/v1` proxy, API types generated from OpenAPI (`npm run gen:api`)
+- [x] Upload page: drag-and-drop, limits, one-click samples, server error messages
+- [x] Profile summary + target picker (identifiers excluded) + LLM privacy notice
+- [x] Plan review: Approve/Skip per step, param editors, inline hints, server Gate issues per step, destructive warnings, regenerate
+- [x] Approve → execute with progress polling → run summary → download cleaned CSV; `?session=` resume
+- [x] Reduced motion respected (`MotionConfig reducedMotion="user"`), focus ring, keyboard-reachable controls
+- [x] Spec 04 component tests (12, Vitest); traceability checker reads frontend tests (67 ACs)
+- [x] Verified end to end in the browser on titanic.csv (desktop + 375 px phone width)
+- [x] CI: frontend job (lint, typecheck, tests, build)
+- [ ] Open PR `m3.5-thin-ui` → `main` and merge it (user)
 
 ## M4 — Charts · branch `m4-charts`
 
@@ -149,5 +156,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [ ] SQLite open/close per call is slow on Windows (~1 s per API flow in tests); consider WAL or a pooled connection
 - [ ] Rotating log handler keeps `app.log` open (temp-dir cleanup on Windows)
 - [ ] Titanic `Name` is typed `id_like` (every name is unique) — confirm this is desired
+- [ ] Next.js bundles postcss/sharp with open advisories (build-time CSS only; image optimisation disabled) — bump Next when fixed
+- [ ] Frontend tests for M3.5 were written right after the components, not red-first; keep red-first from M4
+- [ ] Target candidates are "all non-identifier columns"; Spec 07 FR-ML-01 suggestions with reasons come in M5
 - [x] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts (M3)
 - [ ] Profile doesn't count non-numeric values in numeric columns (Telco `TotalCharges` has 11 blanks), so the planner can't see or fix them — add an `unparseable` count per column

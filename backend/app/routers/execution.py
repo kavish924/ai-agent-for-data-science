@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 
 from fastapi import APIRouter, BackgroundTasks
@@ -42,6 +43,17 @@ def execute_plan(session_id: str, background_tasks: BackgroundTasks) -> dict:
                                           "plan_version": version})
     return {"session_id": session_id, "state": "executing", "plan_version": version,
             "detail": "execution started; poll GET /sessions/{id}"}
+
+
+@router.get("/{session_id}/execution-log",
+            summary="The latest run's execution log, completed or failed (FR-AP-16)")
+def get_execution_log(session_id: str) -> dict:
+    get_row_or_404(session_id)
+    path = artifacts.execution_log_path(settings.storage_root, session_id)
+    if not path.exists():
+        raise ApiError(404, "execution_log_not_found", "This session has not been executed yet.")
+    log: dict = json.loads(path.read_text(encoding="utf-8"))
+    return log
 
 
 @router.get("/{session_id}/cleaned.csv", response_class=FileResponse,

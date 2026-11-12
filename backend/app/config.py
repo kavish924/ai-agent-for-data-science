@@ -1,6 +1,7 @@
 """Application configuration (docs/tech-stack.md §4, Spec 01/03/06/10 defaults)."""
 
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -38,6 +39,7 @@ class Settings(BaseSettings):
     random_seed: int = 42
 
     # LLM: Google Gemini, used from M3 (Spec 03)
+    llm_provider: Literal["gemini", "offline"] = "gemini"  # Spec 03 FR-PL-17
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-2.5-flash"
     llm_timeout_s: float = 60.0  # per LLM call

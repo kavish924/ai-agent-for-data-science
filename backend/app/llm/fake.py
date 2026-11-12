@@ -1,8 +1,10 @@
-"""Offline LLM clients for tests and the smoke script. Never used in production paths.
+"""Offline LLM clients.
 
-* `ScriptedLLM` replays fixed responses and records every prompt it receives.
+* `ScriptedLLM` replays fixed responses and records every prompt it receives (tests only).
 * `RuleBasedLLM` answers planner prompts with a deterministic plan derived from the
-  `llm_profile()` JSON embedded in the prompt, so the full pipeline can run offline.
+  `llm_profile()` JSON embedded in the prompt. It backs `LLM_PROVIDER=offline` (Spec 03
+  FR-PL-17) for demos without an API key, and the smoke scripts. Its plans pass the same
+  Gate and approval as Gemini's.
 """
 
 from __future__ import annotations

@@ -285,3 +285,17 @@ def test_ml_fr10_target_conflicting_with_plan_rejected(client):
     response = client.put(_url(sid, "/target"), json={"target": "age"})
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "target_conflicts_plan"
+
+
+def test_ap_ac10_execution_log_endpoint(client):
+    sid = upload_csv(client, CSV).json()["id"]
+    missing = client.get(_url(sid, "/execution-log"))
+    assert missing.status_code == 404
+    assert missing.json()["error"]["code"] == "execution_log_not_found"
+    _plan_and_approve(client, sid)
+    client.post(_url(sid, "/execute"))
+    log = client.get(_url(sid, "/execution-log"))
+    assert log.status_code == 200
+    body = log.json()
+    assert body["status"] == "completed"
+    assert [s["status"] for s in body["steps"]] == ["executed", "executed"]

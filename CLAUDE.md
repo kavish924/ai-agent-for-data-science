@@ -28,6 +28,10 @@ All from `backend/` with the venv's tools; CI (`.github/workflows/ci.yml`) runs 
 - `ruff check .` and `mypy` green
 - `python scripts/check_traceability.py` green
 - `python scripts/smoke_mN.py` passes on all `samples/*.csv` (latest: `smoke_m3.py`; `--live` uses real Gemini)
+- Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`
+  green; after any backend API change run `npm run gen:api` and commit the regenerated types
+- UI changes are checked in the browser pane: `.claude/launch.json` starts `backend`
+  (offline planner) and `frontend`
 
 ## Branching & progress tracking
 

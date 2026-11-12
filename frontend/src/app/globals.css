@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Design tokens from the "Data Science Agent UI" Claude Design canvas:
+   calm lab-notebook ground, ink text, one teal accent, amber only for destructive. */
+@theme {
+  --color-ground: #f7f7f4;
+  --color-surface: #ffffff;
+  --color-sunken: #f0f0ec;
+  --color-line: #e4e4df;
+  --color-line-strong: #d4d5cf;
+  --color-ink: #16181d;
+  --color-ink-soft: #33363d;
+  --color-muted: #5b5f68;
+  --color-accent: #0f766e;
+  --color-accent-strong: #115e59;
+  --color-accent-soft: #e6f2f0;
+  --color-accent-ink: #0b5d57;
+  --color-warn: #8a3b0b;
+  --color-warn-soft: #fdf3e7;
+  --color-warn-line: #e8c9a6;
+  --color-edit: #b45309;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+html {
+  background: var(--color-ground);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One visible focus ring everywhere (Spec 04 FR-RV-16) */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

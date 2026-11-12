@@ -63,6 +63,10 @@ def get_llm() -> LLMClient | None:
 
     Tests replace it via `app.dependency_overrides[get_llm]`.
     """
+    if settings.llm_provider == "offline":  # FR-PL-17: demos/dev without a key
+        from ..llm.fake import RuleBasedLLM
+
+        return RuleBasedLLM()
     if not settings.gemini_api_key:
         return None
     from ..llm.gemini import GeminiClient  # imported lazily: SDK only needed when used

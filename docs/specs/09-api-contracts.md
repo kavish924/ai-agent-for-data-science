@@ -33,6 +33,7 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | FR-AP-13 | *(M0)* `PUT /sessions/{id}/target` — body `{target: "col" \| null}` (Spec 07 FR-ML-10). `200 SessionOut` · `409` unless `profiled`/`awaiting_approval` · `422` invalid target or plan conflict. |
 | FR-AP-14 | *(M0)* `POST /sessions/{id}/profile` — retry profiling (Spec 01 FR-UP-12). `202` · `409` unless `uploaded`. |
 | FR-AP-15 | *(M0)* `GET /sessions/{id}/cleaned.csv` — download deliverable 1 as an attachment named `cleaned_<original>.csv`. `200 text/csv` · `404` until `executed`. |
+| FR-AP-16 | *(M3.5)* `GET /sessions/{id}/execution-log` — the latest `execution_log.json` (completed or failed run), for the UI's run summary. `200` · `404 execution_log_not_found` before any run. |
 
 ### Session state table (normative)
 
@@ -80,6 +81,7 @@ code and the generated OpenAPI spec, not in docs (docs link, never duplicate).
 | `POST /plan/approve` | `awaiting_approval` |
 | `POST /execute` | `approved` only |
 | `GET /cleaned.csv` | `executed` and later |
+| `GET /execution-log` | any state, once a run has happened |
 | `POST /model` | `executed` and later |
 | `GET /report` | `reported` only |
 
@@ -103,6 +105,8 @@ Violations return `409` with the current state in `details`.
   versions plus any approved version; nothing is overwritten.
 - **AC-9** *(M0)* `GET /cleaned.csv` returns the deliverable with a
   `Content-Disposition` filename of `cleaned_<original>.csv`.
+- **AC-10** *(M3.5)* `GET /execution-log` is `404` before execution and returns the
+  log with per-step statuses after a run.
 
 ## Dependencies
 
@@ -137,3 +141,4 @@ Violations return `409` with the current state in `details`.
   profile-retry and cleaned-CSV endpoints; normative state table (`planned` merged into
   `awaiting_approval`; failures recorded via `error` + `failed_stage`).
 - 2026-11-11 — M3: `POST /plan` body is optional (LLM generation); added `502 planner_failed` and `503 llm_not_configured`.
+- 2026-11-12 — M3.5: added FR-AP-16 `GET /execution-log` (AC-10) for the UI's run summary.

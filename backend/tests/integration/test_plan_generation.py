@@ -144,3 +144,12 @@ def test_nfr_ac2_no_data_or_prompt_in_logs(client, use_llm):
     for call in session_store.list_llm_calls(settings.db_path, sid):
         assert secret not in json.dumps(call)
     assert all(secret not in prompt for prompt in llm.prompts)  # never sent to the LLM
+
+
+def test_pl_ac12_offline_provider_plans_without_a_key(client, monkeypatch):
+    monkeypatch.setattr(settings, "llm_provider", "offline")
+    sid = _upload_titanic(client)
+    response = client.post(f"/api/v1/sessions/{sid}/plan")
+    assert response.status_code == 201, response.json()
+    ops = [s["op"] for s in response.json()["steps"]]
+    assert "impute" in ops

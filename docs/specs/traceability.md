@@ -32,9 +32,19 @@
 | 03 | AC-9 | `test_pl_ac9_no_api_key_is_503_and_changes_nothing` | `routers/plans.py` |
 | 03 | AC-10 | `test_pl_ac10_prompt_has_no_raw_text_or_id_values`, `test_pl_ac10_retry_prompt_lists_previous_issues` | `llm/prompts.py` |
 | 03 | AC-11 | `test_pl_ac11_transport_error_then_success` | `services/planner.py` |
+| 03 | AC-12 | `test_pl_ac12_offline_provider_plans_without_a_key` | `routers/plans.py`, `llm/fake.py` |
 | 03 | AC-7 | `test_pl_ac7_column_dropped_earlier_is_rejected`, `test_pl_ac7_cast_changes_type_for_later_steps` | `services/gate.py` |
 | 03 | AC-8 | `test_pl_ac8_target_cannot_be_imputed`, `test_pl_ac8_target_cannot_be_dropped`, `test_pl_ac8_plan_cannot_touch_target` | `services/gate.py` |
-| 04 | AC-5 | `test_ap_ac6_execute_before_approve_is_409` | `routers/sessions.py` |
+| 04 | AC-1 | `test_rv_ac1_renders_every_step_in_order` | `frontend: PlanReview.tsx` |
+| 04 | AC-2 | `test_rv_ac2_skipped_step_is_submitted_as_disabled` | `frontend: PlanReview.tsx`, `lib/plan.ts` |
+| 04 | AC-3 | `test_rv_ac3_constant_without_value_blocks_approval` | `frontend: ParamEditor.tsx`, `lib/plan.ts` |
+| 04 | AC-4 | `test_rv_ac4_edited_step_is_labelled_and_submitted`, `test_rv_fr09_param_change_becomes_edited` | `frontend: PlanReview.tsx`; `services/plan_review.py` |
+| 04 | AC-5 | `test_rv_ac5_approve_disabled_until_every_step_decided`, `test_ap_ac6_execute_before_approve_is_409` | `frontend: PlanReview.tsx`; `routers/execution.py` |
+| 04 | AC-6 | `test_rv_ac6_regenerate_shows_the_new_version`, `test_ap_ac8_history_keeps_every_version` | `frontend: PlanReview.tsx`; `routers/plans.py` (history view: M7) |
+| 04 | AC-7 | `test_rv_ac7_destructive_steps_name_what_is_lost` | `frontend: lib/plan.ts` |
+| 04 | AC-8 | `test_rv_ac8_server_issues_shown_on_their_step` | `frontend: PlanReview.tsx` |
+| 04 | AC-9 | `test_rv_ac9_upload_error_shows_server_message` | `frontend: UploadScreen.tsx` |
+| 04 | AC-10 | `test_rv_ac10_id_like_columns_not_offered_as_target` | `frontend: ProfileScreen.tsx` |
 | 05 | AC-1 | `test_full_flow_plan_review_approve_execute` | `services/executor.py` |
 | 05 | AC-2 | `test_ap_ac6_execute_runs_the_frozen_approved_plan` | `services/executor.py` |
 | 05 | AC-3 | `test_ex_fr05_failing_step_returns_to_review_and_keeps_log`, `test_cast_type_str_to_int_fails_dry_run` | `services/executor.py` |
@@ -55,6 +65,7 @@
 | 09 | AC-7 | `test_ap_ac7_second_execute_is_rejected` | `db/session_store.py` (`transition`) |
 | 09 | AC-8 | `test_ap_ac8_history_keeps_every_version` | `storage/artifacts.py` |
 | 09 | AC-9 | `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
+| 09 | AC-10 | `test_ap_ac10_execution_log_endpoint` | `routers/execution.py` |
 | 10 | AC-1 | pending (M5) | — |
 | 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |

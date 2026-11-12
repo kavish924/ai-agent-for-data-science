@@ -2,7 +2,7 @@
 
 For every spec whose status is `In progress` or `Done`:
   * every AC must have a row in docs/specs/traceability.md;
-  * every test named in a row must exist under backend/tests;
+  * every test named in a row must exist (backend/tests or frontend/src/**/*.test.ts[x]);
   * `pending` rows are allowed only while the spec is not `Done`.
 Exits non-zero with a list of problems.
 
@@ -23,6 +23,9 @@ _STATUS = re.compile(r"\*\*Status:\*\*\s*([A-Za-z ]+?)(?:\s*\(|\s*·)")
 _AC = re.compile(r"^- \*\*(AC-\d+)\*\*", re.MULTILINE)
 _ROW = re.compile(r"^\|\s*(\d{2})\s*\|\s*(AC-\d+)\s*\|\s*([^|]+)\|", re.MULTILINE)
 _TEST_DEF = re.compile(r"^def (test_\w+)", re.MULTILINE)
+# Frontend (Vitest) tests are named by their title string: test("test_rv_ac1_...", ...)
+_TEST_TITLE = re.compile(r"""\b(?:test|it)\(\s*["'`](test_\w+)["'`]""")
+FRONTEND = BACKEND.parent / "frontend" / "src"
 
 
 def main() -> int:
@@ -31,6 +34,12 @@ def main() -> int:
         for path in (BACKEND / "tests").rglob("test_*.py")
         for name in _TEST_DEF.findall(path.read_text(encoding="utf-8"))
     }
+    if FRONTEND.exists():
+        tests |= {
+            name
+            for path in FRONTEND.rglob("*.test.ts*")
+            for name in _TEST_TITLE.findall(path.read_text(encoding="utf-8"))
+        }
     rows: dict[tuple[str, str], str] = {
         (spec, ac): cell.strip() for spec, ac, cell in _ROW.findall(MATRIX.read_text(encoding="utf-8"))
     }
