@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m3.5-thin-ui` (not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m4-charts` (on top of `main`; pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -17,8 +17,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M0 Hardening | `m0-hardening` | ✅ done · merged to `main` (PR #1) |
 | M3 LLM planner (Gemini) | `m3-llm-planner` | ✅ done · merged to `main` (PR #2) |
 | graphify tooling | `chore/graphify` | ✅ merged to `main` (PR #3) |
-| M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · awaiting PR → `main` |
-| M4 Charts | `m4-charts` | ⬜ not started |
+| M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · in `main` (fast-forward push, user-approved; no PR) |
+| M4 Charts | `m4-charts` | ✅ done · pushed, awaiting PR → `main` |
 | M5 ML baselines | `m5-ml-baselines` | ⬜ not started |
 | M6 Report + narration | `m6-report` | ⬜ not started |
 | M7 UI polish | `m7-ui-polish` | ⬜ not started |
@@ -35,7 +35,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Branching rule: never commit/push to `main`; one branch per milestone, merged by PR
 - [x] This checklist
 - [x] Open PR `m0-hardening` → `main` and merge it (PR #1)
-- [ ] First green CI run on GitHub
+- [ ] First green CI run on GitHub (M3.5 reached `main` without a PR, so check the Actions tab for its push run)
 
 ## M1 — Ingestion + profiler *(done before M0)*
 
@@ -106,16 +106,22 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Spec 04 component tests (12, Vitest); traceability checker reads frontend tests (67 ACs)
 - [x] Verified end to end in the browser on titanic.csv (desktop + 375 px phone width)
 - [x] CI: frontend job (lint, typecheck, tests, build)
-- [ ] Open PR `m3.5-thin-ui` → `main` and merge it (user)
+- [x] Into `main` by a user-approved fast-forward push (the PR route was blocked by a signed-out browser)
 
 ## M4 — Charts · branch `m4-charts`
 
-- [ ] Spec 06 approved; add `matplotlib` (Agg backend)
-- [ ] After-cleaning re-profile → `profile.after.json`
-- [ ] `services/charts.py`: histogram, box plot, top categories, correlation heatmap, missingness map
-- [ ] Chart cap + documented priority order; deterministic file names and bytes
-- [ ] Orchestrator: execute → re-profile → charts automatically
-- [ ] Chart endpoints + UI gallery
+- [x] Spec 06 FR-CH-02 revised (one distribution chart = histogram + box strip), FR-CH-06 priority from the original profile, FR-CH-10..13 + AC-6..10; Spec 09 FR-AP-17..19 + AC-11
+- [x] Tests written first (backend and frontend), watched fail, then implemented
+- [x] Add `matplotlib`; `services/charts.py` with the object API, fixed style, no version stamp → byte-identical PNGs
+- [x] Missing-value map, correlation heatmap, distribution, top-category bars; cap 12 with recorded skip reasons
+- [x] "Before" outline on distributions of columns the plan changed
+- [x] After-cleaning re-profile → `profile.after.json`
+- [x] `services/orchestrator.py`: re-profile + charts inside the run, before `executed`; failures isolated (manifest `status: failed`)
+- [x] Endpoints: `GET /charts`, `GET /charts/{file}` (manifest-whitelisted), `GET /profile/after`
+- [x] UI gallery on the Download screen: thumbnails, enlarge with shared-layout animation, Escape to close, skipped list
+- [x] Verified in the browser on titanic.csv (9 charts, before overlay on Age, enlarge/close)
+- [x] No rebase needed: `main` fast-forwarded to M3.5, which `m4-charts` sits on
+- [ ] Open PR `m4-charts` → `main` and merge it (user)
 
 ## M5 — ML baselines · branch `m5-ml-baselines`
 
@@ -155,9 +161,10 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
 - [ ] SQLite open/close per call is slow on Windows (~1 s per API flow in tests); consider WAL or a pooled connection
 - [ ] Rotating log handler keeps `app.log` open (temp-dir cleanup on Windows)
+- [ ] Don't run `npm run build` while `npm run dev` is running: both write `frontend/.next` and the dev server breaks (500s) until restarted
 - [ ] Titanic `Name` is typed `id_like` (every name is unique) — confirm this is desired
 - [ ] Next.js bundles postcss/sharp with open advisories (build-time CSS only; image optimisation disabled) — bump Next when fixed
-- [ ] Frontend tests for M3.5 were written right after the components, not red-first; keep red-first from M4
+- [x] Frontend tests for M3.5 were written right after the components, not red-first; M4 went back to red-first
 - [ ] Target candidates are "all non-identifier columns"; Spec 07 FR-ML-01 suggestions with reasons come in M5
 - [x] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts (M3)
 - [ ] Profile doesn't count non-numeric values in numeric columns (Telco `TotalCharges` has 11 blanks), so the planner can't see or fix them — add an `unparseable` count per column

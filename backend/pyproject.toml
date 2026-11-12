@@ -12,6 +12,7 @@ dependencies = [
     "pydantic-settings>=2.2",
     "charset-normalizer>=3.3",
     "google-genai>=1.0",
+    "matplotlib>=3.9",
 ]
 
 [project.optional-dependencies]

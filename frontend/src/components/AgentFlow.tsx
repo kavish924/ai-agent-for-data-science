@@ -3,7 +3,15 @@
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { api, ApiError, type ExecutionLog, type Plan, type Profile, type Session } from "@/lib/api/client";
+import {
+  api,
+  ApiError,
+  type ChartManifest,
+  type ExecutionLog,
+  type Plan,
+  type Profile,
+  type Session,
+} from "@/lib/api/client";
 import { PlanReview } from "./PlanReview";
 import { ProfileScreen } from "./ProfileScreen";
 import { DoneScreen, RunningScreen } from "./RunScreen";
@@ -32,6 +40,7 @@ export function AgentFlow() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [log, setLog] = useState<ExecutionLog | null>(null);
+  const [charts, setCharts] = useState<ChartManifest | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const openSession = useCallback(
@@ -52,7 +61,11 @@ export function AgentFlow() {
       const screen = screenFor(next);
       if (next.state !== "uploaded" && screen !== "Upload") setProfile(await api.profile(sessionId));
       if (screen === "Review plan") setPlan(await api.getPlan(sessionId));
-      if (screen === "Download") setLog(await api.executionLog(sessionId));
+      if (screen === "Download") {
+        setLog(await api.executionLog(sessionId));
+        // charts are optional: an old run (or a failed render) must not block the download
+        setCharts(await api.charts(sessionId).catch(() => null));
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't load this session.");
       if (err instanceof ApiError && err.status === 404) setSession(null);
@@ -63,6 +76,7 @@ export function AgentFlow() {
     setPlan(null);
     setProfile(null);
     setLog(null);
+    setCharts(null);
     void refresh();
   }, [refresh]);
 
@@ -121,7 +135,7 @@ export function AgentFlow() {
   } else if (screen === "Run") {
     body = <RunningScreen />;
   } else if (screen === "Download" && log) {
-    body = <DoneScreen session={session} log={log} />;
+    body = <DoneScreen session={session} log={log} charts={charts} />;
   } else {
     body = (
       <main className="flex flex-1 items-center justify-center">

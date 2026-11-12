@@ -599,6 +599,94 @@
         ]
       }
     },
+    "/api/v1/sessions/{session_id}/charts": {
+      "get": {
+        "operationId": "get_charts_api_v1_sessions__session_id__charts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Charts Api V1 Sessions  Session Id  Charts Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chart manifest for the latest run (FR-AP-17)",
+        "tags": [
+          "execution"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/charts/{file}": {
+      "get": {
+        "operationId": "get_chart_file_api_v1_sessions__session_id__charts__file__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "file",
+            "required": true,
+            "schema": {
+              "title": "File",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "One chart PNG listed in the manifest (FR-AP-18)",
+        "tags": [
+          "execution"
+        ]
+      }
+    },
     "/api/v1/sessions/{session_id}/cleaned.csv": {
       "get": {
         "operationId": "download_cleaned_api_v1_sessions__session_id__cleaned_csv_get",
@@ -1055,6 +1143,48 @@
         "summary": "Retry profiling after a failure or restart (FR-AP-14)",
         "tags": [
           "sessions"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/profile/after": {
+      "get": {
+        "operationId": "get_after_profile_api_v1_sessions__session_id__profile_after_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Profile of the cleaned dataset (FR-AP-19)",
+        "tags": [
+          "execution"
         ]
       }
     },

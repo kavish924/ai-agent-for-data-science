@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import FileResponse
@@ -11,6 +12,7 @@ from fastapi.responses import FileResponse
 from ..config import settings
 from ..db import session_store
 from ..errors import ApiError
+from ..schemas.profile import ProfileOut
 from ..services import executor
 from ..storage import artifacts
 from ._common import EXECUTED_OR_LATER, get_row_or_404, read_plan, require_state
@@ -54,6 +56,44 @@ def get_execution_log(session_id: str) -> dict:
         raise ApiError(404, "execution_log_not_found", "This session has not been executed yet.")
     log: dict = json.loads(path.read_text(encoding="utf-8"))
     return log
+
+
+def _read_json_or_404(path: Path, code: str, message: str) -> dict:
+    if not path.exists():
+        raise ApiError(404, code, message)
+    data: dict = json.loads(path.read_text(encoding="utf-8"))
+    return data
+
+
+@router.get("/{session_id}/charts", summary="Chart manifest for the latest run (FR-AP-17)")
+def get_charts(session_id: str) -> dict:
+    get_row_or_404(session_id)
+    return _read_json_or_404(artifacts.charts_manifest_path(settings.storage_root, session_id),
+                             "charts_not_ready", "Charts are created when a plan has run.")
+
+
+@router.get("/{session_id}/charts/{file}", response_class=FileResponse,
+            summary="One chart PNG listed in the manifest (FR-AP-18)")
+def get_chart_file(session_id: str, file: str) -> FileResponse:
+    get_row_or_404(session_id)
+    manifest_path = artifacts.charts_manifest_path(settings.storage_root, session_id)
+    listed = set()
+    if manifest_path.exists():
+        listed = {c["file"] for c in json.loads(manifest_path.read_text(encoding="utf-8"))["charts"]}
+    path = artifacts.charts_dir(settings.storage_root, session_id) / file
+    # Only names the manifest lists are served: nothing from the URL becomes a path otherwise
+    if file not in listed or not path.is_file():
+        raise ApiError(404, "chart_not_found", "No such chart for this session.")
+    return FileResponse(path, media_type="image/png")
+
+
+@router.get("/{session_id}/profile/after", response_model=ProfileOut,
+            summary="Profile of the cleaned dataset (FR-AP-19)")
+def get_after_profile(session_id: str) -> ProfileOut:
+    get_row_or_404(session_id)
+    data = _read_json_or_404(artifacts.after_profile_path(settings.storage_root, session_id),
+                             "after_profile_not_found", "The cleaned profile is created when a plan has run.")
+    return ProfileOut.model_validate(data)
 
 
 @router.get("/{session_id}/cleaned.csv", response_class=FileResponse,

@@ -34,6 +34,9 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | FR-AP-14 | *(M0)* `POST /sessions/{id}/profile` — retry profiling (Spec 01 FR-UP-12). `202` · `409` unless `uploaded`. |
 | FR-AP-15 | *(M0)* `GET /sessions/{id}/cleaned.csv` — download deliverable 1 as an attachment named `cleaned_<original>.csv`. `200 text/csv` · `404` until `executed`. |
 | FR-AP-16 | *(M3.5)* `GET /sessions/{id}/execution-log` — the latest `execution_log.json` (completed or failed run), for the UI's run summary. `200` · `404 execution_log_not_found` before any run. |
+| FR-AP-17 | *(M4)* `GET /sessions/{id}/charts` — `charts_manifest.json` (Spec 06). `200` · `404 charts_not_ready` before a run has produced one. |
+| FR-AP-18 | *(M4)* `GET /sessions/{id}/charts/{file}` — one chart PNG, only if `file` is listed in the manifest. `200 image/png` · `404 chart_not_found`. |
+| FR-AP-19 | *(M4)* `GET /sessions/{id}/profile/after` — the cleaned data's profile (Spec 06 FR-CH-10). `200 ProfileOut` · `404 after_profile_not_found` before a successful run. |
 
 ### Session state table (normative)
 
@@ -82,6 +85,7 @@ code and the generated OpenAPI spec, not in docs (docs link, never duplicate).
 | `POST /execute` | `approved` only |
 | `GET /cleaned.csv` | `executed` and later |
 | `GET /execution-log` | any state, once a run has happened |
+| `GET /charts`, `GET /charts/{file}`, `GET /profile/after` | once a successful run has produced them |
 | `POST /model` | `executed` and later |
 | `GET /report` | `reported` only |
 
@@ -107,6 +111,9 @@ Violations return `409` with the current state in `details`.
   `Content-Disposition` filename of `cleaned_<original>.csv`.
 - **AC-10** *(M3.5)* `GET /execution-log` is `404` before execution and returns the
   log with per-step statuses after a run.
+- **AC-11** *(M4)* After a run, `GET /charts` lists the charts, each listed file is served
+  as `image/png`, and `GET /profile/after` returns the cleaned profile; before a run all
+  three are `404`.
 
 ## Dependencies
 
@@ -142,3 +149,4 @@ Violations return `409` with the current state in `details`.
   `awaiting_approval`; failures recorded via `error` + `failed_stage`).
 - 2026-11-11 — M3: `POST /plan` body is optional (LLM generation); added `502 planner_failed` and `503 llm_not_configured`.
 - 2026-11-12 — M3.5: added FR-AP-16 `GET /execution-log` (AC-10) for the UI's run summary.
+- 2026-11-12 — M4: added FR-AP-17..19 (charts manifest, chart files, after-cleaning profile) and AC-11.
