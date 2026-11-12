@@ -32,6 +32,24 @@ export interface ExecutionLog {
   steps: StepLogEntry[];
 }
 
+/** charts_manifest.json (Spec 06). */
+export interface ChartEntry {
+  file: string;
+  kind: "missing_map" | "correlation" | "distribution" | "bar";
+  column: string | null;
+  title: string;
+  before_overlay: boolean;
+}
+
+export interface ChartManifest {
+  status: "completed" | "failed";
+  max_charts: number;
+  duration_ms: number;
+  charts: ChartEntry[];
+  skipped: { kind: string; column: string | null; reason: string }[];
+  error?: string;
+}
+
 export interface GateIssue {
   step: number;
   issue: string;
@@ -108,4 +126,7 @@ export const api = {
     request<{ state: string }>(`/sessions/${id}/execute`, { method: "POST" }),
   executionLog: (id: string) => request<ExecutionLog>(`/sessions/${id}/execution-log`),
   cleanedCsvUrl: (id: string) => `${BASE}/sessions/${id}/cleaned.csv`,
+  charts: (id: string) => request<ChartManifest>(`/sessions/${id}/charts`),
+  chartUrl: (id: string, file: string) =>
+    `${BASE}/sessions/${id}/charts/${encodeURIComponent(file)}`,
 };

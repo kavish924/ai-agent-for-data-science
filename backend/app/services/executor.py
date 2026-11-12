@@ -19,7 +19,13 @@ from typing import Any
 import pandas as pd
 
 from ..schemas.plan import EXECUTABLE_STATUSES, SCHEMA_VERSION
-from ..storage.artifacts import cleaned_csv_path, execution_log_path, upload_path
+from ..storage.artifacts import (
+    after_profile_path,
+    charts_manifest_path,
+    cleaned_csv_path,
+    execution_log_path,
+    upload_path,
+)
 from .numeric import parse_numeric
 
 logger = logging.getLogger("executor")
@@ -225,10 +231,13 @@ def run_execution(
         cleaned = cleaned_csv_path(storage_root, session_id, row["original_filename"])
         cleaned.unlink(missing_ok=True)
         log_file.unlink(missing_ok=True)
+        charts_manifest_path(storage_root, session_id).unlink(missing_ok=True)
+        after_profile_path(storage_root, session_id).unlink(missing_ok=True)
 
         df = pd.read_csv(
             upload, sep=row["delimiter"] or ",", encoding=row["encoding"] or "utf-8", engine="python"
         )
+        original = df  # apply_step never mutates its input, so this stays the upload's data
 
         for index, step in enumerate(steps):
             context = {"index": index, "op": step.get("op")}
@@ -276,6 +285,12 @@ def run_execution(
         _finish_failure(db_path, log_file, session_id, entries, plan_version,
                         f"{where} failed: {exc}", started)
         return
+
+    # Spec 06 FR-CH-10/11: re-profile + charts before the run is reported done; isolated.
+    from . import orchestrator
+
+    orchestrator.after_execution(storage_root, session_id, cleaned_csv=cleaned,
+                                 original=original, log_entries=entries)
 
     duration_ms = int((time.perf_counter() - started) * 1000)
     log = {

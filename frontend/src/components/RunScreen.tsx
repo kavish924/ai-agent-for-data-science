@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { api, type ExecutionLog, type Session } from "@/lib/api/client";
+import { api, type ChartManifest, type ExecutionLog, type Session } from "@/lib/api/client";
+import { ChartGallery } from "./ChartGallery";
 import { Spinner } from "./Shell";
 
 const fmt = (n: number | undefined) => (n === undefined ? "—" : n.toLocaleString());
@@ -24,7 +25,15 @@ export function RunningScreen() {
 }
 
 /** The run summary and deliverable download. */
-export function DoneScreen({ session, log }: { session: Session; log: ExecutionLog }) {
+export function DoneScreen({
+  session,
+  log,
+  charts,
+}: {
+  session: Session;
+  log: ExecutionLog;
+  charts: ChartManifest | null;
+}) {
   const ran = log.steps.filter((s) => s.status === "executed");
   const skipped = log.steps.filter((s) => s.status === "disabled");
   const last = ran.at(-1)?.after;
@@ -95,6 +104,8 @@ export function DoneScreen({ session, log }: { session: Session; log: ExecutionL
             </tbody>
           </table>
         </div>
+
+        {charts && <ChartGallery sessionId={session.id} manifest={charts} />}
       </section>
 
       <aside className="flex flex-[1_1_300px] flex-col gap-4">
@@ -125,7 +136,7 @@ export function DoneScreen({ session, log }: { session: Session; log: ExecutionL
         </section>
         <section className="rounded-xl border border-line bg-surface p-5 text-[13px] leading-relaxed text-ink-soft">
           <p className="mb-1.5 text-sm font-semibold text-ink">Coming next</p>
-          Charts, baseline models and a full process report arrive in later milestones.
+          Baseline models and a full process report arrive in later milestones.
         </section>
       </aside>
     </main>

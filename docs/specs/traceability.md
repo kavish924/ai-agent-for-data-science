@@ -56,6 +56,16 @@
 | 05 | AC-9 | `test_ex_ac9_int_cast_allows_nulls`, `test_ex_ac9_int_cast_rejects_fractions` | `services/executor.py` |
 | 05 | AC-10 | `test_ex_ac10_clip_keeps_unparseable_values`, `test_ex_fr13_impute_median_ignores_unparseable_and_keeps_them` | `services/executor.py` |
 | 05 | AC-11 | `test_ex_ac11_unexpected_exception_never_leaves_executing` | `services/executor.py` |
+| 06 | AC-1 | `test_ch_ac1_titanic_standard_charts` | `services/charts.py` |
+| 06 | AC-2 | `test_ch_ac2_cap_enforced_and_skips_recorded` | `services/charts.py` |
+| 06 | AC-3 | `test_ch_ac3_no_nulls_means_no_missing_map`, `test_ch_fr05_missing_map_when_nulls_remain` | `services/charts.py` |
+| 06 | AC-4 | `test_ch_ac4_png_bytes_are_deterministic` | `services/charts.py` |
+| 06 | AC-5 | `test_ch_ac5_text_only_dataset_does_not_crash` | `services/charts.py` |
+| 06 | AC-6 | `test_ch_ac6_chart_failure_never_fails_the_run`, `test_ch_ac6_failed_charts_explained_without_breaking` | `services/orchestrator.py`; `frontend: ChartGallery.tsx` |
+| 06 | AC-7 | `test_ch_ac7_after_profile_reflects_cleaning` | `services/orchestrator.py` |
+| 06 | AC-8 | `test_ch_ac8_before_overlay_only_on_changed_columns`, `test_ch_ac8_imputed_column_has_before_overlay` | `services/charts.py`, `services/orchestrator.py` |
+| 06 | AC-9 | `test_ch_ac9_chart_files_are_whitelisted` | `routers/execution.py` |
+| 06 | AC-10 | `test_ch_ac10_gallery_shows_each_chart_and_skips`, `test_ch_fr13_chart_opens_large_and_closes_with_escape` | `frontend: ChartGallery.tsx` |
 | 09 | AC-1 | `test_file_too_large_413`, `test_get_plan_before_created_409`, `test_ap_ac6_execute_before_approve_is_409`, `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
 | 09 | AC-2 | `test_unknown_session_404_with_envelope`, `test_missing_file_422` | `errors.py` |
 | 09 | AC-3 | `test_ap_ac3_review_edits_are_regated` | `routers/sessions.py` |
@@ -66,6 +76,7 @@
 | 09 | AC-8 | `test_ap_ac8_history_keeps_every_version` | `storage/artifacts.py` |
 | 09 | AC-9 | `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
 | 09 | AC-10 | `test_ap_ac10_execution_log_endpoint` | `routers/execution.py` |
+| 09 | AC-11 | `test_ap_ac11_chart_endpoints` | `routers/execution.py` |
 | 10 | AC-1 | pending (M5) | — |
 | 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |

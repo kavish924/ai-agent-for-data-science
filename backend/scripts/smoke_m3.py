@@ -50,10 +50,15 @@ def run_case(client: TestClient, name: str, target: str) -> None:
     stored = (settings.storage_root / "sessions" / sid / "upload.csv").read_bytes()
     assert hashlib.sha256(stored).digest() == hashlib.sha256(raw).digest(), "upload modified!"
 
+    charts = client.get(f"{base}/charts").json()  # M4: charts come with every run
+    assert charts["status"] == "completed" and charts["charts"], charts
+    assert client.get(f"{base}/profile/after").status_code == 200
+
     calls = session_store.list_llm_calls(settings.db_path, sid)
     ops = ", ".join(f"{s['op']}({s.get('column') or ''})" for s in plan["steps"]) or "no steps"
     ms = int((time.perf_counter() - started) * 1000)
-    print(f"[ok] {name:16} attempts={len(calls)} valid_first={bool(calls[0]['valid'])} {ms} ms")
+    print(f"[ok] {name:16} attempts={len(calls)} valid_first={bool(calls[0]['valid'])} "
+          f"charts={len(charts['charts'])} {ms} ms")
     print(f"     plan: {ops}")
 
 

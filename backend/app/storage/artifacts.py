@@ -83,8 +83,18 @@ def cleaned_csv_path(storage_root: Path, session_id: str, original_filename: str
     return session_dir(storage_root, session_id) / cleaned_filename(original_filename)
 
 
-def charts_dir(storage_root: Path, session_id: str) -> Path:  # used from M4
+def charts_dir(storage_root: Path, session_id: str) -> Path:
     return session_dir(storage_root, session_id) / "charts"
+
+
+def charts_manifest_path(storage_root: Path, session_id: str) -> Path:
+    """Which charts exist and why others were skipped (Spec 06)."""
+    return session_dir(storage_root, session_id) / "charts_manifest.json"
+
+
+def after_profile_path(storage_root: Path, session_id: str) -> Path:
+    """Profile of the cleaned dataset (Spec 06 FR-CH-10)."""
+    return session_dir(storage_root, session_id) / "profile.after.json"
 
 
 def save_upload(storage_root: Path, session_id: str, data: bytes) -> Path:
