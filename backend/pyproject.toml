@@ -52,5 +52,8 @@ check_untyped_defs = true
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+include = ["app*"]  # eval/ is run in place (python -m eval.run), not installed
+
 [tool.setuptools.package-data]
 app = ["templates/*.j2"]
