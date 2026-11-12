@@ -100,3 +100,22 @@ def test_nfr_fr07_interrupted_training_is_recovered(client):
         status = restarted.get(_url(sid)).json()
     assert status["state"] == "executed"
     assert status["failed_stage"] == "model"
+
+
+def test_ml_ac12_targets_changed_by_the_plan_are_flagged(client):
+    sid = _upload(client)
+    plan = client.post(_url(sid, "/plan"), json={"steps": [
+        {"op": "impute", "column": "Embarked", "params": {"strategy": "mode"}, "rationale": "2 missing."},
+    ]}).json()
+    def flags() -> dict:
+        suggestions = client.get(_url(sid, "/targets")).json()["suggestions"]
+        return {s["column"]: s["changed_by_plan"] for s in suggestions}
+
+    before = flags()
+    assert before["Embarked"] is False  # nothing has run yet
+    review = {"steps": [{**s, "status": "approved"} for s in plan["steps"]]}
+    assert client.post(_url(sid, "/plan/approve"), json=review).status_code == 200
+    assert client.post(_url(sid, "/execute")).status_code == 202
+    after = flags()
+    assert after["Embarked"] is True
+    assert after["Survived"] is False

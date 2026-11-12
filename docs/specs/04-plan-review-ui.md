@@ -1,6 +1,6 @@
 # Spec 04 — Plan Review UI
 
-> **Status:** In progress (M3.5) · **Source:** PRD §6.4 · **Milestone:** M3.5 (thin slice), M7 (polish) · **Agent:** Frontend + Orchestrator
+> **Status:** Done · **Source:** PRD §6.4 · **Milestone:** M3.5 (thin slice), M7 (polish) · **Agent:** Frontend + Orchestrator
 
 ## Purpose
 
@@ -31,6 +31,12 @@ rationales, allow toggling and parameter edits, and require explicit approval.
 | FR-RV-13 | *(M3.5)* Upload screen: file picker with drag-and-drop, the size/row limits stated, the three sample datasets as one-click options, and server errors (413/415/422) shown as the server's message. |
 | FR-RV-14 | *(M3.5)* Profile screen: rows, columns, duplicate rows and per-column type/missing/outliers; a target picker listing every column except `id_like` ones (optional, "No target" allowed); a notice that only column statistics are sent to the LLM. Then **Generate plan with AI**; when the server answers `503 llm_not_configured`, say so plainly. |
 | FR-RV-15 | *(M3.5)* Run screen: after Approve, start execution and poll `GET /sessions/{id}` until `executed` or a failure (`failed_stage=execute`), then show the execution log summary and a **Download cleaned CSV** link. A failure returns the user to review with the error shown. |
+| FR-RV-17 | *(M7)* The Download screen groups results in **tabs**: Overview (run log + downloads), Charts, Models, Report. They follow the WAI-ARIA tabs pattern (`tablist`/`tab`/`tabpanel`, arrow keys + Home/End move between tabs, only the active tab is in the tab order) with an animated indicator, and the active tab is kept in the URL (`?tab=`) so a reload or shared link opens it. |
+| FR-RV-18 | *(M7)* The Report tab shows the report inside the app in a **sandboxed** iframe (`sandbox="allow-same-origin"`: no scripts, forms, popups or navigation; same-origin only so embedded browsers that block opaque-origin frames still show it) with a title, plus Open in new tab and Download all; before a report exists it shows an empty state with a Create report action. |
+| FR-RV-19 | *(M7)* The Review screen has a **Plan history** panel listing every stored version (`vN · generated` / `vN · approved`, step count) from `GET /plan/history`; choosing one shows its steps read-only, and the current version is marked. Completes AC-6. |
+| FR-RV-20 | *(M7)* **Error and empty states** always offer a next step: an unknown or expired session shows "This analysis isn't available" with **Start a new analysis**; a network failure shows a banner with **Retry**; empty lists explain why and what to do. |
+| FR-RV-21 | *(M7, a11y)* A **skip link** jumps to the main content; each screen has exactly one `h1`; after a screen change, focus moves to that screen's `h1` and a polite live region announces the new step (e.g. "Profile ready"); the step indicator marks finished steps with a check that screen readers read ("Upload, done"). |
+| FR-RV-22 | *(M7)* One animation library: `motion` (`motion/react`) only, `framer-motion` removed; `MotionConfig reducedMotion="user"` stays at the root. |
 | FR-RV-16 | *(M3.5, a11y)* Every control is keyboard reachable with a visible focus ring; motion uses Framer Motion and is disabled when the OS asks for reduced motion; text meets 4.5:1 contrast. |
 
 ## Interfaces
@@ -63,6 +69,19 @@ rationales, allow toggling and parameter edits, and require explicit approval.
 - **AC-9** *(M3.5)* Given an upload error (413/415/422), the server's message is shown and
   the user stays on the upload screen.
 - **AC-10** *(M3.5)* Given the profile screen, `id_like` columns are not offered as a target.
+- **AC-11** *(M7)* Given the Download screen, the tabs are a `tablist`; ArrowRight/ArrowLeft/
+  Home/End move selection and focus; the active tab is written to `?tab=`.
+- **AC-12** *(M7)* Given a reported session, the Report tab renders an iframe pointing at
+  `/report` with `sandbox="allow-same-origin"` (no `allow-scripts`) and a title; before a report, it shows the
+  Create report empty state.
+- **AC-13** *(M7)* Given two plan versions, the history panel lists both (and the approved
+  copy) and shows a chosen version's steps read-only.
+- **AC-14** *(M7)* Given a session id that returns `404`, the app shows "This analysis isn't
+  available" with a Start a new analysis button that clears the session; a network error
+  shows a Retry button that refetches.
+- **AC-15** *(M7)* Given a screen change, focus lands on the new screen's `h1` and the live
+  region announces it; a skip link targets `#main`.
+- **AC-16** *(M7)* No source file imports `framer-motion`.
 
 ## Dependencies
 
@@ -98,7 +117,7 @@ rationales, allow toggling and parameter edits, and require explicit approval.
 - [x] FR-RV-12..15 guided flow screens (M3.5)
 - [x] FR-RV-01..05, 07, 08 review screen behaviors (M3.5)
 - [x] FR-RV-16 accessibility + reduced motion (M3.5)
-- [ ] Plan history view (M7)
+- [x] FR-RV-17..22 tabs, report view, plan history, error states, a11y, one motion library (M7)
 
 ## Changelog
 
@@ -106,3 +125,6 @@ rationales, allow toggling and parameter edits, and require explicit approval.
   rewrote AC-1..6 for the M0 approve flow. Visual design: Claude Design canvas
   "Data Science Agent UI".
 - 2026-11-12 — M3.5 slice complete: AC-1..10 pass (Vitest); verified end to end in the browser on titanic.csv. Stays In progress for the M7 history view.
+- 2026-11-12 — M7: added FR-RV-17..22 and AC-11..16 (results tabs, in-app report, plan history, error states, focus/announcements, motion/react).
+- 2026-11-12 — M7 complete: AC-11..16 pass; every AC of Spec 04 now has tests.
+- 2026-11-12 — M7: report iframe uses `sandbox="allow-same-origin"` instead of `sandbox=""`: the Claude app's browser blocked the opaque-origin frame (`ERR_BLOCKED_BY_CLIENT`); scripts stay forbidden.

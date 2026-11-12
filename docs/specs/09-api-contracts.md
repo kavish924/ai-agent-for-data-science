@@ -38,7 +38,7 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | FR-AP-18 | *(M4)* `GET /sessions/{id}/charts/{file}` — one chart PNG, only if `file` is listed in the manifest. `200 image/png` · `404 chart_not_found`. |
 | FR-AP-19 | *(M4)* `GET /sessions/{id}/profile/after` — the cleaned data's profile (Spec 06 FR-CH-10). `200 ProfileOut` · `404 after_profile_not_found` before a successful run. |
 | FR-AP-20 | *(M5)* `GET /sessions/{id}/model` — `model_runs.json` (Spec 07). `200` · `404 model_not_ready`. |
-| FR-AP-21 | *(M5)* `GET /sessions/{id}/targets` — ranked target suggestions `[{column, problem_type, reason}]` (Spec 07 FR-ML-01). `200` once profiled. |
+| FR-AP-21 | *(M5)* `GET /sessions/{id}/targets` — ranked target suggestions `[{column, problem_type, reason, changed_by_plan}]` (Spec 07 FR-ML-01/15). `200` once profiled. |
 | FR-AP-22 | *(M6)* `GET /sessions/{id}/bundle.zip` — all deliverables in one archive (Spec 08 FR-RP-15). `200 application/zip` · `404` unless `reported`. |
 
 ### Session state table (normative)
@@ -165,3 +165,4 @@ Violations return `409` with the current state in `details`.
 - 2026-11-12 — M4: added FR-AP-17..19 (charts manifest, chart files, after-cleaning profile) and AC-11.
 - 2026-11-12 — M5: FR-AP-05 background training (`modeling` state); added FR-AP-20/21 and AC-12.
 - 2026-11-12 — M6: `POST /report`, `GET /report`, `GET /bundle.zip`; `POST /model` allowed from `reported`; AC-13.
+- 2026-11-12 — M7: `GET /targets` suggestions gain `changed_by_plan`.

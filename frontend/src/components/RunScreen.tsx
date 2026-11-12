@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   api,
   type ChartManifest,
@@ -11,7 +11,8 @@ import {
 } from "@/lib/api/client";
 import { ChartGallery } from "./ChartGallery";
 import { ModelPanel } from "./ModelPanel";
-import { ReportPanel } from "./ReportPanel";
+import { ReportView } from "./ReportView";
+import { ResultsTabs, type ResultTab } from "./ResultsTabs";
 import { Spinner } from "./Shell";
 
 const fmt = (n: number | undefined) => (n === undefined ? "—" : n.toLocaleString());
@@ -42,6 +43,8 @@ export function DoneScreen({
   suggestions = [],
   onTrain = () => undefined,
   report = { source: null, busy: false, onCreate: () => undefined },
+  tab = "overview",
+  onTab = () => undefined,
 }: {
   session: Session;
   log: ExecutionLog;
@@ -50,6 +53,8 @@ export function DoneScreen({
   suggestions?: TargetSuggestion[];
   onTrain?: (target: string) => void;
   report?: { source: "llm" | "template" | null; busy: boolean; onCreate: (renarrate: boolean) => void };
+  tab?: ResultTab;
+  onTab?: (tab: ResultTab) => void;
 }) {
   const ran = log.steps.filter((s) => s.status === "executed");
   const skipped = log.steps.filter((s) => s.status === "disabled");
@@ -57,33 +62,26 @@ export function DoneScreen({
   const first = ran[0]?.before;
   const colDelta = first && last ? last.cols - first.cols : 0;
 
-  return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-wrap gap-6 px-4 py-8 sm:px-8">
-      <section className="flex min-w-0 flex-[999_1_560px] flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <motion.span
-            initial={{ scale: 0.4, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 420, damping: 22 }}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-accent">
-              <motion.path d="M5 12l5 5L20 7" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-                transition={{ delay: 0.15, duration: 0.35 }} />
-            </svg>
-          </motion.span>
-          <div>
-            <h1 className="font-display text-[26px] font-semibold">Plan applied</h1>
-            <p className="text-[13px] text-muted">
-              {ran.length} {ran.length === 1 ? "step" : "steps"} ran · {skipped.length} skipped · {log.duration_ms} ms ·
-              original upload unchanged
-            </p>
-          </div>
-        </div>
+  const badges = {
+    charts: charts?.status === "completed" ? String(charts.charts.length) : undefined,
+    models: runs ? "✓" : undefined,
+    report: session.state === "reported" ? "✓" : undefined,
+  };
+  const shortcuts: [ResultTab, string, string][] = [
+    ["charts", "Explore the charts",
+     charts?.status === "completed" ? `${charts.charts.length} charts from the cleaned data` : "See what was charted"],
+    ["models", runs ? "Compare the models" : "Train baseline models",
+     runs ? `Best: ${runs.best_model.replace("_", " ")}` : "Pick a target and get a first score"],
+    ["report", session.state === "reported" ? "Read the report" : "Create the report",
+     "Everything from this run in one file"],
+  ];
 
+  const overview = (
+    <div className="flex flex-wrap gap-6">
+      <section aria-label="Run log" className="flex min-w-0 flex-[999_1_560px] flex-col gap-4">
         <div className="overflow-x-auto rounded-xl border border-line bg-surface">
           <table className="w-full text-left text-sm">
+            <caption className="sr-only">What each approved step changed</caption>
             <thead className="border-b border-line text-xs uppercase tracking-[0.06em] text-muted">
               <tr>
                 <th scope="col" className="px-4 py-3 font-medium">Step</th>
@@ -121,10 +119,19 @@ export function DoneScreen({
             </tbody>
           </table>
         </div>
-
-        <ModelPanel session={session} runs={runs} suggestions={suggestions} onTrain={onTrain} />
-
-        {charts && <ChartGallery sessionId={session.id} manifest={charts} />}
+        <div className="grid gap-3 sm:grid-cols-3">
+          {shortcuts.map(([target, title, hint]) => (
+            <button
+              key={target}
+              type="button"
+              onClick={() => onTab(target)}
+              className="flex min-h-20 flex-col items-start justify-center gap-1 rounded-xl border border-line bg-surface px-4 py-3 text-left transition-colors hover:border-accent"
+            >
+              <span className="text-sm font-semibold">{title} →</span>
+              <span className="text-xs text-muted">{hint}</span>
+            </button>
+          ))}
+        </div>
       </section>
 
       <aside className="flex flex-[1_1_300px] flex-col gap-4">
@@ -153,8 +160,54 @@ export function DoneScreen({
             Download cleaned CSV
           </a>
         </section>
-        <ReportPanel session={session} source={report.source} busy={report.busy} onCreate={report.onCreate} />
       </aside>
+    </div>
+  );
+
+  return (
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 px-4 py-8 sm:px-8">
+      <div className="flex items-center gap-3">
+        <motion.span
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", visualDuration: 0.35, bounce: 0.35 }}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"
+            strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-accent">
+            <motion.path d="M5 12l5 5L20 7" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+              transition={{ delay: 0.15, duration: 0.35 }} />
+          </svg>
+        </motion.span>
+        <div>
+          <h1 className="font-display text-[26px] font-semibold">Plan applied</h1>
+          <p className="text-[13px] text-muted">
+            {ran.length} {ran.length === 1 ? "step" : "steps"} ran · {skipped.length} skipped · {log.duration_ms} ms ·
+            original upload unchanged
+          </p>
+        </div>
+      </div>
+
+      <ResultsTabs selected={tab} onSelect={onTab} badges={badges}>
+        {(current) => {
+          if (current === "charts") {
+            return charts ? (
+              <ChartGallery sessionId={session.id} manifest={charts} />
+            ) : (
+              <p className="rounded-xl border border-dashed border-line-strong p-8 text-center text-sm text-ink-soft">
+                No charts for this run yet. They are drawn automatically when a plan runs.
+              </p>
+            );
+          }
+          if (current === "models") {
+            return <ModelPanel session={session} runs={runs} suggestions={suggestions} onTrain={onTrain} />;
+          }
+          if (current === "report") {
+            return <ReportView session={session} source={report.source} busy={report.busy} onCreate={report.onCreate} />;
+          }
+          return overview;
+        }}
+      </ResultsTabs>
     </main>
   );
 }

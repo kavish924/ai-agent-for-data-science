@@ -55,6 +55,15 @@ export interface TargetSuggestion {
   column: string;
   problem_type: "classification" | "regression";
   reason: string;
+  /** An executed plan step changed this column, so it can't be the target (FR-ML-15). */
+  changed_by_plan?: boolean;
+}
+
+/** One stored plan version (GET /plan/history, FR-AP-10). */
+export interface PlanHistoryEntry {
+  version: number;
+  kind: "generated" | "approved";
+  plan: Plan;
 }
 
 export interface MetricSummary {
@@ -152,6 +161,8 @@ export const api = {
     request<Session>(`/sessions/${id}/target`, json("PUT", { target })),
   generatePlan: (id: string) => request<Plan>(`/sessions/${id}/plan`, { method: "POST" }),
   getPlan: (id: string) => request<Plan>(`/sessions/${id}/plan`),
+  planHistory: (id: string) =>
+    request<{ versions: PlanHistoryEntry[] }>(`/sessions/${id}/plan/history`).then((r) => r.versions),
   approve: (id: string, steps: PlanStep[]) =>
     request<Plan>(`/sessions/${id}/plan/approve`, json("POST", { steps })),
   execute: (id: string) =>

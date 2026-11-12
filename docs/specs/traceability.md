@@ -45,6 +45,12 @@
 | 04 | AC-8 | `test_rv_ac8_server_issues_shown_on_their_step` | `frontend: PlanReview.tsx` |
 | 04 | AC-9 | `test_rv_ac9_upload_error_shows_server_message` | `frontend: UploadScreen.tsx` |
 | 04 | AC-10 | `test_rv_ac10_id_like_columns_not_offered_as_target` | `frontend: ProfileScreen.tsx` |
+| 04 | AC-11 | `test_rv_ac11_tabs_follow_the_aria_pattern`, `test_rv_ac11_active_tab_lives_in_the_url` | `frontend: ResultsTabs.tsx`, `AgentFlow.tsx` |
+| 04 | AC-12 | `test_rv_ac12_report_tab_embeds_a_sandboxed_report` | `frontend: ReportView.tsx` |
+| 04 | AC-13 | `test_rv_ac13_plan_history_shows_versions_read_only` | `frontend: PlanHistory.tsx` |
+| 04 | AC-14 | `test_rv_ac14_missing_session_and_network_errors_offer_a_next_step` | `frontend: ErrorState.tsx`, `AgentFlow.tsx` |
+| 04 | AC-15 | `test_rv_ac15_focus_moves_to_the_new_heading_and_is_announced`, `test_rv_ac15_skip_link_targets_main`, `test_rv_ac15_stepper_reads_finished_steps` | `frontend: useScreenFocus.ts`, `Shell.tsx` |
+| 04 | AC-16 | `test_rv_ac16_no_framer_motion_imports` | `frontend: package.json` |
 | 05 | AC-1 | `test_full_flow_plan_review_approve_execute` | `services/executor.py` |
 | 05 | AC-2 | `test_ap_ac6_execute_runs_the_frozen_approved_plan` | `services/executor.py` |
 | 05 | AC-3 | `test_ex_fr05_failing_step_returns_to_review_and_keeps_log`, `test_cast_type_str_to_int_fails_dry_run` | `services/executor.py` |
@@ -77,6 +83,7 @@
 | 07 | AC-9 | `test_ml_ac9_training_flow`, `test_ml_ac9_invalid_targets_rejected`, `test_ml_ac9_training_failure_returns_to_executed` | `routers/models.py` |
 | 07 | AC-10 | `test_ml_ac10_best_model_is_never_the_dummy` | `services/analyst.py` |
 | 07 | AC-11 | `test_ml_ac11_results_table_marks_the_best_model`, `test_ml_ac11_train_sends_the_chosen_target` | `frontend: ModelPanel.tsx` |
+| 07 | AC-12 | `test_ml_ac12_targets_changed_by_the_plan_are_flagged`, `test_ml_ac12_model_panel_hides_targets_changed_by_the_plan` | `routers/models.py`; `frontend: ModelPanel.tsx` |
 | 08 | AC-1 | `test_rp_ac1_seven_sections_in_order` | `services/reporter.py`, `templates/report.html.j2` |
 | 08 | AC-2 | `test_rp_ac2_step_shows_rationale_status_and_logged_counts` | `services/reporter.py` |
 | 08 | AC-3 | `test_rp_ac3_numbers_come_from_artifacts`, `test_rp_ac3_render_fills_numbers_from_facts` | `services/reporter.py`, `services/narrator.py` |

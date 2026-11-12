@@ -1,5 +1,5 @@
 /** Spec 06 AC-10 / FR-CH-13: chart gallery on the Download screen. Written before the component. */
-import { render, screen, waitForElementToBeRemoved, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, test } from "vitest";
 import type { ChartManifest } from "@/lib/api/client";
@@ -47,8 +47,8 @@ describe("Spec 06 chart gallery", () => {
     const dialog = screen.getByRole("dialog", { name: "Age — distribution" });
     expect(within(dialog).getByRole("img")).toHaveAttribute("alt", "Age — distribution");
     await user.keyboard("{Escape}");
-    // the dialog leaves through an exit animation, so wait for it to be removed
-    await waitForElementToBeRemoved(() => screen.queryByRole("dialog"));
+    // instant in tests (animations skipped), animated in browsers: wait either way
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
   test("test_ch_ac6_failed_charts_explained_without_breaking", () => {

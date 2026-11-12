@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -17,10 +17,20 @@ import {
 import { PlanReview } from "./PlanReview";
 import { ProfileScreen } from "./ProfileScreen";
 import { DoneScreen, RunningScreen } from "./RunScreen";
-import { ErrorNote, Shell, Spinner, type StepName } from "./Shell";
+import { ErrorState } from "./ErrorState";
+import { readTab, type ResultTab } from "./ResultsTabs";
+import { ErrorNote, Shell, Spinner, STEPS, type StepName } from "./Shell";
+import { useScreenFocus } from "./useScreenFocus";
 import { UploadScreen } from "./UploadScreen";
 
 const POLL_MS = 800;
+const ANNOUNCE: Record<StepName, string> = {
+  Upload: "Upload a CSV to start",
+  Profile: "Profile",
+  "Review plan": "Review the cleaning plan",
+  Run: "Running the approved plan",
+  Download: "Results ready",
+};
 const EXECUTED = new Set(["executed", "modeling", "modeled", "reported"]);
 
 /** Which screen a session state belongs to (Spec 04 FR-RV-12). */
@@ -37,6 +47,7 @@ export function AgentFlow() {
   const pathname = usePathname();
   const params = useSearchParams();
   const sessionId = params.get("session");
+  const tab = readTab(params);
 
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -48,10 +59,19 @@ export function AgentFlow() {
   const [reportSource, setReportSource] = useState<"llm" | "template" | null>(null);
   const [reportBusy, setReportBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // FR-RV-20: problems that get their own screen or banner with a next step
+  const [problem, setProblem] = useState<"missing" | "network" | null>(null);
 
   const openSession = useCallback(
     (id: string | null) => router.replace(id ? `${pathname}?session=${id}` : pathname),
     [router, pathname],
+  );
+  const selectTab = useCallback(
+    (next: ResultTab) => {
+      if (!sessionId) return;
+      router.replace(`${pathname}?session=${sessionId}${next === "overview" ? "" : `&tab=${next}`}`, { scroll: false });
+    },
+    [router, pathname, sessionId],
   );
 
   // Load the session and whatever its current screen needs.
@@ -64,6 +84,7 @@ export function AgentFlow() {
       const next = await api.session(sessionId);
       setSession(next);
       setError(null);
+      setProblem(null);
       const screen = screenFor(next);
       if (next.state !== "uploaded" && screen !== "Upload") {
         setProfile(await api.profile(sessionId));
@@ -78,8 +99,14 @@ export function AgentFlow() {
         setRuns(await api.modelRuns(sessionId).catch(() => null));
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Couldn't load this session.");
-      if (err instanceof ApiError && err.status === 404) setSession(null);
+      if (err instanceof ApiError && err.status === 404 && err.code === "session_not_found") {
+        setSession(null);
+        setProblem("missing");
+      } else if (err instanceof ApiError && err.status === 0) {
+        setProblem("network");
+      } else {
+        setError(err instanceof ApiError ? err.message : "Couldn't load this session.");
+      }
     }
   }, [sessionId]);
 
@@ -106,11 +133,29 @@ export function AgentFlow() {
   }, [waiting, refresh]);
 
   const screen = screenFor(session);
+  const focusKey = problem === "missing" ? "missing" : screen;
+  const step = STEPS.indexOf(screen) + 1;
+  const { announcement, focus } = useScreenFocus(
+    focusKey,
+    problem === "missing" ? "This analysis isn't available" : `Step ${step} of ${STEPS.length}: ${ANNOUNCE[screen]}`,
+    { immediate: false },
+  );
   // The Download screen stays mounted while training moves executed -> modeling -> modeled
   const key = `${screen}-${screen === "Download" ? "" : session?.state}-${session?.plan_version ?? 0}`;
 
   let body: React.ReactNode;
-  if (!session) {
+  if (problem === "missing") {
+    body = (
+      <ErrorState
+        kind="missing"
+        onStartOver={() => {
+          setProblem(null);
+          openSession(null);
+        }}
+        onRetry={() => void refresh()}
+      />
+    );
+  } else if (!session) {
     body = <UploadScreen onUploaded={(created) => openSession(created.id)} />;
   } else if (session.state === "uploaded") {
     body = (
@@ -124,7 +169,10 @@ export function AgentFlow() {
             </button>
           </>
         ) : (
-          <Spinner label="Profiling your data: types, missing values, duplicates, outliers…" />
+          <>
+            <h1 className="font-display text-2xl font-semibold">Profiling your data</h1>
+            <Spinner label="Checking types, missing values, duplicates and outliers…" />
+          </>
         )}
       </main>
     );
@@ -158,6 +206,8 @@ export function AgentFlow() {
   } else if (screen === "Download" && log) {
     body = (
       <DoneScreen
+        tab={tab}
+        onTab={selectTab}
         session={session}
         log={log}
         charts={charts}
@@ -198,7 +248,12 @@ export function AgentFlow() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <Shell current={screen} sessionId={session?.id} onReset={() => openSession(null)}>
+      <Shell current={screen} sessionId={session?.id} onReset={() => openSession(null)} announcement={announcement}>
+        {problem === "network" && (
+          <div className="px-4">
+            <ErrorState kind="network" onStartOver={() => openSession(null)} onRetry={() => void refresh()} />
+          </div>
+        )}
         {error && (
           <div className="mx-auto w-full max-w-4xl px-4 pt-4">
             <ErrorNote>{error}</ErrorNote>
@@ -206,8 +261,9 @@ export function AgentFlow() {
         )}
         <AnimatePresence mode="wait">
           <motion.div
-            key={key}
+            key={problem === "missing" ? "missing" : key}
             className="flex flex-1 flex-col"
+            onAnimationComplete={focus}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}

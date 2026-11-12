@@ -27,10 +27,30 @@ class ModelIn(BaseModel):
     target: str | None = None
 
 
+def _changed_by_run(session_id: str) -> set[str]:
+    """Columns an executed step dropped or changed (Spec 07 FR-ML-15); empty before a run."""
+    log_file = artifacts.execution_log_path(settings.storage_root, session_id)
+    if not log_file.exists():
+        return set()
+    changed: set[str] = set()
+    for step in json.loads(log_file.read_text(encoding="utf-8")).get("steps", []):
+        if step.get("status") != "executed" or step.get("op") not in _TARGET_CHANGING_OPS:
+            continue
+        if step.get("column"):
+            changed.add(step["column"])
+        changed.update((step.get("params") or {}).get("columns", []))
+    return changed
+
+
 @router.get("/{session_id}/targets", summary="Ranked target suggestions (FR-AP-21)")
 def get_target_suggestions(session_id: str) -> dict:
     row = get_row_or_404(session_id)
-    return {"session_id": session_id, "suggestions": analyst.suggest_targets(load_profile(session_id, row))}
+    changed = _changed_by_run(session_id)
+    suggestions = [
+        {**s, "changed_by_plan": s["column"] in changed}
+        for s in analyst.suggest_targets(load_profile(session_id, row))
+    ]
+    return {"session_id": session_id, "suggestions": suggestions}
 
 
 @router.post("/{session_id}/model", status_code=202,

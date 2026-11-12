@@ -21,7 +21,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M4 Charts | `m4-charts` | ✅ done · merged to `main` (PR #4) |
 | M5 ML baselines | `m5-ml-baselines` | ✅ done · in `main` (fast-forward push `62d4c5e..6707cec`, user-approved; no PR) |
 | M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
-| M7 UI polish | `m7-ui-polish` | ⬜ not started |
+| M7 UI polish | `m7-ui-polish` | ✅ done · awaiting PR → `main` |
 | M8 Evaluation + demo | `m8-eval-demo` | ⬜ not started |
 
 ---
@@ -156,14 +156,25 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Fix: cleaned CSV download returned 404 while a model was training (`modeling` added to the allowed states)
 - [x] UI: Process report card (Create report → Open report / Download all (.zip), summary source, Rewrite summary)
 - [x] Live with real Gemini on titanic.csv: plan 9.8 s, narration passed the gate first try (7.3 s); every figure matches the artifacts
-- [ ] Click-through of the report card in the app UI (the pane was hidden; the report page itself was checked visually)
+- [x] Report card clicked through in the app UI (Report tab, M7)
 - [x] Merged to `main` (PR #5)
 
 ## M7 — UI polish · branch `m7-ui-polish`
 
-- [ ] Report view, charts, model results in the UI
-- [ ] Plan history + regenerate
-- [ ] Progress UX, error states, accessibility pass
+- [x] Tooling: UI UX Pro Max (user skill), 21st skills (already current), Motion AI Kit (project: `motion` skill, `motion-reviewer`, `.mcp.json`)
+- [x] One animation library: imports moved to `motion/react`, `framer-motion` removed; tests skip animations (`MotionGlobalConfig.skipAnimations`)
+- [x] Spec 04 FR-RV-17..22 + AC-11..16; Spec 07 FR-ML-15 + AC-12; Spec 09 `changed_by_plan` — tests written first
+- [x] Download screen in WAI-ARIA tabs (Overview · Charts · Models · Report), arrow/Home/End keys, animated indicator, `?tab=` deep link, next-step shortcuts
+- [x] Report tab: report embedded in a fully sandboxed iframe; empty state with Create report
+- [x] Plan history panel on the Review screen (read-only versions; completes Spec 04 AC-6)
+- [x] Error states with a next step: unknown session → "This analysis isn't available" + Start a new analysis; network → Retry banner
+- [x] Accessibility: skip link, one `h1` per screen, focus to the new heading after a screen change, polite announcements, "done" marks in the step indicator, 44 px header buttons; token contrast all ≥ WCAG AA (15 pairs checked)
+- [x] Model panel hides targets the executed plan changed (`GET /targets` `changed_by_plan`)
+- [x] Chart dialog: shared-layout morph replaced by scale + fade (layout exit never completed under Motion 14 in tests; cheaper in browsers)
+- [x] Visual pass, part 1 (browser pane): Download screen with tabs, badges, step checkmarks and shortcuts; keyboard ArrowRight moves tab + `?tab=`; fixed a stray tab-bar scrollbar and a clipped tab focus ring
+- [x] Visual pass, part 2: Charts thumbnails, Models table and the embedded report all render; found and fixed the report frame being blocked by the Claude app's browser (`sandbox=""` → `allow-same-origin`, still no scripts)
+- [ ] Plan history panel not yet seen in the browser (covered by its component test)
+- [ ] Open PR `m7-ui-polish` → `main` and merge it (user)
 
 ## M8 — Evaluation + demo · branch `m8-eval-demo`
 
@@ -183,7 +194,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Frontend tests for M3.5 were written right after the components, not red-first; M4 went back to red-first
 - [x] Target candidates are "all non-identifier columns"; Spec 07 FR-ML-01 suggestions with reasons came in M5
 - [x] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts (M3)
-- [ ] Model panel offers targets the executed plan changed (e.g. imputed `Embarked`); the server rejects them with `target_changed_by_plan` — filter them out of the list
+- [x] Model panel offers targets the executed plan changed — filtered via `changed_by_plan` (M7)
 - [ ] Consider moving to `gemini-3.8-flash` once its 503 "high demand" errors stop (one `GEMINI_MODEL` change in `.env`)
 - [ ] Narration wording can still be inaccurate without a wrong number (live run said the charts cover "model evaluation results"; they don't) — tighten the prompt or add a facts-only phrasing check
 - [ ] Reproducible Python script of the executed steps (Spec 08 FR-RP-06 stretch)

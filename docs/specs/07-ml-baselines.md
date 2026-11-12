@@ -29,6 +29,7 @@ baseline models with cross-validation, and compare them without data leakage.
 | FR-ML-12 | *(M5)* The best model is chosen by the primary cross-validated metric (classification: F1 macro; regression: RMSE, lower is better), never the dummy; the result says whether it beats the dummy floor and by how much. Timing is recorded separately from scores so scores stay byte-stable across runs. |
 | FR-ML-13 | *(M5)* Datasets above `MODEL_MAX_ROWS` (default 50,000) are down-sampled with the fixed seed (stratified for classification) before splitting; the sample size is recorded. Feature columns that are `id_like`, text or datetime are excluded and listed. |
 | FR-ML-14 | *(M5, UI)* The Download screen offers **Train baseline models**: target preselected (session target, else the top suggestion), progress while training, then a comparison table (CV mean ± std and hold-out score per model, best marked, dummy shown as the floor) with a "baselines, not production models" note. |
+| FR-ML-15 | *(M7)* Once a plan has run, each `GET /targets` suggestion carries `changed_by_plan: true` when an executed step dropped, imputed, clipped or cast that column; the Model panel leaves those out of its target list (the session's own target always stays), so the user can't pick a target the server would refuse. |
 | FR-ML-11 | *(M5)* **No leakage from cleaning.** Ops are classed *structural* (`drop_duplicates`, `drop_column`, `cast_type`, `parse_datetime`, `standardize_text`) or *statistical* (`impute`, `clip_outliers`). The Analyst replays only the approved structural ops on `upload.csv`; statistical ops are re-created inside each model's `Pipeline` (imputer, `IQRClipper`) so they are fit on training folds only. The cleaned CSV deliverable still applies all approved ops; the report states this split. |
 
 ## Interfaces
@@ -68,6 +69,9 @@ baseline models with cross-validation, and compare them without data leakage.
 - **AC-10** *(M5)* The best model is never the dummy, and `beats_dummy` is reported.
 - **AC-11** *(M5, UI)* Given model runs, the results table lists each model with its CV
   score and marks the best; the train button sends the chosen target.
+- **AC-12** *(M7)* Given an executed plan that imputed `Embarked`, `GET /targets` marks it
+  `changed_by_plan: true` and the Model panel doesn't offer it; untouched columns are
+  `false` and offered.
 
 ## Dependencies
 
@@ -104,3 +108,5 @@ baseline models with cross-validation, and compare them without data leakage.
 - 2026-11-12 — M5: FR-ML-02 rule for small-integer targets; FR-ML-08 background job;
   added FR-ML-12..14 and AC-7..11; FR-ML-01 suggestions endpoint.
 - 2026-11-12 — M5 complete: AC-1..11 pass. Titanic via the API: random forest F1 0.801 vs dummy 0.381 (5-fold CV), 2.3 s; only structural ops replayed.
+- 2026-11-12 — M7: FR-ML-15 / AC-12 (targets changed by the plan are flagged and hidden).
+- 2026-11-12 — M7 complete: AC-12 passes.

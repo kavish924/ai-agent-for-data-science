@@ -1,13 +1,18 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
+import { MotionGlobalConfig } from "motion/react";
 import { afterEach, vi } from "vitest";
 
 afterEach(() => cleanup());
 
-// jsdom doesn't implement scrolling; Framer Motion layout animations call it.
+// Tests check behaviour, not motion: finish every animation instantly. jsdom has no
+// real animation clock, so exit animations (AnimatePresence) would otherwise hang.
+MotionGlobalConfig.skipAnimations = true;
+
+// jsdom doesn't implement scrolling; Motion layout animations call it.
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
 
-// jsdom lacks matchMedia, which Framer Motion consults for reduced motion.
+// jsdom lacks matchMedia, which Motion consults for reduced motion.
 if (!window.matchMedia) {
   Object.defineProperty(window, "matchMedia", {
     value: vi.fn().mockImplementation((query: string) => ({

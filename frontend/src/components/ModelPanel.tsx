@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useState } from "react";
 import type { ModelRuns, Session, TargetSuggestion } from "@/lib/api/client";
 import { ErrorNote, Spinner } from "./Shell";
@@ -34,11 +34,13 @@ export function ModelPanel({
   suggestions: TargetSuggestion[];
   onTrain: (target: string) => void;
 }) {
-  const [target, setTarget] = useState(session.target ?? runs?.target ?? suggestions[0]?.column ?? "");
+  // Columns the executed plan changed can't be targets (FR-ML-15); the session's own target stays
+  const offered = suggestions.filter((s) => !s.changed_by_plan || s.column === session.target);
+  const [target, setTarget] = useState(session.target ?? runs?.target ?? offered[0]?.column ?? "");
   const training = session.state === "modeling";
   const primary = runs?.primary_metric ?? "f1_macro";
   const secondary = runs?.problem_type === "regression" ? "r2" : "accuracy";
-  const choice = suggestions.find((s) => s.column === target);
+  const choice = offered.find((s) => s.column === target);
 
   return (
     <section aria-labelledby="models-heading" className="flex flex-col gap-3">
@@ -72,7 +74,7 @@ export function ModelPanel({
               className="h-10 rounded-lg border border-line-strong bg-surface px-3 font-mono text-sm text-ink"
             >
               {!target && <option value="">Choose a column</option>}
-              {suggestions.map((s) => (
+              {offered.map((s) => (
                 <option key={s.column} value={s.column}>{s.column} ({s.problem_type})</option>
               ))}
               {target && !choice && <option value={target}>{target}</option>}

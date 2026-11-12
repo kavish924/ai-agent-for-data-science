@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { api, ApiError, type Plan, type Profile } from "@/lib/api/client";
 import {
@@ -18,6 +18,7 @@ import {
   type ReviewStep,
 } from "@/lib/plan";
 import { ParamEditor } from "./ParamEditor";
+import { PlanHistory } from "./PlanHistory";
 import { ErrorNote, Spinner } from "./Shell";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -234,7 +235,7 @@ export function PlanReview({
             type="button"
             disabled={busy !== null || steps.length === 0}
             onClick={() => setSteps((all) => all.map((s) => (s.decision === "proposed" ? { ...s, decision: "approved" } : s)))}
-            className="h-10 rounded-lg border border-line-strong bg-surface px-4 text-sm font-medium hover:border-accent disabled:opacity-50"
+            className="h-11 rounded-lg border border-line-strong bg-surface px-4 text-sm font-medium hover:border-accent disabled:opacity-50"
           >
             Approve all
           </button>
@@ -242,12 +243,14 @@ export function PlanReview({
             type="button"
             disabled={busy !== null}
             onClick={() => void regenerate()}
-            className="h-10 rounded-lg border border-line-strong bg-surface px-4 text-sm font-medium hover:border-accent disabled:opacity-50"
+            className="h-11 rounded-lg border border-line-strong bg-surface px-4 text-sm font-medium hover:border-accent disabled:opacity-50"
           >
             Regenerate
           </button>
         </div>
       </div>
+
+      <PlanHistory key={plan.version ?? 1} sessionId={sessionId} currentVersion={plan.version ?? null} />
 
       <AnimatePresence>{error && <ErrorNote key="error">{error}</ErrorNote>}</AnimatePresence>
 

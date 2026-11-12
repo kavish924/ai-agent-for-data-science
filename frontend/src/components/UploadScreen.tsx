@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useRef, useState } from "react";
 import { api, ApiError, type Session } from "@/lib/api/client";
 import { ErrorNote, Spinner } from "./Shell";

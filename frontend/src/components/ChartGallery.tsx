@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { api, type ChartEntry, type ChartManifest } from "@/lib/api/client";
 
@@ -64,7 +64,7 @@ export function ChartGallery({ sessionId, manifest }: { sessionId: string; manif
               }}
               className="group flex w-full flex-col gap-2 rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-accent"
             >
-              <motion.div layoutId={`chart-${chart.file}`} className="overflow-hidden rounded-lg bg-white">
+              <div className="overflow-hidden rounded-lg bg-white">
                 {/* eslint-disable-next-line @next/next/no-img-element -- plain PNGs from our API; image optimisation is off */}
                 <img
                   src={api.chartUrl(sessionId, chart.file)}
@@ -72,7 +72,7 @@ export function ChartGallery({ sessionId, manifest }: { sessionId: string; manif
                   loading="lazy"
                   className="h-44 w-full object-contain"
                 />
-              </motion.div>
+              </div>
               <span className="flex items-center justify-between gap-2 text-[13px]">
                 <span className="truncate font-medium">{chart.title}</span>
                 {chart.before_overlay && (
@@ -126,10 +126,14 @@ export function ChartGallery({ sessionId, manifest }: { sessionId: string; manif
             exit={{ opacity: 0 }}
             onClick={() => setOpen(null)}
           >
-            <div
+            <motion.div
               role="dialog"
               aria-modal="true"
               aria-label={open.title}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ type: "spring", visualDuration: 0.25, bounce: 0.15 }}
               className="flex max-h-full w-full max-w-4xl flex-col gap-3 rounded-2xl bg-surface p-4"
               onClick={(event) => event.stopPropagation()}
             >
@@ -144,11 +148,11 @@ export function ChartGallery({ sessionId, manifest }: { sessionId: string; manif
                   Close
                 </button>
               </div>
-              <motion.div layoutId={`chart-${open.file}`} className="min-h-0 overflow-auto rounded-lg bg-white">
+              <div className="min-h-0 overflow-auto rounded-lg bg-white">
                 {/* eslint-disable-next-line @next/next/no-img-element -- see above */}
                 <img src={api.chartUrl(sessionId, open.file)} alt={open.title} className="mx-auto max-h-[75vh] w-auto" />
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

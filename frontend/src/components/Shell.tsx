@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export const STEPS = ["Upload", "Profile", "Review plan", "Run", "Download"] as const;
 export type StepName = (typeof STEPS)[number];
@@ -35,10 +35,19 @@ export function Stepper({ current }: { current: StepName }) {
                   <motion.span
                     layoutId="stepper-pill"
                     className="absolute inset-0 rounded-full bg-accent"
-                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
                   />
                 )}
-                <span className="relative">{step}</span>
+                <span className="relative flex items-center gap-1">
+                  {isDone && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12l5 5L20 7" />
+                    </svg>
+                  )}
+                  {step}
+                  {isDone && <span className="sr-only">, done</span>}
+                </span>
               </span>
             </li>
           );
@@ -52,15 +61,25 @@ export function Shell({
   current,
   sessionId,
   onReset,
+  announcement = "",
   children,
 }: {
   current: StepName;
   sessionId?: string | null;
   onReset?: () => void;
+  announcement?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-screen flex-col">
+      <a
+        href="#main"
+        className="sr-only z-50 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ground focus:not-sr-only focus:fixed focus:left-4 focus:top-3"
+      >
+        Skip to main content
+      </a>
+      {/* Screen changes are announced here without moving focus away (FR-RV-21) */}
+      <p role="status" aria-live="polite" className="sr-only">{announcement}</p>
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface px-4 py-3 sm:px-8">
         <button type="button" onClick={onReset} className="flex items-center gap-2.5 rounded-md"
           aria-label="Data Science Agent: start over">
@@ -72,7 +91,7 @@ export function Shell({
           {sessionId ? `session ${sessionId.slice(0, 4)}…${sessionId.slice(-3)}` : " "}
         </span>
       </header>
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">{children}</div>
     </div>
   );
 }
