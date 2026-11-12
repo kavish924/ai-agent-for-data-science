@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m5-ml-baselines` (not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m5-ml-baselines` (pushed: `a031735`, `1d89cd8`)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -19,7 +19,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | graphify tooling | `chore/graphify` | ✅ merged to `main` (PR #3) |
 | M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · in `main` (fast-forward push, user-approved; no PR) |
 | M4 Charts | `m4-charts` | ✅ done · merged to `main` (PR #4) |
-| M5 ML baselines | `m5-ml-baselines` | ✅ done · awaiting PR → `main` |
+| M5 ML baselines | `m5-ml-baselines` | ✅ done · pushed, awaiting PR → `main` |
 | M6 Report + narration | `m6-report` | ⬜ not started |
 | M7 UI polish | `m7-ui-polish` | ⬜ not started |
 | M8 Evaluation + demo | `m8-eval-demo` | ⬜ not started |
@@ -90,7 +90,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Fake-LLM tests for Spec 03 AC-1..11; optional `@pytest.mark.live` Gemini test
 - [x] Spec 10 AC-2 (no data in logs) and AC-5 (LLM failure is recoverable)
 - [x] `smoke_m3.py` (offline fake by default, `--live` for Gemini); added to CI
-- [ ] Run `pytest -m live` and `smoke_m3.py --live` with a real `GEMINI_API_KEY` (user)
+- [x] `pytest -m live` passes against real Gemini (2026-11-12, `gemini-3.5-flash`)
+- [ ] Run `smoke_m3.py --live` on all three samples with the real key
 - [x] Open PR `m3-llm-planner` → `main` and merge it (PR #2)
 
 ## M3.5 — Thin UI slice · branch `m3.5-thin-ui`
@@ -138,6 +139,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Verified through the API on titanic.csv (RF F1 0.801 vs dummy 0.381, 2.3 s)
 - [x] Clicked through in the browser pane: suggestion "Use it" → plan → approve & run → Train → results table (RF Best 0.801, dummy floor 0.381); screen stayed mounted during training
 - [ ] Screenshot review of the model panel layout (the app window stopped drawing before it could be captured)
+- [x] Gemini model fix: `gemini-2.5-flash` returns 404 for new keys → default `gemini-3.5-flash` (`1d89cd8`); `gemini-3.8-flash` was overloaded (503) at the time
+- [x] `.claude/launch.json`: `backend` follows `.env` (Gemini), `backend-offline` for key-free demos
 - [ ] Open PR `m5-ml-baselines` → `main` and merge it (user)
 
 ## M6 — Report + narration · branch `m6-report`
@@ -171,6 +174,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [ ] Titanic `Name` is typed `id_like` (every name is unique) — confirm this is desired
 - [ ] Next.js bundles postcss/sharp with open advisories (build-time CSS only; image optimisation disabled) — bump Next when fixed
 - [x] Frontend tests for M3.5 were written right after the components, not red-first; M4 went back to red-first
-- [ ] Target candidates are "all non-identifier columns"; Spec 07 FR-ML-01 suggestions with reasons come in M5
+- [x] Target candidates are "all non-identifier columns"; Spec 07 FR-ML-01 suggestions with reasons came in M5
 - [x] Split `routers/sessions.py` per stage before M3 to reduce merge conflicts (M3)
+- [ ] Model panel offers targets the executed plan changed (e.g. imputed `Embarked`); the server rejects them with `target_changed_by_plan` — filter them out of the list
+- [ ] Consider moving to `gemini-3.8-flash` once its 503 "high demand" errors stop (one `GEMINI_MODEL` change in `.env`)
 - [ ] Profile doesn't count non-numeric values in numeric columns (Telco `TotalCharges` has 11 blanks), so the planner can't see or fix them — add an `unparseable` count per column
