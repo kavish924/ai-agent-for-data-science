@@ -107,3 +107,13 @@ def test_rp_fr11_prompt_carries_facts_not_data():
     prompt = build_prompt(FACTS, KNOWN)
     assert '"null_cells_before": 866' in prompt
     assert "{{" in prompt  # explains the placeholder syntax
+
+
+def test_rp_ac12_transport_error_backs_off_then_uses_llm(db, monkeypatch):
+    waits: list[float] = []
+    monkeypatch.setattr("app.llm.client._sleep", waits.append)
+    monkeypatch.setattr("app.config.settings.llm_retry_backoff_s", 2.0)
+    narration = _narrate(db, ScriptedLLM([LLMError("gemini API error 503", status=503), GOOD]))
+    assert narration.source == "llm"
+    assert waits == [2.0]
+    assert [c["error"] for c in session_store.list_llm_calls(db, "sid")] == ["transport:503", None]

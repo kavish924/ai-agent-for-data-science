@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m7-ui-polish` (not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m8-eval-demo` (not pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -21,8 +21,8 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M4 Charts | `m4-charts` | ✅ done · merged to `main` (PR #4) |
 | M5 ML baselines | `m5-ml-baselines` | ✅ done · in `main` (fast-forward push `62d4c5e..6707cec`, user-approved; no PR) |
 | M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
-| M7 UI polish | `m7-ui-polish` | ✅ done · awaiting PR → `main` |
-| M8 Evaluation + demo | `m8-eval-demo` | ⬜ not started |
+| M7 UI polish | `m7-ui-polish` | ✅ done · in `main` (fast-forward push `3cbc717..b7febdb`, user-approved; no PR) |
+| M8 Evaluation + demo | `m8-eval-demo` | ✅ done · awaiting PR → `main` (full live eval pending Gemini quota) |
 
 ---
 
@@ -174,20 +174,27 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Visual pass, part 1 (browser pane): Download screen with tabs, badges, step checkmarks and shortcuts; keyboard ArrowRight moves tab + `?tab=`; fixed a stray tab-bar scrollbar and a clipped tab focus ring
 - [x] Visual pass, part 2: Charts thumbnails, Models table and the embedded report all render; found and fixed the report frame being blocked by the Claude app's browser (`sandbox=""` → `allow-same-origin`, still no scripts)
 - [ ] Plan history panel not yet seen in the browser (covered by its component test)
-- [ ] Open PR `m7-ui-polish` → `main` and merge it (user)
+- [x] Into `main` by a user-approved fast-forward push (`3cbc717..b7febdb`); no PR record
 
 ## M8 — Evaluation + demo · branch `m8-eval-demo`
 
-- [ ] `backend/eval/` harness on titanic / housing / telco with the live LLM
-- [ ] Metrics: schema-validity rate, plan quality (golden ops), approval rate, time to report
-- [ ] Reproducibility: double-run byte-identical cleaned CSV and report
-- [ ] Spec 10 AC-6 performance baseline
-- [ ] README, demo script, screenshots
+- [x] Spec 10 NFR-09..12 + AC-8..10 (AC-1, AC-6 via the harness); Spec 03 FR-PL-18 + AC-13; Spec 08 FR-RP-17 + AC-12. Tests written first
+- [x] `backend/eval/`: in-process harness through the real API (`python -m eval.run [--live]`), golden expectations (`golden.json`), JSON + Markdown results
+- [x] Metrics: schema validity (first attempt), plan quality (sensible = expected present, nothing forbidden), approval rate (golden reviewer), time to report + stage times, transport errors counted apart
+- [x] Reproducibility: executed plan replayed in a fresh session → cleaned CSV, chart PNGs, model scores identical; report re-render identical; report across sessions identical (template narration, session id masked). All 3 samples pass
+- [x] Performance baseline: 100,000 × 21 Telco fixture (13 MB): upload+profile 11.3 s, execute (+re-profile, charts) 19.6 s; budget 60 s each
+- [x] Offline eval on all 3 samples: 3/3 sensible, 100% first-attempt validity, 100% approval (`eval/results/offline.md`)
+- [x] Live eval run 1 (Gemini): Titanic and Housing sensible, Telco planning failed on transient transport errors → **fix: backoff between transport retries + HTTP status in `llm_calls`** (FR-PL-18, FR-RP-17)
+- [ ] Full live eval with the backoff (run 2 hit HTTP 429 `RESOURCE_EXHAUSTED`: key quota used up). Re-run `python -m eval.run --live` after the quota resets
+- [x] Root `README.md` (setup, eval, development) and `docs/demo.md` (8-minute walkthrough + likely questions)
+- [ ] Screenshots for the README (the browser pane can't save image files; take them by hand or add a Playwright script)
+- [ ] Open PR `m8-eval-demo` → `main` and merge it (user)
 
 ## Known follow-ups / tech debt
 
 - [ ] SQLite open/close per call is slow on Windows (~1 s per API flow in tests); consider WAL or a pooled connection
 - [ ] Rotating log handler keeps `app.log` open (temp-dir cleanup on Windows)
+- [ ] A 429 for a used-up *quota* (not a rate limit) can't be fixed by retrying; consider failing fast on `RESOURCE_EXHAUSTED` with a clearer message
 - [ ] Don't run `npm run build` while `npm run dev` is running: both write `frontend/.next` and the dev server breaks (500s) until restarted
 - [ ] Titanic `Name` is typed `id_like` (every name is unique) — confirm this is desired
 - [ ] Next.js bundles postcss/sharp with open advisories (build-time CSS only; image optimisation disabled) — bump Next when fixed

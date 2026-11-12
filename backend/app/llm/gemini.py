@@ -35,7 +35,9 @@ class GeminiClient:
                 model=self.model, contents=prompt, config=config
             )
         except errors.APIError as exc:  # 4xx/5xx from the API
-            raise LLMError(f"gemini API error {getattr(exc, 'code', '?')}") from exc
+            code = getattr(exc, "code", None)
+            raise LLMError(f"gemini API error {code or '?'}",
+                           status=code if isinstance(code, int) else None) from exc
         except Exception as exc:  # network, timeout, SDK errors
             raise LLMError(f"gemini call failed: {type(exc).__name__}") from exc
 

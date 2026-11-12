@@ -18,7 +18,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from ..db import session_store
-from ..llm.client import LLMClient, LLMError
+from ..llm.client import LLMClient, LLMError, backoff, transport_error_class
 from ..llm.prompts import SYSTEM_PROMPT, build_plan_prompt
 from ..schemas.plan import PlanIn
 from .gate import validate_plan
@@ -113,7 +113,7 @@ def generate_plan(
             plan = _parse(response.text)
             _check(plan, profile, target)
         except LLMError as exc:  # FR-PL-16: transport failures use the same budget
-            error_class = f"transport:{type(exc).__name__}"
+            error_class = transport_error_class(exc)
             issues = ["the previous request failed; please answer again"]
             plan = None
         except _Rejected as exc:
@@ -134,5 +134,7 @@ def generate_plan(
         )
         if plan is not None:
             return plan
+        if error_class and error_class.startswith("transport:") and attempt < attempts:
+            backoff(attempt)  # FR-PL-18: give a busy provider time before the next try
 
     raise PlanningFailed(attempts, issues)

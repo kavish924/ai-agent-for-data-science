@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-3.5-flash"  # 2.5 retired for new keys (404, 2026-11)
     llm_timeout_s: float = 60.0  # per LLM call
+    llm_retry_backoff_s: float = 2.0  # Spec 03 FR-PL-18: wait after a transport failure, doubling
 
 
 settings = Settings()

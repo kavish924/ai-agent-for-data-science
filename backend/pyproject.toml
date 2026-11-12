@@ -43,7 +43,7 @@ ignore = ["B008"]  # FastAPI's File(...)/Body(...) defaults are idiomatic
 
 [tool.mypy]
 python_version = "3.11"
-files = ["app"]
+files = ["app", "eval"]
 ignore_missing_imports = true
 warn_unused_ignores = true
 check_untyped_defs = true
@@ -51,6 +51,9 @@ check_untyped_defs = true
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]  # eval/ is run in place (python -m eval.run), not installed
 
 [tool.setuptools.package-data]
 app = ["templates/*.j2"]

@@ -33,6 +33,7 @@
 | 03 | AC-10 | `test_pl_ac10_prompt_has_no_raw_text_or_id_values`, `test_pl_ac10_retry_prompt_lists_previous_issues` | `llm/prompts.py` |
 | 03 | AC-11 | `test_pl_ac11_transport_error_then_success` | `services/planner.py` |
 | 03 | AC-12 | `test_pl_ac12_offline_provider_plans_without_a_key` | `routers/plans.py`, `llm/fake.py` |
+| 03 | AC-13 | `test_pl_ac13_transport_errors_back_off_then_succeed`, `test_pl_ac13_gate_rejection_is_reprompted_without_waiting`, `test_pl_ac13_no_wait_after_the_last_attempt` | `services/planner.py`, `llm/client.py` (`backoff`), `llm/gemini.py` |
 | 03 | AC-7 | `test_pl_ac7_column_dropped_earlier_is_rejected`, `test_pl_ac7_cast_changes_type_for_later_steps` | `services/gate.py` |
 | 03 | AC-8 | `test_pl_ac8_target_cannot_be_imputed`, `test_pl_ac8_target_cannot_be_dropped`, `test_pl_ac8_plan_cannot_touch_target` | `services/gate.py` |
 | 04 | AC-1 | `test_rv_ac1_renders_every_step_in_order` | `frontend: PlanReview.tsx` |
@@ -95,6 +96,7 @@
 | 08 | AC-9 | `test_rp_ac9_rerender_is_byte_identical_and_offline` | `services/reporter.py` |
 | 08 | AC-10 | `test_rp_ac10_no_model_run_says_training_skipped` | `templates/report.html.j2` |
 | 08 | AC-11 | `test_rp_ac11_create_report_before_one_exists`, `test_rp_ac11_links_and_summary_source_once_reported` | `frontend: ReportPanel.tsx` |
+| 08 | AC-12 | `test_rp_ac12_transport_error_backs_off_then_uses_llm` | `services/narrator.py` |
 | 09 | AC-1 | `test_file_too_large_413`, `test_get_plan_before_created_409`, `test_ap_ac6_execute_before_approve_is_409`, `test_ap_ac9_cleaned_csv_download` | `routers/sessions.py` |
 | 09 | AC-2 | `test_unknown_session_404_with_envelope`, `test_missing_file_422` | `errors.py` |
 | 09 | AC-3 | `test_ap_ac3_review_edits_are_regated` | `routers/sessions.py` |
@@ -108,10 +110,13 @@
 | 09 | AC-11 | `test_ap_ac11_chart_endpoints` | `routers/execution.py` |
 | 09 | AC-12 | `test_ap_ac12_model_and_targets_endpoints` | `routers/models.py` |
 | 09 | AC-13 | `test_ap_ac13_report_and_bundle_endpoints` | `routers/reports.py` |
-| 10 | AC-1 | pending (M8 harness); parts covered today: cleaned CSV by `test_deterministic_outputs_across_sessions`, chart bytes by `test_ch_ac4_png_bytes_are_deterministic`, model scores by `test_ml_ac5_scores_are_reproducible` | — |
+| 10 | AC-1 | `test_nfr_ac1_replayed_plan_is_byte_identical` (also `test_deterministic_outputs_across_sessions`, `test_ch_ac4_png_bytes_are_deterministic`, `test_ml_ac5_scores_are_reproducible`) | `eval/harness.py` |
 | 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |
 | 10 | AC-4 | `test_nfr_ac4_one_completion_line_per_stage` | `routers/plans.py`, `services/reporter.py` |
 | 10 | AC-5 | `test_nfr_ac5_llm_failure_is_visible_and_recoverable` | `routers/plans.py` |
-| 10 | AC-6 | pending (M8) | — |
+| 10 | AC-6 | `test_nfr_ac6_performance_baseline_is_recorded` | `eval/harness.py` (`perf_baseline`) |
 | 10 | AC-7 | `test_nfr_ac7_inflight_sessions_recovered_on_startup` | `db/session_store.py` (`recover_inflight`) |
+| 10 | AC-8 | `test_nfr_ac8_matching_by_column_drop_list_and_wildcard`, `test_nfr_ac8_sensible_plan_and_scripted_review`, `test_nfr_ac8_missing_or_forbidden_steps_are_not_sensible`, `test_nfr_ac8_empty_expectations_and_empty_plan` | `eval/metrics.py`, `eval/golden.json` |
+| 10 | AC-9 | `test_nfr_ac9_summary_metrics` | `eval/metrics.py` |
+| 10 | AC-10 | `test_nfr_ac10_offline_eval_runs_every_stage_and_writes_results` | `eval/harness.py`, `eval/run.py` |

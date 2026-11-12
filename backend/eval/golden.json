@@ -1,0 +1,65 @@
+{
+  "_doc": "Golden plan expectations per sample (Spec 10 NFR-10). A step matches an entry when the op is equal and the entry's column is the step's column, is listed in a drop_column's columns, or is '*'. expected: a sensible plan must contain it. acceptable: a reviewer would approve it. forbidden: a sensible plan must not propose it.",
+  "datasets": {
+    "titanic.csv": {
+      "target": "Survived",
+      "expected": [
+        {"op": "impute", "column": "Age", "why": "~20% missing, an important predictor"},
+        {"op": "impute", "column": "Embarked", "why": "2 missing values in a categorical"},
+        {"op": "drop_column", "column": "Cabin", "why": "~77% missing"}
+      ],
+      "acceptable": [
+        {"op": "drop_duplicates", "column": "*"},
+        {"op": "drop_column", "column": "PassengerId"},
+        {"op": "drop_column", "column": "Name"},
+        {"op": "drop_column", "column": "Ticket"},
+        {"op": "clip_outliers", "column": "Fare"},
+        {"op": "clip_outliers", "column": "Age"},
+        {"op": "standardize_text", "column": "*"},
+        {"op": "cast_type", "column": "Pclass"}
+      ],
+      "forbidden": [
+        {"op": "drop_column", "column": "Sex", "why": "the strongest predictor"},
+        {"op": "drop_column", "column": "Pclass"},
+        {"op": "drop_column", "column": "Age"},
+        {"op": "drop_column", "column": "Fare"}
+      ]
+    },
+    "housing.csv": {
+      "target": "median_house_value",
+      "expected": [
+        {"op": "impute", "column": "total_bedrooms", "why": "207 missing values"}
+      ],
+      "acceptable": [
+        {"op": "drop_duplicates", "column": "*"},
+        {"op": "clip_outliers", "column": "*"},
+        {"op": "standardize_text", "column": "ocean_proximity"},
+        {"op": "cast_type", "column": "ocean_proximity"}
+      ],
+      "forbidden": [
+        {"op": "drop_column", "column": "median_income", "why": "the strongest predictor"},
+        {"op": "drop_column", "column": "ocean_proximity"},
+        {"op": "drop_column", "column": "total_bedrooms", "why": "only 1% missing: impute, don't drop"}
+      ]
+    },
+    "telco_churn.csv": {
+      "target": "Churn",
+      "expected": [],
+      "acceptable": [
+        {"op": "drop_duplicates", "column": "*"},
+        {"op": "drop_column", "column": "customerID"},
+        {"op": "cast_type", "column": "TotalCharges"},
+        {"op": "impute", "column": "TotalCharges"},
+        {"op": "cast_type", "column": "SeniorCitizen"},
+        {"op": "standardize_text", "column": "*"},
+        {"op": "clip_outliers", "column": "*"}
+      ],
+      "forbidden": [
+        {"op": "drop_column", "column": "tenure", "why": "a strong churn predictor"},
+        {"op": "drop_column", "column": "Contract"},
+        {"op": "drop_column", "column": "MonthlyCharges"},
+        {"op": "drop_column", "column": "TotalCharges"}
+      ]
+    }
+  }
+}
