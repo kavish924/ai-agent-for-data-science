@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m8-eval-demo` (not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `chore/checklist-m8-merged`
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -22,7 +22,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M5 ML baselines | `m5-ml-baselines` | ✅ done · in `main` (fast-forward push `62d4c5e..6707cec`, user-approved; no PR) |
 | M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
 | M7 UI polish | `m7-ui-polish` | ✅ done · in `main` (fast-forward push `3cbc717..b7febdb`, user-approved; no PR) |
-| M8 Evaluation + demo | `m8-eval-demo` | ✅ done · awaiting PR → `main` (full live eval pending Gemini quota) |
+| M8 Evaluation + demo | `m8-eval-demo` | ✅ done · merged to `main` (PR #6; full live eval pending Gemini quota) |
 
 ---
 
@@ -35,7 +35,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Branching rule: never commit/push to `main`; one branch per milestone, merged by PR
 - [x] This checklist
 - [x] Open PR `m0-hardening` → `main` and merge it (PR #1)
-- [ ] First green CI run on GitHub (M3.5 reached `main` without a PR, so check the Actions tab for its push run)
+- [x] Green CI run on GitHub: PR #6 (backend + frontend) on 2026-11-12
 
 ## M1 — Ingestion + profiler *(done before M0)*
 
@@ -188,7 +188,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [ ] Full live eval with the backoff (run 2 hit HTTP 429 `RESOURCE_EXHAUSTED`: key quota used up). Re-run `python -m eval.run --live` after the quota resets
 - [x] Root `README.md` (setup, eval, development) and `docs/demo.md` (8-minute walkthrough + likely questions)
 - [ ] Screenshots for the README (the browser pane can't save image files; take them by hand or add a Playwright script)
-- [ ] Open PR `m8-eval-demo` → `main` and merge it (user)
+- [x] Merged to `main` (PR #6); CI green (backend + frontend) after a packaging fix (`517b747`)
 
 ## Known follow-ups / tech debt
 
