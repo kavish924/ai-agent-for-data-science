@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `m6-report` (not pushed)
+> **Last updated:** 2026-11-12 · **Current branch:** `m7-ui-polish` (not pushed)
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -20,7 +20,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M3.5 Thin UI slice | `m3.5-thin-ui` | ✅ done · in `main` (fast-forward push, user-approved; no PR) |
 | M4 Charts | `m4-charts` | ✅ done · merged to `main` (PR #4) |
 | M5 ML baselines | `m5-ml-baselines` | ✅ done · in `main` (fast-forward push `62d4c5e..6707cec`, user-approved; no PR) |
-| M6 Report + narration | `m6-report` | ✅ done · awaiting PR → `main` |
+| M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
 | M7 UI polish | `m7-ui-polish` | ⬜ not started |
 | M8 Evaluation + demo | `m8-eval-demo` | ⬜ not started |
 
@@ -157,7 +157,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] UI: Process report card (Create report → Open report / Download all (.zip), summary source, Rewrite summary)
 - [x] Live with real Gemini on titanic.csv: plan 9.8 s, narration passed the gate first try (7.3 s); every figure matches the artifacts
 - [ ] Click-through of the report card in the app UI (the pane was hidden; the report page itself was checked visually)
-- [ ] Open PR `m6-report` → `main` and merge it (user)
+- [x] Merged to `main` (PR #5)
 
 ## M7 — UI polish · branch `m7-ui-polish`
 
