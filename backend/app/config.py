@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     # LLM: Google Gemini, used from M3 (Spec 03)
     llm_provider: Literal["gemini", "offline"] = "gemini"  # Spec 03 FR-PL-17
     gemini_api_key: str | None = None
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.5-flash"  # 2.5 retired for new keys (404, 2026-11)
     llm_timeout_s: float = 60.0  # per LLM call
 
 

@@ -11,7 +11,7 @@
 | Data processing | **pandas** | 2.x | Deterministic cleaning execution |
 | ML | **scikit-learn** | 1.5+ | Baselines + `cross_validate` + leakage-safe `Pipeline` |
 | Charts | **matplotlib** | 3.x | Histograms, box plots, heatmap, missingness map, top categories (PNG artifacts) |
-| LLM | **Google Gemini API** (`google-genai` SDK) | gemini-2.5-flash default | Structured JSON output (response schema + JSON mime type) for planning and narration; model configurable via env |
+| LLM | **Google Gemini API** (`google-genai` SDK) | gemini-3.5-flash default | Structured JSON output (response schema + JSON mime type) for planning and narration; model configurable via env |
 | Validation | **Pydantic v2** | 2.x | Schema gate on all LLM output; whitelist enforcement (ships inside FastAPI) |
 | Metadata DB | **SQLite** | 3.x | Zero-ops session store; interface allows Postgres swap |
 | Artifact store | **Filesystem** | — | `storage/sessions/{id}/…`; interface allows object-store swap |
@@ -61,7 +61,7 @@ ai-agent-for-datascience/
 ```bash
 # .env.example
 GEMINI_API_KEY=...               # required from M3 (planner/narrator)
-GEMINI_MODEL=gemini-2.5-flash    # configurable, not hard-coded
+GEMINI_MODEL=gemini-3.5-flash    # configurable, not hard-coded
 MAX_FILE_SIZE_MB=25              # PRD §6.1 limits
 MAX_ROWS=100000
 MAX_CHARTS=12                    # PRD §6.6 cap

@@ -31,7 +31,8 @@ All from `backend/` with the venv's tools; CI (`.github/workflows/ci.yml`) runs 
 - Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`
   green; after any backend API change run `npm run gen:api` and commit the regenerated types
 - UI changes are checked in the browser pane: `.claude/launch.json` starts `backend`
-  (offline planner) and `frontend`
+  (planner per `.env`, Gemini by default), `backend-offline` (no key needed) and `frontend`
+- The Gemini key goes in the repo-root `.env` (gitignored), never in `.env.example` (tracked)
 
 ## Branching & progress tracking
 
