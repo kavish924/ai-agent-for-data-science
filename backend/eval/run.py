@@ -4,6 +4,8 @@ Usage (from backend/):
     python -m eval.run                 # offline: deterministic RuleBasedLLM, no key needed
     python -m eval.run --live          # real Gemini (GEMINI_API_KEY in the repo-root .env)
     python -m eval.run --only titanic.csv --perf-rows 0
+    python -m eval.run --live --cache eval/cache --min-interval 6   # record/replay (NFR-13)
+    python -m eval.run --live --cache eval/cache --replay-only      # rerun with zero API calls
 
 Writes eval/results/<offline|live>.json and .md. Storage is a temporary directory, so
 the eval never touches the app's real sessions.
@@ -34,6 +36,11 @@ def main(argv: list[str] | None = None) -> int:
                         help=f"rows for the performance fixture (default {settings.max_rows}; 0 skips)")
     parser.add_argument("--no-replay", action="store_true", help="skip the reproducibility replay")
     parser.add_argument("--out", type=Path, default=harness.EVAL_DIR / "results")
+    parser.add_argument("--cache", type=Path, help="record/replay LLM answers in this directory (NFR-13)")
+    parser.add_argument("--run-tag", default="", help="part of the cache key, to keep repeated runs distinct")
+    parser.add_argument("--replay-only", action="store_true", help="with --cache: a miss fails, no API call")
+    parser.add_argument("--min-interval", type=float, default=0.0,
+                        help="with --cache: seconds between provider calls (free-tier pacing)")
     args = parser.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):  # Windows consoles default to cp1252
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -58,8 +65,14 @@ def main(argv: list[str] | None = None) -> int:
         from app.routers.plans import get_llm
 
         app = create_app()
-        if not args.live:
-            app.dependency_overrides[get_llm] = RuleBasedLLM
+        llm = RuleBasedLLM() if not args.live else get_llm()
+        cached = None
+        if args.cache and llm is not None:
+            from .llm_cache import CachingLLM
+
+            llm = cached = CachingLLM(llm, args.cache, run_tag=args.run_tag,
+                                      replay_only=args.replay_only, min_interval_s=args.min_interval)
+        app.dependency_overrides[get_llm] = lambda: llm
         with TestClient(app) as client:
             datasets = []
             for name in names:
@@ -79,6 +92,8 @@ def main(argv: list[str] | None = None) -> int:
         "summary": metrics.summarize(datasets),
         "datasets": datasets,
         "perf": perf,
+        "llm_cache": cached.stats() if cached else None,
+        "run_tag": args.run_tag or None,
         "environment": f"Python {platform.python_version()} on {platform.system()} {platform.release()}",
     }
     json_path, md_path = harness.write_results(report, args.out)

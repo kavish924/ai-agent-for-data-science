@@ -120,3 +120,6 @@
 | 10 | AC-8 | `test_nfr_ac8_matching_by_column_drop_list_and_wildcard`, `test_nfr_ac8_sensible_plan_and_scripted_review`, `test_nfr_ac8_missing_or_forbidden_steps_are_not_sensible`, `test_nfr_ac8_empty_expectations_and_empty_plan` | `eval/metrics.py`, `eval/golden.json` |
 | 10 | AC-9 | `test_nfr_ac9_summary_metrics` | `eval/metrics.py` |
 | 10 | AC-10 | `test_nfr_ac10_offline_eval_runs_every_stage_and_writes_results` | `eval/harness.py`, `eval/run.py` |
+| 10 | AC-11 | `test_nfr_ac11_hit_does_not_call_provider`, `test_nfr_ac11_run_tag_and_prompt_change_the_key`, `test_nfr_ac11_transport_errors_are_not_cached`, `test_nfr_ac11_replay_only_miss_raises_without_calling`, `test_nfr_ac11_cache_file_holds_no_prompt`, `test_nfr_ac11_min_interval_between_provider_calls_only` | `eval/llm_cache.py`, `eval/run.py` |
+| 10 | AC-12 | `test_nfr_ac12_precision_recall_f1_forbidden_rate`, `test_nfr_ac12_empty_plan_and_zero_cases`, `test_nfr_ac12_summary_mean_f1_and_pooled_forbidden_rate` | `eval/metrics.py` |
+| 10 | AC-13 | `test_nfr_ac13_bootstrap_ci_is_seeded_and_contains_mean`, `test_nfr_ac13_cohen_kappa` | `eval/metrics.py` |

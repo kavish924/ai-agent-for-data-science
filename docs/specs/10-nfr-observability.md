@@ -1,6 +1,6 @@
 # Spec 10 — Non-Functional Requirements & Observability
 
-> **Status:** Done · **Source:** PRD §7, §9, §10 · **Milestone:** cross-cutting (M1–M8)
+> **Status:** Done · **Source:** PRD §7, §9, §10 · **Milestone:** cross-cutting (M1–M9)
 
 ## Purpose
 
@@ -29,6 +29,8 @@ measurable against PRD §9 success metrics.
 | NFR-10 **Eval metrics** | *(M8)* Computed per dataset and overall. **Schema validity** = planner runs whose first attempt passed / planner runs (from `llm_calls`). Planner attempts that failed in transport are counted separately (`transport_errors`), so an API outage is not read as a bad plan. **Plan quality**: a plan is *sensible* when every golden `expected` step is present and no `forbidden` step is proposed; reported with expected-step recall. **Approval rate** = steps the scripted reviewer approves unedited / steps proposed; the reviewer approves a step that matches `expected` or `acceptable` and nothing `forbidden`. **Time to report** = wall time from upload to report, with per-stage times. A golden entry matches a step when the ops are equal and the entry's column is the step's column, is listed in a `drop_column`'s `columns`, or is `*`. |
 | NFR-11 **Reproducibility harness** | *(M8)* Each eval run replays the executed steps as a manual plan in a fresh session. The cleaned CSV, every chart PNG and the model scores must be identical (bytes or values). Re-rendering the report in the original session must be byte-identical. Across sessions, the report must be identical after masking the session id whenever both narrations come from the template (LLM narration is a stored artifact per session, NFR-01). |
 | NFR-12 **Performance baseline** | *(M8)* The eval records upload+profile and execute times for a max-size fixture (Telco rows repeated up to `MAX_ROWS`) against a 60 s budget each. Recorded, not enforced in CI. |
+| NFR-13 **LLM record/replay cache** | *(M9)* The eval can wrap any `LLMClient` in a disk cache (`eval/llm_cache.py`, `--cache DIR`). The key is the SHA-256 of model, system prompt, prompt and a run tag (`--run-tag`, so repeated runs can be distinct). A hit returns the stored response without calling the provider; a miss calls it, stores the answer and waits at least `--min-interval` seconds since the previous provider call (free-tier pacing). Transport errors are never cached. With `--replay-only` a miss raises `LLMError("cache:miss")` instead of calling the provider, so a rerun is provably free. Each cache file holds only the key, the model, the response text and token counts: no prompt. Hits and misses are counted in the results. |
+| NFR-14 **Paper metrics** | *(M9)* Per dataset, besides NFR-10: **precision** = steps the golden reviewer approves / steps proposed (equals the approval rate; 1.0 for an empty plan), **recall** = expected-step recall, **F1** = their harmonic mean (0 when both are 0), **forbidden rate** = proposed steps matching `forbidden` / steps proposed (0 for an empty plan). Overall: mean F1 and pooled forbidden rate. Helpers: a seeded percentile **bootstrap CI** of a mean (default 2,000 resamples, 95%), and **Cohen's κ** for two annotators' binary labels (1.0 when both label sets are constant and equal). |
 | NFR-08 **Retention sweep** | *(M0)* The retention sweep runs at startup and then every `RETENTION_SWEEP_MINUTES` (default 60); it deletes the DB row and the whole session directory and logs `retention.sweep`. |
 
 ### Log event catalog
@@ -75,6 +77,16 @@ measurable against PRD §9 success metrics.
   from `llm_calls`).
 - **AC-10** *(M8)* Given the offline LLM, when the eval runs on a sample, then every stage completes,
   each metric and stage time is recorded, and the JSON and Markdown results are written.
+- **AC-11** *(M9)* Given a cached LLM, when the same request is made twice, then the provider is called
+  once and the second answer comes from disk; a transport error is not cached; in replay-only mode a
+  miss raises `LLMError("cache:miss")` without calling the provider; a cache file holds no prompt text;
+  the minimum interval is waited between provider calls but not for hits (NFR-13).
+- **AC-12** *(M9)* Given a plan and a golden entry, when it is scored, then precision, recall, F1 and
+  forbidden rate follow NFR-14, including the empty-plan and zero cases; the summary reports mean F1 and
+  the pooled forbidden rate.
+- **AC-13** *(M9)* Given values, when a bootstrap CI is computed with a seed, then it is deterministic and
+  contains the mean; given two annotators' labels, Cohen's κ is 1.0 for identical labels, 0 for chance
+  agreement and matches a hand-computed value (NFR-14).
 - **AC-7** *(M0)* Given a session stored in `executing` and one in `uploaded` with no
   profile, when the app starts, then the first is `awaiting_approval` with
   `failed_stage=execute` and the second has an error with `failed_stage=profile`.
@@ -113,6 +125,8 @@ measurable against PRD §9 success metrics.
 - [x] NFR-11 reproducibility replay (AC-1) (M8)
 - [x] NFR-12 performance baseline (AC-6) (M8)
 - [x] Offline eval results recorded (AC-10) (M8)
+- [x] NFR-13 LLM record/replay cache (AC-11) (M9)
+- [x] NFR-14 paper metrics (AC-12, AC-13) (M9)
 - [ ] Full live eval results (`--live`), blocked by the Gemini key's quota (429) on 2026-11-12
 
 ## Changelog
@@ -121,3 +135,5 @@ measurable against PRD §9 success metrics.
 - 2026-11-11 — M3: AC-2 and AC-5 pass.
 - 2026-11-12 — M8 (Approved): added NFR-09..12 (eval harness, metrics, reproducibility replay, performance baseline) and AC-8..10; AC-1 and AC-6 are now met through the harness.
 - 2026-11-12 — M8 complete: AC-1..10 pass. Offline eval on all samples recorded in `backend/eval/results/offline.md` (100k-row baseline: profile 11 s, execute 20 s).
+- 2026-11-24 — M9 (Approved): added NFR-13 (LLM record/replay cache) and NFR-14 (paper metrics: precision/recall/F1, forbidden rate, bootstrap CI, Cohen's κ) with AC-11..13, for the paper evaluation.
+- 2026-11-24 — M9 step 1: AC-11..13 pass; `eval.run` gains `--cache`, `--run-tag`, `--replay-only`, `--min-interval` and records cache hits/misses.

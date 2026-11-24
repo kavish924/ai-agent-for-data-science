@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+import random
+from collections.abc import Iterable, Sequence
 from statistics import mean
 from typing import Any
 
@@ -33,6 +34,10 @@ def _bare(entry: Entry) -> Entry:
     return {"op": entry["op"], "column": entry.get("column", "*")}
 
 
+def _f1(precision: float, recall: float) -> float:
+    return 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+
+
 def score_plan(steps: list[Step], golden: dict[str, Any]) -> dict[str, Any]:
     """Score proposed steps against a golden entry and decide the scripted review."""
     expected, acceptable, forbidden = (golden.get(k, []) for k in ("expected", "acceptable", "forbidden"))
@@ -45,8 +50,14 @@ def score_plan(steps: list[Step], golden: dict[str, Any]) -> dict[str, Any]:
         review.append({"step_id": s.get("step_id"), "op": s["op"], "columns": step_columns(s),
                        "decision": "approve" if ok else "skip"})
     approved = sum(r["decision"] == "approve" for r in review)
+    recall = 1.0 if not expected else (len(expected) - len(missing)) / len(expected)
+    precision = approved / len(steps) if steps else 1.0
     return {
-        "expected_recall": 1.0 if not expected else round((len(expected) - len(missing)) / len(expected), 4),
+        "expected_recall": round(recall, 4),
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(_f1(precision, recall), 4),
+        "forbidden_rate": round(len(forbidden_hits) / len(steps), 4) if steps else 0.0,
         "missing": missing,
         "forbidden_hits": forbidden_hits,
         "sensible": not missing and not forbidden_hits,
@@ -74,4 +85,35 @@ def summarize(datasets: list[dict[str, Any]]) -> dict[str, Any]:
         "transport_errors": sum(str(c.get("error") or "").startswith("transport:")
                                 for d in planned for c in d["planner_calls"]),
         "mean_time_to_report_ms": int(mean(times)) if times else None,
+        "mean_f1": round(mean(s["f1"] for s in scored if "f1" in s), 4)
+                   if any("f1" in s for s in scored) else None,
+        "forbidden_rate": round(sum(len(s.get("forbidden_hits", [])) for s in scored) / proposed, 4)
+                          if proposed else None,
     }
+
+
+def bootstrap_ci(values: Sequence[float], *, n: int = 2000, alpha: float = 0.05,
+                 seed: int = 0) -> tuple[float, float, float]:
+    """NFR-14: (mean, low, high) percentile bootstrap CI of the mean; deterministic per seed."""
+    if not values:
+        raise ValueError("bootstrap_ci needs at least one value")
+    rng = random.Random(seed)
+    k = len(values)
+    means = sorted(sum(rng.choices(values, k=k)) / k for _ in range(n))
+    lo = means[int(alpha / 2 * (n - 1))]
+    hi = means[int(round((1 - alpha / 2) * (n - 1)))]
+    m = sum(values) / k
+    return m, min(lo, m), max(hi, m)
+
+
+def cohen_kappa(a: Sequence[bool], b: Sequence[bool]) -> float:
+    """NFR-14: Cohen's kappa for two annotators' binary labels."""
+    if len(a) != len(b) or not a:
+        raise ValueError("cohen_kappa needs two non-empty label lists of equal length")
+    k = len(a)
+    po = sum(x == y for x, y in zip(a, b, strict=True)) / k
+    pa, pb = sum(a) / k, sum(b) / k
+    pe = pa * pb + (1 - pa) * (1 - pb)
+    if pe == 1.0:
+        return 1.0 if po == 1.0 else 0.0
+    return (po - pe) / (1 - pe)
