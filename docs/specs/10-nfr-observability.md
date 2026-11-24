@@ -162,3 +162,4 @@ measurable against PRD §9 success metrics.
 - 2026-11-24 — M9 step 1: AC-11..13 pass; `eval.run` gains `--cache`, `--run-tag`, `--replay-only`, `--min-interval` and records cache hits/misses.
 - 2026-11-24 — M9 benchmark (Approved): added NFR-15 (manifest + OpenML fetcher), NFR-16 (seeded corruption generator with exact ground truth), NFR-17 (eval on any golden file) and AC-14..18.
 - 2026-11-24 — M9 benchmark: AC-14..18 pass. First offline run on 9 corrupted samples (3 seeds): rule-based planner mean F1 0.62, approval 100%, 0% forbidden, 0/9 sensible. The run exposed two generator bugs, fixed under AC-16: a forbidden-to-drop column made heavily missing, and outliers injected into a 0/1 column.
+- 2026-11-24 — M9 fetch: all 16 manifest ids pass the OpenML name check; hashes and licences recorded. The fetcher falls back to scikit-learn's `liac-arff` parser when the pandas parser fails on numeric category labels under pandas 3 (9 of 16 datasets).

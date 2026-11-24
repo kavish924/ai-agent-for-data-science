@@ -44,7 +44,12 @@ def load_manifest(path: Path = MANIFEST) -> list[dict[str, Any]]:
 def openml_fetcher(openml_id: int) -> tuple[str, pd.DataFrame, str | None]:
     from sklearn.datasets import fetch_openml  # network access, only when really fetching
 
-    bunch = fetch_openml(data_id=openml_id, as_frame=True, parser="auto")
+    try:
+        bunch = fetch_openml(data_id=openml_id, as_frame=True, parser="auto")
+    except TypeError:
+        # scikit-learn 1.9's pandas ARFF parser fails on numeric category labels under
+        # pandas 3 ("expected string ... got 'int'"); the pure-Python parser works.
+        bunch = fetch_openml(data_id=openml_id, as_frame=True, parser="liac-arff")
     return str(bunch.details["name"]), bunch.frame, bunch.details.get("licence")
 
 

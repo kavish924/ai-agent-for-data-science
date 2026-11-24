@@ -204,7 +204,7 @@ RQ5 ablations, RQ6 cost.
 - [x] Manifest of 16 OpenML datasets (12 classification, 4 regression) + fetcher with name/target/sha256 checks (`python -m eval.fetch_datasets`)
 - [x] `eval.run --golden/--data-dir` scores any benchmark; results go next to the benchmark, not over `eval/results/`
 - [x] Offline baseline on 9 corrupted samples (3 seeds): rule-based planner F1 0.62, 0/9 sensible, 0% forbidden
-- [ ] Fetch the OpenML datasets (`--record-hashes`), fix any id the name check rejects, commit the manifest hashes
+- [x] Fetched all 16 OpenML datasets (every id passed the name check); hashes + licences in the manifest. `house-prices` reports licence "NA": check before redistributing
 - [ ] Natural (uncorrupted) golden plans for the OpenML datasets + second annotator (κ)
 - [ ] RQ2 downstream utility: raw vs agent vs golden vs baseline-cleaned CV scores
 - [ ] Code-generating LLM baseline (sandboxed) scored with the same metrics
