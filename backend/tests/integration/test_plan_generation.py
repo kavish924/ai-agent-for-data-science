@@ -146,6 +146,18 @@ def test_nfr_ac2_no_data_or_prompt_in_logs(client, use_llm):
     assert all(secret not in prompt for prompt in llm.prompts)  # never sent to the LLM
 
 
+def test_pl_ac15_vertex_without_project_is_503_and_changes_nothing(client, monkeypatch):
+    monkeypatch.setattr(settings, "gemini_backend", "vertex")
+    monkeypatch.setattr(settings, "google_cloud_project", None)
+    sid = upload_csv(client, "a,b\n1,x\n2,y\n").json()["id"]
+    response = client.post(f"/api/v1/sessions/{sid}/plan")
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "llm_not_configured"
+    status = client.get(f"/api/v1/sessions/{sid}").json()
+    assert status["state"] == "profiled"
+    assert status["plan_version"] is None
+
+
 def test_pl_ac12_offline_provider_plans_without_a_key(client, monkeypatch):
     monkeypatch.setattr(settings, "llm_provider", "offline")
     sid = _upload_titanic(client)

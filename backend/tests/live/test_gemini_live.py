@@ -1,4 +1,4 @@
-"""Live Gemini check (Spec 03). Excluded from CI; runs only with GEMINI_API_KEY set.
+"""Live Gemini check (Spec 03). Excluded from CI; runs only when Gemini is configured (API key or Vertex AI).
 
     pytest -m live
 """
@@ -22,15 +22,14 @@ pytestmark = pytest.mark.live
 SAMPLES = Path(__file__).resolve().parents[3] / "samples"
 
 
-@pytest.mark.skipif(not settings.gemini_api_key, reason="GEMINI_API_KEY not set")
+@pytest.mark.skipif(not settings.gemini_configured, reason="Gemini not configured")
 def test_live_gemini_plans_titanic(tmp_path):
     db = tmp_path / "app.db"
     session_store.init_db(db)
     session_store.create_session(db, session_id="live", original_filename="t.csv", state="profiled")
     profile = profile_dataframe("live", pd.read_csv(SAMPLES / "titanic.csv"))
 
-    client = GeminiClient(api_key=settings.gemini_api_key or "", model=settings.gemini_model,
-                          seed=settings.random_seed, timeout_s=settings.llm_timeout_s)
+    client = GeminiClient.from_settings(settings)
     plan = generate_plan(client, profile, target="Survived", max_retries=3, db_path=db,
                          session_id="live")
 

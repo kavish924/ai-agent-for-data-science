@@ -34,6 +34,8 @@
 | 03 | AC-11 | `test_pl_ac11_transport_error_then_success` | `services/planner.py` |
 | 03 | AC-12 | `test_pl_ac12_offline_provider_plans_without_a_key` | `routers/plans.py`, `llm/fake.py` |
 | 03 | AC-13 | `test_pl_ac13_transport_errors_back_off_then_succeed`, `test_pl_ac13_gate_rejection_is_reprompted_without_waiting`, `test_pl_ac13_no_wait_after_the_last_attempt` | `services/planner.py`, `llm/client.py` (`backoff`), `llm/gemini.py` |
+| 03 | AC-14 | `test_pl_ac14_vertex_backend_uses_project_and_no_key`, `test_pl_ac14_vertex_backend_honours_location`, `test_pl_ac14_default_backend_uses_api_key_not_vertex` | `config.py` (`gemini_configured`), `llm/gemini.py` (`from_settings`), `routers/plans.py` |
+| 03 | AC-15 | `test_pl_ac15_vertex_without_project_is_not_configured`, `test_pl_ac15_vertex_without_project_is_503_and_changes_nothing` | `config.py`, `routers/plans.py` |
 | 03 | AC-7 | `test_pl_ac7_column_dropped_earlier_is_rejected`, `test_pl_ac7_cast_changes_type_for_later_steps` | `services/gate.py` |
 | 03 | AC-8 | `test_pl_ac8_target_cannot_be_imputed`, `test_pl_ac8_target_cannot_be_dropped`, `test_pl_ac8_plan_cannot_touch_target` | `services/gate.py` |
 | 04 | AC-1 | `test_rv_ac1_renders_every_step_in_order` | `frontend: PlanReview.tsx` |

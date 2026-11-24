@@ -5,7 +5,7 @@ on every sample dataset, in-process with a temporary storage root.
 
 Usage (from backend/):
     python scripts/smoke_m3.py          # offline: deterministic RuleBasedLLM
-    python scripts/smoke_m3.py --live   # real Gemini (needs GEMINI_API_KEY in .env)
+    python scripts/smoke_m3.py --live   # real Gemini (API key or Vertex AI, see .env.example)
 """
 
 from __future__ import annotations
@@ -78,8 +78,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--live", action="store_true", help="use real Gemini instead of the fake")
     args = parser.parse_args()
-    if args.live and not settings.gemini_api_key:
-        print("--live needs GEMINI_API_KEY (in the repo-root .env)")
+    if args.live and not settings.gemini_configured:
+        print("--live needs GEMINI_API_KEY, or GEMINI_BACKEND=vertex with GOOGLE_CLOUD_PROJECT"
+              " (in the repo-root .env)")
         return 2
 
     # ignore_cleanup_errors: the rotating log handler keeps app.log open on Windows

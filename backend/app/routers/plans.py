@@ -68,12 +68,11 @@ def get_llm() -> LLMClient | None:
         from ..llm.fake import RuleBasedLLM
 
         return RuleBasedLLM()
-    if not settings.gemini_api_key:
+    if not settings.gemini_configured:  # FR-PL-19: API key, or a project for Vertex AI
         return None
     from ..llm.gemini import GeminiClient  # imported lazily: SDK only needed when used
 
-    return GeminiClient(api_key=settings.gemini_api_key, model=settings.gemini_model,
-                        seed=settings.random_seed, timeout_s=settings.llm_timeout_s)
+    return GeminiClient.from_settings(settings)
 
 
 @router.post("/{session_id}/plan", status_code=201, response_model=PlanIn,
@@ -91,7 +90,8 @@ def create_plan(
     if body is None:  # Spec 03 FR-PL-14: LLM generation
         if llm is None:
             raise ApiError(503, "llm_not_configured",
-                           "Plan generation needs GEMINI_API_KEY; submit a manual plan instead.")
+                           "Plan generation needs GEMINI_API_KEY (or GOOGLE_CLOUD_PROJECT with "
+                           "GEMINI_BACKEND=vertex); submit a manual plan instead.")
         logger.info("plan.requested", extra={"session_id": session_id, "stage": "plan"})
         try:
             body = planner.generate_plan(

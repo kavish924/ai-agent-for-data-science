@@ -34,6 +34,7 @@ code validates; nothing executes here.
 | FR-PL-16 | *(M3)* LLM transport errors, timeouts and unparseable JSON count as failed attempts within the same `PLAN_MAX_RETRIES` budget and are recorded in `llm_calls` by error class only. |
 | FR-PL-18 | *(M8, from the live eval)* After an attempt that failed in transport, the planner waits before the next attempt with exponential backoff (`LLM_RETRY_BACKOFF_S`, default 2 s, doubling per attempt); there is no wait after a schema or Gate failure, or after the last attempt. `llm_calls.error` records the provider's HTTP status when there is one (`transport:503`), otherwise `transport:<ErrorClass>`; never the message. |
 | FR-PL-17 | *(M3.5)* `LLM_PROVIDER` selects the planner backend: `gemini` (default; needs `GEMINI_API_KEY`) or `offline`, a deterministic rule-based planner for demos and development without a key. Offline plans go through the same Gate, review and approval. |
+| FR-PL-19 | `GEMINI_BACKEND` selects how Gemini is reached: `aistudio` (default; API key in `GEMINI_API_KEY`) or `vertex` (Vertex AI on Google Cloud: project `GOOGLE_CLOUD_PROJECT`, region `GOOGLE_CLOUD_LOCATION`, default `global`; credentials from Application Default Credentials, no API key). Gemini counts as configured only when the chosen backend's required setting is present; otherwise LLM generation returns `503 llm_not_configured` as in FR-PL-14. Model, temperature, seed and JSON mode are the same on both backends. |
 | FR-PL-13 | *(M0)* When a target column is set (Spec 07 FR-ML-10), the Gate rejects `drop_column`, `impute`, `clip_outliers` and `cast_type` on it, and the planner prompt names the target as protected. |
 
 ### Whitelist summary (normative details in `design.md` §4)
@@ -90,6 +91,12 @@ code validates; nothing executes here.
   rejection is re-prompted without waiting.
 - **AC-12** *(M3.5)* Given `LLM_PROVIDER=offline` and no API key, `POST /plan` without a
   body returns a Gate-valid plan (201).
+- **AC-14** Given `GEMINI_BACKEND=vertex`, `GOOGLE_CLOUD_PROJECT=p` and no API key, the
+  configured LLM client is a Gemini client built for Vertex AI with project `p` and region
+  `global` (or `GOOGLE_CLOUD_LOCATION`) and no API key; given the default backend, it is
+  built with `GEMINI_API_KEY` and without Vertex AI.
+- **AC-15** Given `GEMINI_BACKEND=vertex` and no `GOOGLE_CLOUD_PROJECT`, `POST /plan`
+  without a body returns `503 llm_not_configured` and the session state is unchanged.
 - **AC-6** Given the same profile and a seeded/stubbed LLM, planning behavior is
   stable; stored `plan.json` is the artifact of record (execution reproducibility does
   not depend on re-calling the LLM).
@@ -124,6 +131,7 @@ code validates; nothing executes here.
 - [x] FR-PL-01, 06..10 LLM planner (M3)
 - [x] FR-PL-14..16 generation endpoint, prompt contract, transport errors (M3)
 - [x] FR-PL-18 transport backoff + HTTP status in `llm_calls` (M8)
+- [x] FR-PL-19 Vertex AI backend (`fix/vertex-backend`)
 
 ## Changelog
 
@@ -133,3 +141,5 @@ code validates; nothing executes here.
 - 2026-11-12 — M3.5: added FR-PL-17 / AC-12 (`LLM_PROVIDER=offline` for demos without a key).
 - 2026-11-12 — M8 (Approved): added FR-PL-18 / AC-13. The live eval lost Telco's plan because its three attempts hit transient Gemini errors with no wait between them.
 - 2026-11-12 — M8 complete: AC-13 passes.
+- 2026-11-24 — (Approved): added FR-PL-19 / AC-14..15, Gemini through Vertex AI (Google Cloud project + ADC) as an alternative to an AI Studio API key.
+- 2026-11-24 — FR-PL-19 complete: AC-14/15 pass with the SDK mocked; live Vertex AI check pending credentials.

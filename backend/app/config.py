@@ -48,6 +48,17 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-3.5-flash"  # 2.5 retired for new keys (404, 2026-11)
     llm_timeout_s: float = 60.0  # per LLM call
     llm_retry_backoff_s: float = 2.0  # Spec 03 FR-PL-18: wait after a transport failure, doubling
+    # Spec 03 FR-PL-19: AI Studio (API key) or Vertex AI (Google Cloud project + ADC)
+    gemini_backend: Literal["aistudio", "vertex"] = "aistudio"
+    google_cloud_project: str | None = None
+    google_cloud_location: str = "global"  # newest models are often served only from global
+
+    @property
+    def gemini_configured(self) -> bool:
+        """The chosen Gemini backend has what it needs (Spec 03 FR-PL-19)."""
+        if self.gemini_backend == "vertex":
+            return bool(self.google_cloud_project)
+        return bool(self.gemini_api_key)
 
 
 settings = Settings()

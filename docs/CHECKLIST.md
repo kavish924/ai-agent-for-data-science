@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-24 · **Current branch:** `m9-paper-eval`
+> **Last updated:** 2026-11-24 · **Current branch:** `fix/vertex-backend`
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -213,6 +213,12 @@ RQ5 ablations, RQ6 cost.
 - [ ] Safety suite: prompt injection via column names/values, prompt leak scanner, upload hash check, Gate fuzzer
 - [ ] Multi-model, ≥3 runs each; LaTeX tables + plots from committed JSON
 - [ ] Paper draft
+
+## Fix — Vertex AI backend · branch `fix/vertex-backend`
+
+- [x] Spec 03 FR-PL-19 + AC-14/15, tests written first (SDK mocked)
+- [x] `GEMINI_BACKEND=vertex` with `GOOGLE_CLOUD_PROJECT` / `GOOGLE_CLOUD_LOCATION` (default `global`), auth via ADC; `get_llm`, `eval.run --live`, `smoke_m3.py --live` and the live test accept either backend
+- [ ] Live check on Vertex AI (`pytest -m live`) once the Vertex AI API is enabled and ADC is set up
 
 ## Known follow-ups / tech debt
 

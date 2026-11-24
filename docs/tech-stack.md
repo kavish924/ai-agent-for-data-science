@@ -62,6 +62,7 @@ ai-agent-for-datascience/
 # .env.example
 GEMINI_API_KEY=...               # required from M3 (planner/narrator)
 GEMINI_MODEL=gemini-3.5-flash    # configurable, not hard-coded
+GEMINI_BACKEND=aistudio          # or vertex: Vertex AI via GOOGLE_CLOUD_PROJECT/_LOCATION + ADC
 MAX_FILE_SIZE_MB=25              # PRD §6.1 limits
 MAX_ROWS=100000
 MAX_CHARTS=12                    # PRD §6.6 cap
