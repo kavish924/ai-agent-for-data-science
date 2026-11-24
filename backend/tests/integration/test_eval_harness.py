@@ -55,3 +55,20 @@ def test_nfr_ac6_performance_baseline_is_recorded(offline):
     assert perf["upload_profile_ms"] >= 0 and perf["execute_ms"] >= 0
     assert perf["budget_s"] == 60
     assert perf["within_budget"] is True
+
+
+def test_nfr_ac18_eval_runs_on_a_generated_benchmark(offline, golden, tmp_path):
+    from eval import build_benchmark, run
+
+    src = build_benchmark.Source(path=harness.SAMPLES / "titanic.csv", target="Survived",
+                                 golden=golden["titanic.csv"])
+    bench = build_benchmark.build([src], [1], tmp_path / "bench")
+    assert run.resolve_data_dir(tmp_path / "bench" / "golden.json", None) == tmp_path / "bench"
+    assert run.resolve_data_dir(harness.EVAL_DIR / "golden.json", None) == harness.SAMPLES
+    loaded = harness.load_golden(tmp_path / "bench" / "golden.json")
+    assert loaded == bench
+    result = harness.run_dataset(offline, "titanic__s1.csv", loaded["titanic__s1.csv"],
+                                 data_dir=tmp_path / "bench", replay=False)
+    assert result["status"] == "ok", result
+    assert 0.0 <= result["score"]["f1"] <= 1.0
+    assert result["score"]["proposed"] > 0

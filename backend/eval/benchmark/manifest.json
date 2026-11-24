@@ -1,0 +1,149 @@
+{
+ "_doc": "Benchmark sources (Spec 10 NFR-15). Fetch with `python -m eval.fetch_datasets --record-hashes`; the fetcher rejects an id whose OpenML name differs from openml_name. sha256 and license are recorded on first fetch.",
+ "datasets": [
+  {
+   "name": "credit-g",
+   "openml_id": 31,
+   "openml_name": "credit-g",
+   "target": "class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "diabetes",
+   "openml_id": 37,
+   "openml_name": "diabetes",
+   "target": "class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "adult",
+   "openml_id": 1590,
+   "openml_name": "adult",
+   "target": "class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "bank-marketing",
+   "openml_id": 1461,
+   "openml_name": "bank-marketing",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "blood-transfusion",
+   "openml_id": 1464,
+   "openml_name": "blood-transfusion-service-center",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "breast-w",
+   "openml_id": 15,
+   "openml_name": "breast-w",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "spambase",
+   "openml_id": 44,
+   "openml_name": "spambase",
+   "target": "class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "phoneme",
+   "openml_id": 1489,
+   "openml_name": "phoneme",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "kc1",
+   "openml_id": 1067,
+   "openml_name": "kc1",
+   "target": "defects",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "ilpd",
+   "openml_id": 1480,
+   "openml_name": "ilpd",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "vehicle",
+   "openml_id": 54,
+   "openml_name": "vehicle",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "wdbc",
+   "openml_id": 1510,
+   "openml_name": "wdbc",
+   "target": "Class",
+   "task": "classification",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "house-prices",
+   "openml_id": 42165,
+   "openml_name": "house_prices",
+   "target": "SalePrice",
+   "task": "regression",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "diamonds",
+   "openml_id": 42225,
+   "openml_name": "diamonds",
+   "target": "price",
+   "task": "regression",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "bike-sharing",
+   "openml_id": 42712,
+   "openml_name": "Bike_Sharing_Demand",
+   "target": "count",
+   "task": "regression",
+   "license": null,
+   "sha256": null
+  },
+  {
+   "name": "house-sales",
+   "openml_id": 42092,
+   "openml_name": "house_sales",
+   "target": "price",
+   "task": "regression",
+   "license": null,
+   "sha256": null
+  }
+ ]
+}

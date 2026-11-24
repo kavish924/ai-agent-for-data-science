@@ -73,6 +73,20 @@ Latest offline run ([offline.md](backend/eval/results/offline.md)): all 3 plans 
 first-attempt validity, every reproducibility check identical, and the 100k × 21 fixture profiled in
 11 s and executed in 20 s. Live notes are in [live-2026-11-12.md](backend/eval/results/live-2026-11-12.md).
 
+### Benchmark (M9)
+
+```bash
+cd backend
+.venv/Scripts/python -m eval.fetch_datasets --record-hashes      # OpenML datasets in eval/benchmark/manifest.json
+.venv/Scripts/python -m eval.build_benchmark --samples --manifest --seeds 1 2 3
+.venv/Scripts/python -m eval.run --golden eval/benchmark/build/golden.json --perf-rows 0
+```
+
+`build_benchmark` injects known issues with a seed (ID, constant and target-copy columns, missing values,
+outliers, messy text, duplicate rows) and writes a golden file with the exact expected fixes. Add
+`--live --cache eval/cache --min-interval 6` to plan with Gemini on a free-tier key and record every answer,
+then `--replay-only` to rerun without API calls.
+
 ## Development
 
 Spec-driven: requirements live in [docs/specs/](docs/specs/) as FR/AC tables. Every AC has a test

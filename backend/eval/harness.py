@@ -136,9 +136,9 @@ def _reproducibility(client: TestClient, name: str, raw: bytes, target: str | No
 
 
 def run_dataset(client: TestClient, name: str, golden: dict[str, Any], *,
-                replay: bool = True) -> dict[str, Any]:
-    """One full eval run on `samples/<name>` (NFR-09); never raises for a stage failure."""
-    raw = (SAMPLES / name).read_bytes()
+                replay: bool = True, data_dir: Path = SAMPLES) -> dict[str, Any]:
+    """One full eval run on `<data_dir>/<name>` (NFR-09, NFR-17); never raises for a stage failure."""
+    raw = (data_dir / name).read_bytes()
     target = golden.get("target")
     clock = _Clock()
     result: dict[str, Any] = {"name": name, "target": target, "status": "ok"}
@@ -236,11 +236,13 @@ def to_markdown(report: dict[str, Any]) -> str:
             f"| Planner transport errors (API, not the plan) | {s.get('transport_errors', 0)} |",
             f"| Plan quality (sensible plans) | {_pct(s['plan_quality'])} |",
             f"| Approval rate (golden reviewer) | {_pct(s['approval_rate'])} |",
+            f"| Mean step F1 (NFR-14) | {s.get('mean_f1', '—')} |",
+            f"| Forbidden-step rate | {_pct(s.get('forbidden_rate'))} |",
             f"| Mean time to report | {(s['mean_time_to_report_ms'] or 0) / 1000:.1f} s |", ""]
     out += ["## Datasets", "",
-            "| Dataset | Status | Plan | Sensible | Recall | Approved | Attempts "
+            "| Dataset | Status | Plan | Sensible | Recall | F1 | Approved | Attempts "
             "| Best model | Score (dummy) | Summary | Time |",
-            "|---|---|---|---|---|---|---|---|---|---|---|"]
+            "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for d in report["datasets"]:
         sc = d.get("score") or {}
         plan = ", ".join(f"{p['op']}({','.join(metrics.step_columns(p))})" for p in d.get("plan", [])) or "—"
@@ -248,7 +250,8 @@ def to_markdown(report: dict[str, Any]) -> str:
         score = (f"{d['primary_metric']} {d['best_cv']:.3f} ({d['dummy_cv']:.3f})"
                  if d.get("best_cv") is not None else "—")
         out.append(f"| {d['name']} | {status} | {plan} | {_yes(sc.get('sensible'))} | "
-                   f"{sc.get('expected_recall', '—')} | {sc.get('approved', 0)}/{sc.get('proposed', 0)} | "
+                   f"{sc.get('expected_recall', '—')} | {sc.get('f1', '—')} | "
+                   f"{sc.get('approved', 0)}/{sc.get('proposed', 0)} | "
                    f"{len(d.get('planner_calls', []))} | {d.get('best_model', '—')} | {score} | "
                    f"{d.get('narration_source', '—')} | {d['timings_ms']['total'] / 1000:.1f} s |")
     issues = [(d["name"], d["score"]) for d in report["datasets"]

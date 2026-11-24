@@ -199,7 +199,13 @@ RQ5 ablations, RQ6 cost.
 - [x] Spec 10 NFR-13/14 + AC-11..13, tests written first
 - [x] LLM record/replay cache (`eval/llm_cache.py`; `eval.run --cache/--run-tag/--replay-only/--min-interval`) for the Gemini free tier
 - [x] Metrics: precision/recall/F1, forbidden rate, seeded bootstrap CI, Cohen's κ
-- [ ] Benchmark: dataset manifest + downloader (~20–30 OpenML/UCI datasets), seeded corruption generator with exact ground truth, golden plans + second annotator (κ)
+- [x] Spec 10 NFR-15..17 + AC-14..18, tests written first
+- [x] Seeded corruption generator with exact ground truth (`eval/corrupt.py`, `python -m eval.build_benchmark`): id/constant/leak columns, 10% and 80% missing, outliers, text noise, duplicates; merges the source's golden entry
+- [x] Manifest of 16 OpenML datasets (12 classification, 4 regression) + fetcher with name/target/sha256 checks (`python -m eval.fetch_datasets`)
+- [x] `eval.run --golden/--data-dir` scores any benchmark; results go next to the benchmark, not over `eval/results/`
+- [x] Offline baseline on 9 corrupted samples (3 seeds): rule-based planner F1 0.62, 0/9 sensible, 0% forbidden
+- [ ] Fetch the OpenML datasets (`--record-hashes`), fix any id the name check rejects, commit the manifest hashes
+- [ ] Natural (uncorrupted) golden plans for the OpenML datasets + second annotator (κ)
 - [ ] RQ2 downstream utility: raw vs agent vs golden vs baseline-cleaned CV scores
 - [ ] Code-generating LLM baseline (sandboxed) scored with the same metrics
 - [ ] Ablations: no Gate, no retry, sample values in profile, free-form ops, auto-approve

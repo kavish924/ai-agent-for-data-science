@@ -6,6 +6,7 @@ Usage (from backend/):
     python -m eval.run --only titanic.csv --perf-rows 0
     python -m eval.run --live --cache eval/cache --min-interval 6   # record/replay (NFR-13)
     python -m eval.run --live --cache eval/cache --replay-only      # rerun with zero API calls
+    python -m eval.run --golden eval/benchmark/build/golden.json --perf-rows 0   # benchmark (NFR-17)
 
 Writes eval/results/<offline|live>.json and .md. Storage is a temporary directory, so
 the eval never touches the app's real sessions.
@@ -27,6 +28,15 @@ from app.llm.fake import RuleBasedLLM
 from . import harness, metrics
 
 
+def resolve_data_dir(golden_path: Path, data_dir: Path | None) -> Path:
+    """NFR-17: CSVs live in --data-dir, else next to the golden file (samples/ for the built-in one)."""
+    if data_dir is not None:
+        return data_dir
+    if golden_path.resolve() == (harness.EVAL_DIR / "golden.json").resolve():
+        return harness.SAMPLES
+    return golden_path.parent
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -35,7 +45,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--perf-rows", type=int, default=settings.max_rows,
                         help=f"rows for the performance fixture (default {settings.max_rows}; 0 skips)")
     parser.add_argument("--no-replay", action="store_true", help="skip the reproducibility replay")
-    parser.add_argument("--out", type=Path, default=harness.EVAL_DIR / "results")
+    parser.add_argument("--out", type=Path,
+                        help="results folder (default eval/results, or <golden folder>/results)")
+    parser.add_argument("--golden", type=Path, default=harness.EVAL_DIR / "golden.json",
+                        help="golden file to score (default: the samples' eval/golden.json)")
+    parser.add_argument("--data-dir", type=Path, help="folder of the golden file's CSVs")
     parser.add_argument("--cache", type=Path, help="record/replay LLM answers in this directory (NFR-13)")
     parser.add_argument("--run-tag", default="", help="part of the cache key, to keep repeated runs distinct")
     parser.add_argument("--replay-only", action="store_true", help="with --cache: a miss fails, no API call")
@@ -48,7 +62,11 @@ def main(argv: list[str] | None = None) -> int:
         print("--live needs GEMINI_API_KEY (in the repo-root .env)")
         return 2
 
-    golden = harness.load_golden()
+    golden = harness.load_golden(args.golden)
+    data_dir = resolve_data_dir(args.golden, args.data_dir)
+    if args.out is None:  # never overwrite the committed sample results with a benchmark run
+        args.out = (harness.EVAL_DIR / "results" if data_dir == harness.SAMPLES
+                    else args.golden.parent / "results")
     names = args.only or list(golden)
     unknown = [n for n in names if n not in golden]
     if unknown:
@@ -77,7 +95,8 @@ def main(argv: list[str] | None = None) -> int:
             datasets = []
             for name in names:
                 print(f"[..] {name}", flush=True)
-                result = harness.run_dataset(client, name, golden[name], replay=not args.no_replay)
+                result = harness.run_dataset(client, name, golden[name], replay=not args.no_replay,
+                                             data_dir=data_dir)
                 datasets.append(result)
                 sc = result.get("score") or {}
                 mark = "ok" if result["status"] == "ok" else "FAIL"
@@ -94,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         "perf": perf,
         "llm_cache": cached.stats() if cached else None,
         "run_tag": args.run_tag or None,
+        "golden": str(args.golden),
         "environment": f"Python {platform.python_version()} on {platform.system()} {platform.release()}",
     }
     json_path, md_path = harness.write_results(report, args.out)

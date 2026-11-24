@@ -31,6 +31,9 @@ measurable against PRD §9 success metrics.
 | NFR-12 **Performance baseline** | *(M8)* The eval records upload+profile and execute times for a max-size fixture (Telco rows repeated up to `MAX_ROWS`) against a 60 s budget each. Recorded, not enforced in CI. |
 | NFR-13 **LLM record/replay cache** | *(M9)* The eval can wrap any `LLMClient` in a disk cache (`eval/llm_cache.py`, `--cache DIR`). The key is the SHA-256 of model, system prompt, prompt and a run tag (`--run-tag`, so repeated runs can be distinct). A hit returns the stored response without calling the provider; a miss calls it, stores the answer and waits at least `--min-interval` seconds since the previous provider call (free-tier pacing). Transport errors are never cached. With `--replay-only` a miss raises `LLMError("cache:miss")` instead of calling the provider, so a rerun is provably free. Each cache file holds only the key, the model, the response text and token counts: no prompt. Hits and misses are counted in the results. |
 | NFR-14 **Paper metrics** | *(M9)* Per dataset, besides NFR-10: **precision** = steps the golden reviewer approves / steps proposed (equals the approval rate; 1.0 for an empty plan), **recall** = expected-step recall, **F1** = their harmonic mean (0 when both are 0), **forbidden rate** = proposed steps matching `forbidden` / steps proposed (0 for an empty plan). Overall: mean F1 and pooled forbidden rate. Helpers: a seeded percentile **bootstrap CI** of a mean (default 2,000 resamples, 95%), and **Cohen's κ** for two annotators' binary labels (1.0 when both label sets are constant and equal). |
+| NFR-15 **Benchmark manifest & fetcher** | *(M9)* `eval/benchmark/manifest.json` lists public tabular datasets: `name`, `openml_id`, `openml_name`, `target`, `task` (`classification`\|`regression`), `license`, `sha256` (null until first fetched). `python -m eval.fetch_datasets` downloads each through scikit-learn's `fetch_openml` into `eval/benchmark/data/<name>.csv` (gitignored). A dataset whose OpenML name differs from `openml_name`, or that lacks `target`, is an error and is not written. A recorded `sha256` must match the written CSV (else error); `--record-hashes` writes the hashes of new files back to the manifest. Fetching is network access the user runs; tests use a stub fetcher. |
+| NFR-16 **Corruption generator** | *(M9)* `python -m eval.build_benchmark` takes source CSVs (the manifest's data and/or `samples/` via `eval/golden.json`) and, per seed, writes `<stem>__s<seed>.csv` plus one `golden.json` with exact ground truth. Injections, applied in this order with a seeded NumPy generator, never touching the target: **id column** (`record_id`, strings `REC-000001`… shuffled) → `expected drop_column`; **constant column** (`export_batch` = `"B1"`) → `expected drop_column`; **leak column** (`<target>_copy`, a copy of the target) → `expected drop_column`; **missing** (10% of a complete numeric column set to NaN) → `expected impute`, `forbidden drop_column`; **heavy missing** (80% of another column set to NaN) → `expected drop_column`; **outliers** (1% of a numeric column with at least 10 distinct values set to 50 × its largest absolute value) → `expected clip_outliers`; **text noise** (20% of a categorical string column upper-cased or space-padded) → `expected standardize_text`; **duplicates** (2% of rows appended again) → `expected drop_duplicates`. A type with no eligible column is skipped and listed under `skipped`. `drop_column(<target>)` is always forbidden. The source's own golden entry, when it has one, is merged in (lists unioned); a column it forbids dropping is never chosen for heavy missing, so the merged truth cannot both expect and forbid a step. Each golden entry records its `source`, `seed`, `injections` (type, column, rows affected) and the CSV's `sha256`. Same sources + seeds ⇒ byte-identical CSVs and golden file; the source files are never modified. |
+| NFR-17 **Eval on any benchmark** | *(M9)* `eval.run --golden PATH` scores the datasets of any golden file; CSVs are read from `--data-dir` (default: the golden file's folder, or `samples/` for the built-in golden). |
 | NFR-08 **Retention sweep** | *(M0)* The retention sweep runs at startup and then every `RETENTION_SWEEP_MINUTES` (default 60); it deletes the DB row and the whole session directory and logs `retention.sweep`. |
 
 ### Log event catalog
@@ -87,6 +90,23 @@ measurable against PRD §9 success metrics.
 - **AC-13** *(M9)* Given values, when a bootstrap CI is computed with a seed, then it is deterministic and
   contains the mean; given two annotators' labels, Cohen's κ is 1.0 for identical labels, 0 for chance
   agreement and matches a hand-computed value (NFR-14).
+- **AC-14** *(M9)* Given a source CSV and a seed, when the benchmark is built twice, then the CSVs and the
+  golden file are byte-identical; another seed gives a different CSV; the source file is unchanged (NFR-16).
+- **AC-15** *(M9)* Given a corrupted dataset, then every recorded injection is present in the CSV (id
+  column unique strings, constant column, leak column equal to the target, the stated NaN and duplicate
+  counts, the outlier values, noisy text variants), the target column is untouched, the golden entry has the
+  matching `expected`/`forbidden` entries, and a type with no eligible column is listed in `skipped` (NFR-16).
+- **AC-16** *(M9)* Given a source with its own golden entry, when it is corrupted, then that entry's
+  expected, acceptable and forbidden steps and its target are kept in the generated entry, no step is
+  both expected and forbidden, and a column the entry forbids dropping is not made heavily missing;
+  outliers are never injected into a low-cardinality (e.g. 0/1) column (NFR-16).
+- **AC-17** *(M9)* Given a manifest and a stub fetcher, when datasets are fetched, then valid entries are
+  written as CSV with the target column, an OpenML name mismatch or a missing target is reported and not
+  written, a wrong recorded hash is an error, and `--record-hashes` stores the hashes of new files; a
+  manifest entry missing a required field is rejected (NFR-15).
+- **AC-18** *(M9)* Given a generated benchmark and the offline LLM, when the eval runs on it with
+  `--golden`, then every dataset runs through every stage from the benchmark folder and is scored with
+  F1 (NFR-17).
 - **AC-7** *(M0)* Given a session stored in `executing` and one in `uploaded` with no
   profile, when the app starts, then the first is `awaiting_approval` with
   `failed_stage=execute` and the second has an error with `failed_stage=profile`.
@@ -127,6 +147,9 @@ measurable against PRD §9 success metrics.
 - [x] Offline eval results recorded (AC-10) (M8)
 - [x] NFR-13 LLM record/replay cache (AC-11) (M9)
 - [x] NFR-14 paper metrics (AC-12, AC-13) (M9)
+- [x] NFR-15 benchmark manifest + fetcher (AC-17) (M9)
+- [x] NFR-16 corruption generator (AC-14..16) (M9)
+- [x] NFR-17 eval on any benchmark (AC-18) (M9)
 - [ ] Full live eval results (`--live`), blocked by the Gemini key's quota (429) on 2026-11-12
 
 ## Changelog
@@ -137,3 +160,5 @@ measurable against PRD §9 success metrics.
 - 2026-11-12 — M8 complete: AC-1..10 pass. Offline eval on all samples recorded in `backend/eval/results/offline.md` (100k-row baseline: profile 11 s, execute 20 s).
 - 2026-11-24 — M9 (Approved): added NFR-13 (LLM record/replay cache) and NFR-14 (paper metrics: precision/recall/F1, forbidden rate, bootstrap CI, Cohen's κ) with AC-11..13, for the paper evaluation.
 - 2026-11-24 — M9 step 1: AC-11..13 pass; `eval.run` gains `--cache`, `--run-tag`, `--replay-only`, `--min-interval` and records cache hits/misses.
+- 2026-11-24 — M9 benchmark (Approved): added NFR-15 (manifest + OpenML fetcher), NFR-16 (seeded corruption generator with exact ground truth), NFR-17 (eval on any golden file) and AC-14..18.
+- 2026-11-24 — M9 benchmark: AC-14..18 pass. First offline run on 9 corrupted samples (3 seeds): rule-based planner mean F1 0.62, approval 100%, 0% forbidden, 0/9 sensible. The run exposed two generator bugs, fixed under AC-16: a forbidden-to-drop column made heavily missing, and outliers injected into a 0/1 column.

@@ -123,3 +123,8 @@
 | 10 | AC-11 | `test_nfr_ac11_hit_does_not_call_provider`, `test_nfr_ac11_run_tag_and_prompt_change_the_key`, `test_nfr_ac11_transport_errors_are_not_cached`, `test_nfr_ac11_replay_only_miss_raises_without_calling`, `test_nfr_ac11_cache_file_holds_no_prompt`, `test_nfr_ac11_min_interval_between_provider_calls_only` | `eval/llm_cache.py`, `eval/run.py` |
 | 10 | AC-12 | `test_nfr_ac12_precision_recall_f1_forbidden_rate`, `test_nfr_ac12_empty_plan_and_zero_cases`, `test_nfr_ac12_summary_mean_f1_and_pooled_forbidden_rate` | `eval/metrics.py` |
 | 10 | AC-13 | `test_nfr_ac13_bootstrap_ci_is_seeded_and_contains_mean`, `test_nfr_ac13_cohen_kappa` | `eval/metrics.py` |
+| 10 | AC-14 | `test_nfr_ac14_same_seed_is_byte_identical_and_source_untouched` | `eval/build_benchmark.py`, `eval/corrupt.py` |
+| 10 | AC-15 | `test_nfr_ac15_every_injection_is_present_and_in_the_golden`, `test_nfr_ac15_types_without_eligible_column_are_skipped` | `eval/corrupt.py` |
+| 10 | AC-16 | `test_nfr_ac16_base_golden_is_merged`, `test_nfr_ac16_protected_columns_and_no_binary_outliers` | `eval/corrupt.py`, `eval/build_benchmark.py` |
+| 10 | AC-17 | `test_nfr_ac17_fetch_validates_names_targets_and_hashes`, `test_nfr_ac17_manifest_requires_fields` | `eval/fetch_datasets.py`, `eval/benchmark/manifest.json` |
+| 10 | AC-18 | `test_nfr_ac18_eval_runs_on_a_generated_benchmark` | `eval/harness.py`, `eval/run.py` |
