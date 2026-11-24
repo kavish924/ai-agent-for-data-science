@@ -75,3 +75,59 @@ def test_nfr_ac9_summary_metrics():
     assert summary["mean_time_to_report_ms"] == 2000
     assert summary["datasets"] == 2
     assert summary["transport_errors"] == 1
+
+
+def test_nfr_ac12_precision_recall_f1_forbidden_rate():
+    steps = [step("impute", "Age"), step("drop_column", "Sex"), step("clip_outliers", "Fare")]
+    s = metrics.score_plan(steps, GOLDEN)
+    assert s["precision"] == pytest.approx(1 / 3, abs=1e-4)        # only impute(Age) approved
+    assert s["recall"] == pytest.approx(0.5)               # Cabin missing
+    assert s["f1"] == pytest.approx(2 * (1 / 3) * 0.5 / (1 / 3 + 0.5), abs=1e-4)
+    assert s["forbidden_rate"] == pytest.approx(1 / 3, abs=1e-4)
+
+
+def test_nfr_ac12_empty_plan_and_zero_cases():
+    empty = metrics.score_plan([], GOLDEN)
+    assert (empty["precision"], empty["recall"], empty["f1"], empty["forbidden_rate"]) == (1.0, 0.0, 0.0, 0.0)
+    bad = metrics.score_plan([step("drop_column", "Sex")], GOLDEN)
+    assert (bad["precision"], bad["recall"], bad["f1"], bad["forbidden_rate"]) == (0.0, 0.0, 0.0, 1.0)
+    perfect = metrics.score_plan([], {"expected": [], "acceptable": [], "forbidden": []})
+    assert perfect["f1"] == 1.0
+
+
+def test_nfr_ac12_summary_mean_f1_and_pooled_forbidden_rate():
+    datasets = [
+        {"planner_calls": [{"valid": 1}], "timings_ms": {"total": 1},
+         "score": {"sensible": True, "approved": 1, "proposed": 2, "f1": 0.5, "forbidden_hits": [{}]}},
+        {"planner_calls": [{"valid": 1}], "timings_ms": {"total": 1},
+         "score": {"sensible": True, "approved": 2, "proposed": 2, "f1": 1.0, "forbidden_hits": []}},
+    ]
+    summary = metrics.summarize(datasets)
+    assert summary["mean_f1"] == pytest.approx(0.75)
+    assert summary["forbidden_rate"] == pytest.approx(0.25)
+
+
+def test_nfr_ac13_bootstrap_ci_is_seeded_and_contains_mean():
+    values = [0.2, 0.4, 0.5, 0.9, 1.0, 0.7]
+    a = metrics.bootstrap_ci(values, seed=1)
+    b = metrics.bootstrap_ci(values, seed=1)
+    assert a == b
+    m, lo, hi = a
+    assert m == pytest.approx(sum(values) / len(values))
+    assert lo <= m <= hi
+    assert metrics.bootstrap_ci([0.5, 0.5]) == (0.5, 0.5, 0.5)
+    with pytest.raises(ValueError):
+        metrics.bootstrap_ci([])
+
+
+def test_nfr_ac13_cohen_kappa():
+    assert metrics.cohen_kappa([True, False, True], [True, False, True]) == 1.0
+    assert metrics.cohen_kappa([True, True], [True, True]) == 1.0
+    assert metrics.cohen_kappa([True, True, False, False], [True, False, True, False]) == pytest.approx(0.0)
+    # po = 3/5 agree; pe from the marginals (3/5 True each)
+    a = [True, True, True, False, False]
+    b = [True, True, False, False, True]
+    po, pe = 3 / 5, (3 / 5) * (3 / 5) + (2 / 5) * (2 / 5)
+    assert metrics.cohen_kappa(a, b) == pytest.approx((po - pe) / (1 - pe))
+    with pytest.raises(ValueError):
+        metrics.cohen_kappa([True], [True, False])

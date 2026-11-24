@@ -1,0 +1,7498 @@
+{
+  "provider": "offline",
+  "model": "rule-based-fake",
+  "summary": {
+    "datasets": 57,
+    "schema_validity": 1.0,
+    "mean_planner_attempts": 1,
+    "plan_quality": 0.0,
+    "approval_rate": 1.0,
+    "transport_errors": 0,
+    "mean_time_to_report_ms": 9605,
+    "mean_f1": 0.5834,
+    "forbidden_rate": 0.0
+  },
+  "datasets": [
+    {
+      "name": "titanic__s1.csv",
+      "target": "Survived",
+      "status": "ok",
+      "session_id": "c1f7c4f21bab482880c28ef4e2b37b03",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 2
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Parch",
+              "Cabin"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Age",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "Fare",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "Embarked",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.5455,
+        "precision": 1.0,
+        "recall": 0.5455,
+        "f1": 0.7059,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Survived_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "PassengerId"
+          },
+          {
+            "op": "standardize_text",
+            "column": "Sex"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Parch",
+              "Cabin"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "Fare"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "Embarked"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 5,
+        "proposed": 5,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.381407,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 177,
+        "plan": 28,
+        "execute": 1606,
+        "model": 2785,
+        "report": 121,
+        "total": 4754
+      }
+    },
+    {
+      "name": "titanic__s2.csv",
+      "target": "Survived",
+      "status": "ok",
+      "session_id": "2ef36a8bd7ce43de9d452088412a904a",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Parch",
+              "Cabin"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "PassengerId",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "Age",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "Embarked",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.5455,
+        "precision": 1.0,
+        "recall": 0.5455,
+        "f1": 0.7059,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Survived_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "Fare"
+          },
+          {
+            "op": "standardize_text",
+            "column": "Sex"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Parch",
+              "Cabin"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "PassengerId"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "Age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "Embarked"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 5,
+        "proposed": 5,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.381407,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 150,
+        "plan": 19,
+        "execute": 1012,
+        "model": 2334,
+        "report": 103,
+        "total": 3650
+      }
+    },
+    {
+      "name": "titanic__s3.csv",
+      "target": "Survived",
+      "status": "ok",
+      "session_id": "158778c40df1452698ef26d2ffd42779",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "SibSp",
+              "Cabin"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Age",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "Parch",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "Embarked",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.5455,
+        "precision": 1.0,
+        "recall": 0.5455,
+        "f1": 0.7059,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Survived_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "PassengerId"
+          },
+          {
+            "op": "standardize_text",
+            "column": "Sex"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "SibSp",
+              "Cabin"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "Parch"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "Embarked"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 5,
+        "proposed": 5,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.381407,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 157,
+        "plan": 19,
+        "execute": 1134,
+        "model": 2824,
+        "report": 101,
+        "total": 4266
+      }
+    },
+    {
+      "name": "housing__s1.csv",
+      "target": "median_house_value",
+      "status": "ok",
+      "session_id": "f8c1a292893448f6b42b4d47bd3221ce",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "total_rooms"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "latitude",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "total_bedrooms",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4444,
+        "precision": 1.0,
+        "recall": 0.4444,
+        "f1": 0.6154,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "median_house_value_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "longitude"
+          },
+          {
+            "op": "standardize_text",
+            "column": "ocean_proximity"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "total_rooms"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "latitude"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "total_bedrooms"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 4,
+        "proposed": 4,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 115617.185265,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 973,
+        "plan": 16,
+        "execute": 2581,
+        "model": 7463,
+        "report": 113,
+        "total": 11179
+      }
+    },
+    {
+      "name": "housing__s2.csv",
+      "target": "median_house_value",
+      "status": "ok",
+      "session_id": "655b6d4d8a534372a9931b92b6daa2e4",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "latitude"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "total_rooms",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "total_bedrooms",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4444,
+        "precision": 1.0,
+        "recall": 0.4444,
+        "f1": 0.6154,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "median_house_value_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "households"
+          },
+          {
+            "op": "standardize_text",
+            "column": "ocean_proximity"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "latitude"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "total_rooms"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "total_bedrooms"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 4,
+        "proposed": 4,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 115617.185265,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 891,
+        "plan": 16,
+        "execute": 2414,
+        "model": 7401,
+        "report": 106,
+        "total": 10862
+      }
+    },
+    {
+      "name": "housing__s3.csv",
+      "target": "median_house_value",
+      "status": "ok",
+      "session_id": "c9ded851777e441095136821751fdc3f",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "housing_median_age"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "latitude",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "total_bedrooms",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4444,
+        "precision": 1.0,
+        "recall": 0.4444,
+        "f1": 0.6154,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "median_house_value_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "median_income"
+          },
+          {
+            "op": "standardize_text",
+            "column": "ocean_proximity"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "housing_median_age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "latitude"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "total_bedrooms"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 4,
+        "proposed": 4,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 115617.185265,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 937,
+        "plan": 17,
+        "execute": 2453,
+        "model": 7467,
+        "report": 104,
+        "total": 11011
+      }
+    },
+    {
+      "name": "telco_churn__s1.csv",
+      "target": "Churn",
+      "status": "ok",
+      "session_id": "094dbd936b7645ba95f4e1e95e84d803",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "SeniorCitizen"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "tenure",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Churn_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "MonthlyCharges"
+          },
+          {
+            "op": "standardize_text",
+            "column": "OnlineSecurity"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "SeniorCitizen"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "tenure"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.423513,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 746,
+        "plan": 16,
+        "execute": 2105,
+        "model": 4980,
+        "report": 106,
+        "total": 7985
+      }
+    },
+    {
+      "name": "telco_churn__s2.csv",
+      "target": "Churn",
+      "status": "ok",
+      "session_id": "0ac369fbf4544883a4dfbc7cdaf8c5c3",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "SeniorCitizen"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "tenure",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Churn_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "MonthlyCharges"
+          },
+          {
+            "op": "standardize_text",
+            "column": "StreamingMovies"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "SeniorCitizen"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "tenure"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.423513,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 728,
+        "plan": 16,
+        "execute": 2107,
+        "model": 4996,
+        "report": 103,
+        "total": 7983
+      }
+    },
+    {
+      "name": "telco_churn__s3.csv",
+      "target": "Churn",
+      "status": "ok",
+      "session_id": "39cf0e1e28b94bee948461c3b3f25b8b",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Dependents"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "SeniorCitizen",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Churn_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "tenure"
+          },
+          {
+            "op": "standardize_text",
+            "column": "Partner"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Dependents"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "SeniorCitizen"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.423513,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 737,
+        "plan": 17,
+        "execute": 2135,
+        "model": 5020,
+        "report": 109,
+        "total": 8049
+      }
+    },
+    {
+      "name": "credit-g__s1.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "f139498e34dc4058929ebad6451a1139",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "age"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "num_dependents",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "credit_amount"
+          },
+          {
+            "op": "standardize_text",
+            "column": "housing"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "num_dependents"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.411765,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 136,
+        "plan": 16,
+        "execute": 1234,
+        "model": 3283,
+        "report": 115,
+        "total": 4821
+      }
+    },
+    {
+      "name": "credit-g__s2.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "ba7b4f0466144126b5c93ef125f30b4c",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "duration"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "existing_credits",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "age"
+          },
+          {
+            "op": "standardize_text",
+            "column": "personal_status"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "duration"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "existing_credits"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.411765,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 137,
+        "plan": 16,
+        "execute": 1188,
+        "model": 3343,
+        "report": 107,
+        "total": 4826
+      }
+    },
+    {
+      "name": "credit-g__s3.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "5bd4326042ad4afd9bc5f40eb9fbe24e",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "residence_since"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "duration",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "credit_amount"
+          },
+          {
+            "op": "standardize_text",
+            "column": "purpose"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "residence_since"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "duration"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.411765,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 146,
+        "plan": 16,
+        "execute": 1194,
+        "model": 3278,
+        "report": 109,
+        "total": 4778
+      }
+    },
+    {
+      "name": "diabetes__s1.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "91c684e7b25b4226829e7a6cb8031add",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "pres"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "plas",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "pedi"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "pres"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "plas"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.394479,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 78,
+        "plan": 16,
+        "execute": 941,
+        "model": 1899,
+        "report": 105,
+        "total": 3073
+      }
+    },
+    {
+      "name": "diabetes__s2.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "d7eba9bdd11d49d0956ae53cddbfb095",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "pres"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "mass",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "preg"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "pres"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "mass"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.394479,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 80,
+        "plan": 16,
+        "execute": 930,
+        "model": 1923,
+        "report": 95,
+        "total": 3081
+      }
+    },
+    {
+      "name": "diabetes__s3.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "335d1cdb65614b99b99977ebd3efeb27",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "insu"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "mass",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "age"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "insu"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "mass"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.394479,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 79,
+        "plan": 16,
+        "execute": 941,
+        "model": 1885,
+        "report": 96,
+        "total": 3051
+      }
+    },
+    {
+      "name": "adult__s1.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "f3bd092d7f614fe39c8fbe2b6d0d24de",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "capital-loss"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "age",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "workclass",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "occupation",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s6",
+          "op": "impute",
+          "column": "native-country",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "education-num"
+          },
+          {
+            "op": "standardize_text",
+            "column": "sex"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "capital-loss"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "age"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "workclass"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "occupation"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s6",
+            "op": "impute",
+            "columns": [
+              "native-country"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 6,
+        "proposed": 6,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.432054,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 3052,
+        "plan": 16,
+        "execute": 9079,
+        "model": 14423,
+        "report": 108,
+        "total": 26718
+      }
+    },
+    {
+      "name": "adult__s2.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "823fbfa4effb4e51943111fad23ca37e",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "hours-per-week"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "workclass",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "fnlwgt",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "occupation",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s6",
+          "op": "impute",
+          "column": "native-country",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "capital-loss"
+          },
+          {
+            "op": "standardize_text",
+            "column": "sex"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "hours-per-week"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "workclass"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "fnlwgt"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "occupation"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s6",
+            "op": "impute",
+            "columns": [
+              "native-country"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 6,
+        "proposed": 6,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.432054,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 3047,
+        "plan": 22,
+        "execute": 9250,
+        "model": 13847,
+        "report": 102,
+        "total": 26304
+      }
+    },
+    {
+      "name": "adult__s3.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "1785ff9b32ce4ab3812c725a535384da",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "hours-per-week"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "workclass",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "occupation",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "capital-gain",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s6",
+          "op": "impute",
+          "column": "native-country",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "education-num"
+          },
+          {
+            "op": "standardize_text",
+            "column": "race"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "hours-per-week"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "workclass"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "occupation"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "capital-gain"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s6",
+            "op": "impute",
+            "columns": [
+              "native-country"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 6,
+        "proposed": 6,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.432054,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2908,
+        "plan": 17,
+        "execute": 8849,
+        "model": 13999,
+        "report": 105,
+        "total": 25914
+      }
+    },
+    {
+      "name": "bank-marketing__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "0891ea44c38647bf84d0fba0e8c1b8a0",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V1"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V6",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V13"
+          },
+          {
+            "op": "standardize_text",
+            "column": "V3"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V6"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.468938,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2409,
+        "plan": 16,
+        "execute": 5442,
+        "model": 11348,
+        "report": 106,
+        "total": 19357
+      }
+    },
+    {
+      "name": "bank-marketing__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "cf475a32909c4fe89c65938fd1139536",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V15"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V12",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V13"
+          },
+          {
+            "op": "standardize_text",
+            "column": "V9"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V15"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V12"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.468938,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2412,
+        "plan": 16,
+        "execute": 5452,
+        "model": 11387,
+        "report": 101,
+        "total": 19405
+      }
+    },
+    {
+      "name": "bank-marketing__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "8869872444904d889d9221f1362061ac",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V15"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V6",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V12"
+          },
+          {
+            "op": "standardize_text",
+            "column": "V4"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V15"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V6"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.468938,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2436,
+        "plan": 16,
+        "execute": 5472,
+        "model": 14280,
+        "report": 102,
+        "total": 22343
+      }
+    },
+    {
+      "name": "blood-transfusion__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "4445d46c9ac6469a8f22cbbcb55b8c94",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V3"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V2",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V4"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V3"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V2"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.432638,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 67,
+        "plan": 16,
+        "execute": 595,
+        "model": 2105,
+        "report": 91,
+        "total": 2910
+      }
+    },
+    {
+      "name": "blood-transfusion__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "124546703fb34932993028981d1fa6af",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V1"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V3",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V4"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V3"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.432638,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 70,
+        "plan": 17,
+        "execute": 761,
+        "model": 2151,
+        "report": 87,
+        "total": 3124
+      }
+    },
+    {
+      "name": "blood-transfusion__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "0a57182c7d2a49b8b2491481b901d678",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V1"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V3",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V4"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V3"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.432638,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 72,
+        "plan": 23,
+        "execute": 781,
+        "model": 1758,
+        "report": 91,
+        "total": 2765
+      }
+    },
+    {
+      "name": "breast-w__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "0b2734bb9c2940b69bbeadc549c258ee",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Marginal_Adhesion"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Cell_Shape_Uniformity",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "Bare_Nuclei",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "Bland_Chromatin"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Marginal_Adhesion"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Cell_Shape_Uniformity"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "Bare_Nuclei"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 4,
+        "proposed": 4,
+        "approval_rate": 1.0
+      },
+      "best_model": "random_forest",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.395675,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 80,
+        "plan": 17,
+        "execute": 1395,
+        "model": 2595,
+        "report": 148,
+        "total": 4273
+      }
+    },
+    {
+      "name": "breast-w__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "5a0e6b0c4bd84a96a484fb30e44e3c21",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Mitoses"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Cell_Size_Uniformity",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "Bare_Nuclei",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "Single_Epi_Cell_Size"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Mitoses"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Cell_Size_Uniformity"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "Bare_Nuclei"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 4,
+        "proposed": 4,
+        "approval_rate": 1.0
+      },
+      "best_model": "random_forest",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.395675,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 118,
+        "plan": 26,
+        "execute": 1114,
+        "model": 2261,
+        "report": 107,
+        "total": 3685
+      }
+    },
+    {
+      "name": "breast-w__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "2349747ad9e54b3b81b7df1036abb6d1",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Cell_Size_Uniformity"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Marginal_Adhesion",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "Bare_Nuclei",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "Single_Epi_Cell_Size"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Cell_Size_Uniformity"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Marginal_Adhesion"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "Bare_Nuclei"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 4,
+        "proposed": 4,
+        "approval_rate": 1.0
+      },
+      "best_model": "random_forest",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.395675,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 79,
+        "plan": 17,
+        "execute": 1111,
+        "model": 2175,
+        "report": 109,
+        "total": 3532
+      }
+    },
+    {
+      "name": "spambase__s1.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "d4cb1ec8cd9c484ca755f129e480e5b8",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "char_freq_%28"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "word_freq_free",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "word_freq_1999"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "char_freq_%28"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "word_freq_free"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.377327,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 706,
+        "plan": 31,
+        "execute": 2117,
+        "model": 6626,
+        "report": 128,
+        "total": 9673
+      }
+    },
+    {
+      "name": "spambase__s2.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "88a9e34b108a40f1a6126516c9445efe",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "word_freq_report"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "word_freq_our",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "word_freq_all"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "word_freq_report"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "word_freq_our"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.377327,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 507,
+        "plan": 17,
+        "execute": 1838,
+        "model": 6563,
+        "report": 168,
+        "total": 9132
+      }
+    },
+    {
+      "name": "spambase__s3.csv",
+      "target": "class",
+      "status": "ok",
+      "session_id": "0ef9f315a3784e4c9bac5cecaeb0dce0",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "word_freq_pm"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "word_freq_hp",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "word_freq_credit"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "word_freq_pm"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "word_freq_hp"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.377327,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 502,
+        "plan": 17,
+        "execute": 1880,
+        "model": 6558,
+        "report": 109,
+        "total": 9103
+      }
+    },
+    {
+      "name": "phoneme__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "3232e716b5f0461cb05f9e99d94daffa",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V1"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V2",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V5"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V2"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.41399,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 217,
+        "plan": 16,
+        "execute": 910,
+        "model": 2195,
+        "report": 85,
+        "total": 3459
+      }
+    },
+    {
+      "name": "phoneme__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "5ca4e752e36748b7bbf63bb85d74a4df",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V5"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V1",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V3"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V5"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V1"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.41399,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 223,
+        "plan": 16,
+        "execute": 955,
+        "model": 2158,
+        "report": 83,
+        "total": 3471
+      }
+    },
+    {
+      "name": "phoneme__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "556a8e45b2f1470c9fa2937e456a6aa8",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V5"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V3",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V4"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V5"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V3"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.41399,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 233,
+        "plan": 17,
+        "execute": 937,
+        "model": 2142,
+        "report": 80,
+        "total": 3446
+      }
+    },
+    {
+      "name": "kc1__s1.csv",
+      "target": "defects",
+      "status": "ok",
+      "session_id": "74911fa247d84a0b855972ade8a625c7",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "t"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "b",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "defects_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "lOCode"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "t"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "b"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.458079,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 158,
+        "plan": 17,
+        "execute": 1385,
+        "model": 3227,
+        "report": 109,
+        "total": 4931
+      }
+    },
+    {
+      "name": "kc1__s2.csv",
+      "target": "defects",
+      "status": "ok",
+      "session_id": "17e31acba8814796bd04761fc44393de",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "total_Op"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "lOComment",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "defects_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "uniq_Op"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "total_Op"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "lOComment"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.458079,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 175,
+        "plan": 17,
+        "execute": 1273,
+        "model": 3359,
+        "report": 105,
+        "total": 4967
+      }
+    },
+    {
+      "name": "kc1__s3.csv",
+      "target": "defects",
+      "status": "ok",
+      "session_id": "bdb572d7057649da8ab4228b1698968d",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "e"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "l",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "defects_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "total_Opnd"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "e"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "l"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.458079,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 157,
+        "plan": 16,
+        "execute": 1291,
+        "model": 3277,
+        "report": 109,
+        "total": 4884
+      }
+    },
+    {
+      "name": "ilpd__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "3892419ea9b34d61a05b76260eeacdd3",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V6"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V5",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V10"
+          },
+          {
+            "op": "standardize_text",
+            "column": "V2"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V6"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V5"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.416767,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 74,
+        "plan": 16,
+        "execute": 1113,
+        "model": 2248,
+        "report": 121,
+        "total": 3609
+      }
+    },
+    {
+      "name": "ilpd__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "3d735139428949a89425795515afc80f",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V5"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V3",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V4"
+          },
+          {
+            "op": "standardize_text",
+            "column": "V2"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V5"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V3"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.416767,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 80,
+        "plan": 21,
+        "execute": 1089,
+        "model": 2132,
+        "report": 112,
+        "total": 3471
+      }
+    },
+    {
+      "name": "ilpd__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "5f65bfb565494ed5a4eb3dcad1c4af35",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V1"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V10",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V4"
+          },
+          {
+            "op": "standardize_text",
+            "column": "V2"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V10"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.416767,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 81,
+        "plan": 17,
+        "execute": 1125,
+        "model": 2098,
+        "report": 108,
+        "total": 3467
+      }
+    },
+    {
+      "name": "vehicle__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "86f54ed3da3a4af5b07c555ab586388f",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "PR.AXIS_ASPECT_RATIO"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "COMPACTNESS",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "MAX.LENGTH_RECTANGULARITY"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "PR.AXIS_ASPECT_RATIO"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "COMPACTNESS"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.102351,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 107,
+        "plan": 17,
+        "execute": 1179,
+        "model": 3558,
+        "report": 121,
+        "total": 5023
+      }
+    },
+    {
+      "name": "vehicle__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "0b326909487e46fbbd3c8b06a2db3655",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "MAX.LENGTH_RECTANGULARITY"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "KURTOSIS_ABOUT_MAJOR",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "SCATTER_RATIO"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "MAX.LENGTH_RECTANGULARITY"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "KURTOSIS_ABOUT_MAJOR"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.102351,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 122,
+        "plan": 17,
+        "execute": 1364,
+        "model": 3663,
+        "report": 120,
+        "total": 5324
+      }
+    },
+    {
+      "name": "vehicle__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "b01f11d964cd4c048a3b277f0eca984a",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "CIRCULARITY"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "PR.AXIS_RECTANGULARITY",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "SCALED_VARIANCE_MAJOR"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "CIRCULARITY"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "PR.AXIS_RECTANGULARITY"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.102351,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 123,
+        "plan": 18,
+        "execute": 1356,
+        "model": 3554,
+        "report": 118,
+        "total": 5208
+      }
+    },
+    {
+      "name": "wdbc__s1.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "9b45669585f0447aaef8f9b0d0053708",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V22"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V6",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V16"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V22"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V6"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 1.0,
+      "dummy_cv": 0.385135,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 130,
+        "plan": 23,
+        "execute": 1659,
+        "model": 4556,
+        "report": 147,
+        "total": 6563
+      }
+    },
+    {
+      "name": "wdbc__s2.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "0ccdd20c5aa14be3a8433ce3c43f30f1",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V3"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V17",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V30"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V3"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V17"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 0.997638,
+      "dummy_cv": 0.385135,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 142,
+        "plan": 23,
+        "execute": 1540,
+        "model": 4024,
+        "report": 119,
+        "total": 5890
+      }
+    },
+    {
+      "name": "wdbc__s3.csv",
+      "target": "Class",
+      "status": "ok",
+      "session_id": "77423d9e085a4b5887bc9d3969419459",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "V27"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "V22",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "Class_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "V17"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "V27"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "V22"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "logistic_regression",
+      "problem_type": "classification",
+      "primary_metric": "f1_macro",
+      "best_cv": 0.997638,
+      "dummy_cv": 0.385135,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 125,
+        "plan": 22,
+        "execute": 1254,
+        "model": 3906,
+        "report": 118,
+        "total": 5467
+      }
+    },
+    {
+      "name": "house-prices__s1.csv",
+      "target": "SalePrice",
+      "status": "ok",
+      "session_id": "3c63aa66f2f64c3391e505d9520dd49e",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Alley",
+              "Fireplaces",
+              "PoolQC",
+              "Fence",
+              "MiscFeature"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "LotFrontage",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "MasVnrType",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "MasVnrArea",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s6",
+          "op": "impute",
+          "column": "BsmtQual",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s7",
+          "op": "impute",
+          "column": "BsmtCond",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s8",
+          "op": "impute",
+          "column": "BsmtExposure",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s9",
+          "op": "impute",
+          "column": "BsmtFinType1",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s10",
+          "op": "impute",
+          "column": "BsmtFinType2",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s11",
+          "op": "impute",
+          "column": "Electrical",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s12",
+          "op": "impute",
+          "column": "LowQualFinSF",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s13",
+          "op": "impute",
+          "column": "FireplaceQu",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s14",
+          "op": "impute",
+          "column": "GarageType",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s15",
+          "op": "impute",
+          "column": "GarageYrBlt",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s16",
+          "op": "impute",
+          "column": "GarageFinish",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s17",
+          "op": "impute",
+          "column": "GarageQual",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s18",
+          "op": "impute",
+          "column": "GarageCond",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "SalePrice_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "BsmtUnfSF"
+          },
+          {
+            "op": "standardize_text",
+            "column": "HouseStyle"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Alley",
+              "Fireplaces",
+              "PoolQC",
+              "Fence",
+              "MiscFeature"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "LotFrontage"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "MasVnrType"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "MasVnrArea"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s6",
+            "op": "impute",
+            "columns": [
+              "BsmtQual"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s7",
+            "op": "impute",
+            "columns": [
+              "BsmtCond"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s8",
+            "op": "impute",
+            "columns": [
+              "BsmtExposure"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s9",
+            "op": "impute",
+            "columns": [
+              "BsmtFinType1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s10",
+            "op": "impute",
+            "columns": [
+              "BsmtFinType2"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s11",
+            "op": "impute",
+            "columns": [
+              "Electrical"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s12",
+            "op": "impute",
+            "columns": [
+              "LowQualFinSF"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s13",
+            "op": "impute",
+            "columns": [
+              "FireplaceQu"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s14",
+            "op": "impute",
+            "columns": [
+              "GarageType"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s15",
+            "op": "impute",
+            "columns": [
+              "GarageYrBlt"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s16",
+            "op": "impute",
+            "columns": [
+              "GarageFinish"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s17",
+            "op": "impute",
+            "columns": [
+              "GarageQual"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s18",
+            "op": "impute",
+            "columns": [
+              "GarageCond"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 18,
+        "proposed": 18,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 77160.108457,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 435,
+        "plan": 22,
+        "execute": 4974,
+        "model": 7973,
+        "report": 113,
+        "total": 13558
+      }
+    },
+    {
+      "name": "house-prices__s2.csv",
+      "target": "SalePrice",
+      "status": "ok",
+      "session_id": "956db55449da4e0baa452e36ac2c2f86",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Alley",
+              "FullBath",
+              "PoolQC",
+              "Fence",
+              "MiscFeature"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "LotFrontage",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "MasVnrType",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "MasVnrArea",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s6",
+          "op": "impute",
+          "column": "BsmtQual",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s7",
+          "op": "impute",
+          "column": "BsmtCond",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s8",
+          "op": "impute",
+          "column": "BsmtExposure",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s9",
+          "op": "impute",
+          "column": "BsmtFinType1",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s10",
+          "op": "impute",
+          "column": "BsmtFinSF1",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s11",
+          "op": "impute",
+          "column": "BsmtFinType2",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s12",
+          "op": "impute",
+          "column": "Electrical",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s13",
+          "op": "impute",
+          "column": "FireplaceQu",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s14",
+          "op": "impute",
+          "column": "GarageType",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s15",
+          "op": "impute",
+          "column": "GarageYrBlt",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s16",
+          "op": "impute",
+          "column": "GarageFinish",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s17",
+          "op": "impute",
+          "column": "GarageQual",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s18",
+          "op": "impute",
+          "column": "GarageCond",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "SalePrice_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "LowQualFinSF"
+          },
+          {
+            "op": "standardize_text",
+            "column": "MSZoning"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Alley",
+              "FullBath",
+              "PoolQC",
+              "Fence",
+              "MiscFeature"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "LotFrontage"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "MasVnrType"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "MasVnrArea"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s6",
+            "op": "impute",
+            "columns": [
+              "BsmtQual"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s7",
+            "op": "impute",
+            "columns": [
+              "BsmtCond"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s8",
+            "op": "impute",
+            "columns": [
+              "BsmtExposure"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s9",
+            "op": "impute",
+            "columns": [
+              "BsmtFinType1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s10",
+            "op": "impute",
+            "columns": [
+              "BsmtFinSF1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s11",
+            "op": "impute",
+            "columns": [
+              "BsmtFinType2"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s12",
+            "op": "impute",
+            "columns": [
+              "Electrical"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s13",
+            "op": "impute",
+            "columns": [
+              "FireplaceQu"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s14",
+            "op": "impute",
+            "columns": [
+              "GarageType"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s15",
+            "op": "impute",
+            "columns": [
+              "GarageYrBlt"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s16",
+            "op": "impute",
+            "columns": [
+              "GarageFinish"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s17",
+            "op": "impute",
+            "columns": [
+              "GarageQual"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s18",
+            "op": "impute",
+            "columns": [
+              "GarageCond"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 18,
+        "proposed": 18,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 77160.108457,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 400,
+        "plan": 19,
+        "execute": 4711,
+        "model": 7656,
+        "report": 118,
+        "total": 12941
+      }
+    },
+    {
+      "name": "house-prices__s3.csv",
+      "target": "SalePrice",
+      "status": "ok",
+      "session_id": "488e10afcc744a749257db0b202ed9d6",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "Alley",
+              "1stFlrSF",
+              "PoolQC",
+              "Fence",
+              "MiscFeature"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "Id",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s4",
+          "op": "impute",
+          "column": "LotFrontage",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s5",
+          "op": "impute",
+          "column": "MasVnrType",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s6",
+          "op": "impute",
+          "column": "MasVnrArea",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s7",
+          "op": "impute",
+          "column": "BsmtQual",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s8",
+          "op": "impute",
+          "column": "BsmtCond",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s9",
+          "op": "impute",
+          "column": "BsmtExposure",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s10",
+          "op": "impute",
+          "column": "BsmtFinType1",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s11",
+          "op": "impute",
+          "column": "BsmtFinType2",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s12",
+          "op": "impute",
+          "column": "Electrical",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s13",
+          "op": "impute",
+          "column": "FireplaceQu",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s14",
+          "op": "impute",
+          "column": "GarageType",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s15",
+          "op": "impute",
+          "column": "GarageYrBlt",
+          "params": {
+            "strategy": "median"
+          }
+        },
+        {
+          "step_id": "s16",
+          "op": "impute",
+          "column": "GarageFinish",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s17",
+          "op": "impute",
+          "column": "GarageQual",
+          "params": {
+            "strategy": "mode"
+          }
+        },
+        {
+          "step_id": "s18",
+          "op": "impute",
+          "column": "GarageCond",
+          "params": {
+            "strategy": "mode"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "SalePrice_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "BsmtUnfSF"
+          },
+          {
+            "op": "standardize_text",
+            "column": "Condition2"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "Alley",
+              "1stFlrSF",
+              "PoolQC",
+              "Fence",
+              "MiscFeature"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "Id"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s4",
+            "op": "impute",
+            "columns": [
+              "LotFrontage"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s5",
+            "op": "impute",
+            "columns": [
+              "MasVnrType"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s6",
+            "op": "impute",
+            "columns": [
+              "MasVnrArea"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s7",
+            "op": "impute",
+            "columns": [
+              "BsmtQual"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s8",
+            "op": "impute",
+            "columns": [
+              "BsmtCond"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s9",
+            "op": "impute",
+            "columns": [
+              "BsmtExposure"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s10",
+            "op": "impute",
+            "columns": [
+              "BsmtFinType1"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s11",
+            "op": "impute",
+            "columns": [
+              "BsmtFinType2"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s12",
+            "op": "impute",
+            "columns": [
+              "Electrical"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s13",
+            "op": "impute",
+            "columns": [
+              "FireplaceQu"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s14",
+            "op": "impute",
+            "columns": [
+              "GarageType"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s15",
+            "op": "impute",
+            "columns": [
+              "GarageYrBlt"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s16",
+            "op": "impute",
+            "columns": [
+              "GarageFinish"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s17",
+            "op": "impute",
+            "columns": [
+              "GarageQual"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s18",
+            "op": "impute",
+            "columns": [
+              "GarageCond"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 18,
+        "proposed": 18,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 77160.108457,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 407,
+        "plan": 19,
+        "execute": 4643,
+        "model": 7645,
+        "report": 112,
+        "total": 12864
+      }
+    },
+    {
+      "name": "diamonds__s1.csv",
+      "target": "price",
+      "status": "ok",
+      "session_id": "3b0dd4800e2f43dd8b29194dd5d43f25",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "z"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "x",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "price_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "table"
+          },
+          {
+            "op": "standardize_text",
+            "column": "color"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "z"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "x"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 4002.179835,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2447,
+        "plan": 20,
+        "execute": 4665,
+        "model": 17822,
+        "report": 109,
+        "total": 25103
+      }
+    },
+    {
+      "name": "diamonds__s2.csv",
+      "target": "price",
+      "status": "ok",
+      "session_id": "3d02eb04a812435b9742caac19d94e76",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "y"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "depth",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "price_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "table"
+          },
+          {
+            "op": "standardize_text",
+            "column": "color"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "y"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "depth"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 4002.179835,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2433,
+        "plan": 16,
+        "execute": 4708,
+        "model": 17948,
+        "report": 112,
+        "total": 25255
+      }
+    },
+    {
+      "name": "diamonds__s3.csv",
+      "target": "price",
+      "status": "ok",
+      "session_id": "398d884320634cf2a2dd07ba3379d024",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "table"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "depth",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "price_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "z"
+          },
+          {
+            "op": "standardize_text",
+            "column": "clarity"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "table"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "depth"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 4002.179835,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 2530,
+        "plan": 19,
+        "execute": 6006,
+        "model": 27276,
+        "report": 106,
+        "total": 35976
+      }
+    },
+    {
+      "name": "bike-sharing__s1.csv",
+      "target": "count",
+      "status": "ok",
+      "session_id": "248376422c9b489fadb4ccb64cc71ae8",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "windspeed"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "year",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "count_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "temp"
+          },
+          {
+            "op": "standardize_text",
+            "column": "season"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "windspeed"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "year"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 182.179065,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 843,
+        "plan": 18,
+        "execute": 2353,
+        "model": 5967,
+        "report": 120,
+        "total": 9340
+      }
+    },
+    {
+      "name": "bike-sharing__s2.csv",
+      "target": "count",
+      "status": "ok",
+      "session_id": "f01f59760187440f886a6c5b08b321db",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "temp"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "feel_temp",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "count_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "windspeed"
+          },
+          {
+            "op": "standardize_text",
+            "column": "season"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "temp"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "feel_temp"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 182.179065,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 816,
+        "plan": 16,
+        "execute": 2365,
+        "model": 7084,
+        "report": 126,
+        "total": 10445
+      }
+    },
+    {
+      "name": "bike-sharing__s3.csv",
+      "target": "count",
+      "status": "ok",
+      "session_id": "68ef6670da604f3190e81c0520c74c41",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "weekday"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "temp",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.375,
+        "precision": 1.0,
+        "recall": 0.375,
+        "f1": 0.5455,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "count_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "humidity"
+          },
+          {
+            "op": "standardize_text",
+            "column": "season"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "weekday"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "temp"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 182.179065,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 1291,
+        "plan": 17,
+        "execute": 2284,
+        "model": 5649,
+        "report": 101,
+        "total": 9383
+      }
+    },
+    {
+      "name": "house-sales__s1.csv",
+      "target": "price",
+      "status": "ok",
+      "session_id": "ca56221de85241dfb784fe59f3f4797c",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "floors"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "zipcode",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "price_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "long"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "floors"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "zipcode"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 360733.785703,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 1230,
+        "plan": 17,
+        "execute": 2572,
+        "model": 10400,
+        "report": 109,
+        "total": 14368
+      }
+    },
+    {
+      "name": "house-sales__s2.csv",
+      "target": "price",
+      "status": "ok",
+      "session_id": "e30639fe8edb4c99ae5ef799ef31a3a7",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "sqft_basement"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "sqft_above",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "price_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "sqft_living15"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "sqft_basement"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "sqft_above"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 360733.785703,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 1133,
+        "plan": 16,
+        "execute": 2690,
+        "model": 10006,
+        "report": 105,
+        "total": 13988
+      }
+    },
+    {
+      "name": "house-sales__s3.csv",
+      "target": "price",
+      "status": "ok",
+      "session_id": "38d18de6c866422a83a446a011466142",
+      "planner_calls": [
+        {
+          "attempt": 1,
+          "valid": 1,
+          "error": null,
+          "prompt_tokens": null,
+          "output_tokens": null,
+          "duration_ms": 0
+        }
+      ],
+      "plan": [
+        {
+          "step_id": "s1",
+          "op": "drop_duplicates",
+          "column": null,
+          "params": {}
+        },
+        {
+          "step_id": "s2",
+          "op": "drop_column",
+          "column": null,
+          "params": {
+            "columns": [
+              "zipcode"
+            ]
+          }
+        },
+        {
+          "step_id": "s3",
+          "op": "impute",
+          "column": "waterfront",
+          "params": {
+            "strategy": "median"
+          }
+        }
+      ],
+      "score": {
+        "expected_recall": 0.4286,
+        "precision": 1.0,
+        "recall": 0.4286,
+        "f1": 0.6,
+        "forbidden_rate": 0.0,
+        "missing": [
+          {
+            "op": "drop_column",
+            "column": "record_id"
+          },
+          {
+            "op": "drop_column",
+            "column": "export_batch"
+          },
+          {
+            "op": "drop_column",
+            "column": "price_copy"
+          },
+          {
+            "op": "clip_outliers",
+            "column": "sqft_lot15"
+          }
+        ],
+        "forbidden_hits": [],
+        "sensible": false,
+        "review": [
+          {
+            "step_id": "s1",
+            "op": "drop_duplicates",
+            "columns": [],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s2",
+            "op": "drop_column",
+            "columns": [
+              "zipcode"
+            ],
+            "decision": "approve"
+          },
+          {
+            "step_id": "s3",
+            "op": "impute",
+            "columns": [
+              "waterfront"
+            ],
+            "decision": "approve"
+          }
+        ],
+        "approved": 3,
+        "proposed": 3,
+        "approval_rate": 1.0
+      },
+      "best_model": "linear_regression",
+      "problem_type": "regression",
+      "primary_metric": "rmse",
+      "best_cv": 0.0,
+      "dummy_cv": 360733.785703,
+      "narration_source": "template",
+      "timings_ms": {
+        "upload_profile": 1136,
+        "plan": 16,
+        "execute": 2669,
+        "model": 9559,
+        "report": 109,
+        "total": 13527
+      }
+    }
+  ],
+  "perf": null,
+  "llm_cache": null,
+  "run_tag": null,
+  "golden": "eval\\benchmark\\build\\golden.json",
+  "environment": "Python 3.11.9 on Windows 10"
+}

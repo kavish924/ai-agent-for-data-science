@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-12 · **Current branch:** `chore/checklist-m8-merged`
+> **Last updated:** 2026-11-24 · **Current branch:** `m9-paper-eval`
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -189,6 +189,30 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 - [x] Root `README.md` (setup, eval, development) and `docs/demo.md` (8-minute walkthrough + likely questions)
 - [ ] Screenshots for the README (the browser pane can't save image files; take them by hand or add a Playwright script)
 - [x] Merged to `main` (PR #6); CI green (backend + frontend) after a packaging fix (`517b747`)
+
+## M9 — Paper evaluation · branch `m9-paper-eval`
+
+Goal: evidence for a workshop paper ("LLM plans, code executes"). Full plan: RQ1 plan quality,
+RQ2 downstream utility, RQ3 safety vs a code-generating agent, RQ4 reliability/reproducibility,
+RQ5 ablations, RQ6 cost.
+
+- [x] Spec 10 NFR-13/14 + AC-11..13, tests written first
+- [x] LLM record/replay cache (`eval/llm_cache.py`; `eval.run --cache/--run-tag/--replay-only/--min-interval`) for the Gemini free tier
+- [x] Metrics: precision/recall/F1, forbidden rate, seeded bootstrap CI, Cohen's κ
+- [x] Spec 10 NFR-15..17 + AC-14..18, tests written first
+- [x] Seeded corruption generator with exact ground truth (`eval/corrupt.py`, `python -m eval.build_benchmark`): id/constant/leak columns, 10% and 80% missing, outliers, text noise, duplicates; merges the source's golden entry
+- [x] Manifest of 16 OpenML datasets (12 classification, 4 regression) + fetcher with name/target/sha256 checks (`python -m eval.fetch_datasets`)
+- [x] `eval.run --golden/--data-dir` scores any benchmark; results go next to the benchmark, not over `eval/results/`
+- [x] Offline baseline on 9 corrupted samples (3 seeds): rule-based planner F1 0.62, 0/9 sensible, 0% forbidden
+- [x] Offline baseline on the full benchmark, 57 datasets (19 sources × 3 seeds): 57/57 ran every stage; F1 0.58, 0/57 sensible, 100% approval, 0% forbidden, 9.6 s mean to report (`eval/results/benchmark-offline.md`)
+- [x] Fetched all 16 OpenML datasets (every id passed the name check); hashes + licences in the manifest. `house-prices` reports licence "NA": check before redistributing
+- [ ] Natural (uncorrupted) golden plans for the OpenML datasets + second annotator (κ)
+- [ ] RQ2 downstream utility: raw vs agent vs golden vs baseline-cleaned CV scores
+- [ ] Code-generating LLM baseline (sandboxed) scored with the same metrics
+- [ ] Ablations: no Gate, no retry, sample values in profile, free-form ops, auto-approve
+- [ ] Safety suite: prompt injection via column names/values, prompt leak scanner, upload hash check, Gate fuzzer
+- [ ] Multi-model, ≥3 runs each; LaTeX tables + plots from committed JSON
+- [ ] Paper draft
 
 ## Known follow-ups / tech debt
 

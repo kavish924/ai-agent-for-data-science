@@ -16,3 +16,7 @@ node_modules/
 
 # graphify knowledge graph (local, rebuild with `graphify update .`)
 graphify-out/
+
+# Eval benchmark data (fetched/generated; reproducible from the manifest and seeds)
+/backend/eval/benchmark/data/
+/backend/eval/benchmark/build/

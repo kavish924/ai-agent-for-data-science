@@ -1,0 +1,149 @@
+{
+ "_doc": "Benchmark sources (Spec 10 NFR-15). Fetch with `python -m eval.fetch_datasets --record-hashes`; the fetcher rejects an id whose OpenML name differs from openml_name. sha256 and license are recorded on first fetch.",
+ "datasets": [
+  {
+   "name": "credit-g",
+   "openml_id": 31,
+   "openml_name": "credit-g",
+   "target": "class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "38b6dbf6fb4b0311a3ffc005730f42623128591fb36473ab3c22d270c0467632"
+  },
+  {
+   "name": "diabetes",
+   "openml_id": 37,
+   "openml_name": "diabetes",
+   "target": "class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "3da6d7849e3faeaec68309a79b4f4a12c776a752d286f7f20ae644252ce6d029"
+  },
+  {
+   "name": "adult",
+   "openml_id": 1590,
+   "openml_name": "adult",
+   "target": "class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "8f970e20c9991979ec0a9ccb65ce97543d678709a2c6f8ef23f7fb32f40adddc"
+  },
+  {
+   "name": "bank-marketing",
+   "openml_id": 1461,
+   "openml_name": "bank-marketing",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "17d229e152b7789eb835fd785a9f3d14ba7d9c90bf2a4bb83630ef6c7fcad969"
+  },
+  {
+   "name": "blood-transfusion",
+   "openml_id": 1464,
+   "openml_name": "blood-transfusion-service-center",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "0b31be4928ca38698b31e08790876ef00d6135b7a612b2ddb2ecc8608b1f9805"
+  },
+  {
+   "name": "breast-w",
+   "openml_id": 15,
+   "openml_name": "breast-w",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "b3935b056c960158d2d0221742cbacda39fb7a81fcb1818fbe12064402d29ffc"
+  },
+  {
+   "name": "spambase",
+   "openml_id": 44,
+   "openml_name": "spambase",
+   "target": "class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "62e6365090eeaa4120e619bd9f9f368755b591d51507590db76742d619a370a9"
+  },
+  {
+   "name": "phoneme",
+   "openml_id": 1489,
+   "openml_name": "phoneme",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "b2992270f8816e0120d58afea5aa05ee0abc843c77e6b10327bee5e70d7809ca"
+  },
+  {
+   "name": "kc1",
+   "openml_id": 1067,
+   "openml_name": "kc1",
+   "target": "defects",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "03e5aaff7cc370c0c5f97d2c95607c94275b8657fa27b076d7ebb775425c64e0"
+  },
+  {
+   "name": "ilpd",
+   "openml_id": 1480,
+   "openml_name": "ilpd",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "e4a6b59b5921718b28139bc79dfdcfca512ef7feca4dce25cbe3b8c8fad3aaa1"
+  },
+  {
+   "name": "vehicle",
+   "openml_id": 54,
+   "openml_name": "vehicle",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "4980d4ebdfc64180b4607d14e57651049d6420f960d92a12d6754cb0dded05eb"
+  },
+  {
+   "name": "wdbc",
+   "openml_id": 1510,
+   "openml_name": "wdbc",
+   "target": "Class",
+   "task": "classification",
+   "license": "Public",
+   "sha256": "f6dac2f3743d1e37ef35759274b2f730775e6fab9f3d60eb29a6a35add3f3190"
+  },
+  {
+   "name": "house-prices",
+   "openml_id": 42165,
+   "openml_name": "house_prices",
+   "target": "SalePrice",
+   "task": "regression",
+   "license": "NA",
+   "sha256": "b214efc1b289b5675b9f84316549c2a3f44cfaaa1f51ea2f4d0bcdd34fe33882"
+  },
+  {
+   "name": "diamonds",
+   "openml_id": 42225,
+   "openml_name": "diamonds",
+   "target": "price",
+   "task": "regression",
+   "license": "public domain",
+   "sha256": "0e7164799468299f8dc09b006cf396c43717c3dc71f947f0a32cc6e199895b46"
+  },
+  {
+   "name": "bike-sharing",
+   "openml_id": 42712,
+   "openml_name": "Bike_Sharing_Demand",
+   "target": "count",
+   "task": "regression",
+   "license": "Public",
+   "sha256": "046c5cfdc11f48c20d56a2756d96633e396848b5067ebf9ba3c06d027657afa4"
+  },
+  {
+   "name": "house-sales",
+   "openml_id": 42092,
+   "openml_name": "house_sales",
+   "target": "price",
+   "task": "regression",
+   "license": "CC0 Public Domain",
+   "sha256": "8dff07e0d84e5b0ed0513e3064514a00fdfcb56555932695fa0633344476b9e4"
+  }
+ ]
+}
