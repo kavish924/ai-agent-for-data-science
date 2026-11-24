@@ -18,6 +18,8 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "storage_root", storage)
     monkeypatch.setattr(settings, "db_path", storage / "app.db")
     monkeypatch.setattr(settings, "gemini_api_key", None)  # tests never reach a real LLM
+    monkeypatch.setattr(settings, "gemini_backend", "aistudio")  # ...nor Vertex AI
+    monkeypatch.setattr(settings, "google_cloud_project", None)
     monkeypatch.setattr(settings, "llm_provider", "gemini")
     session_store.init_db(settings.db_path)
     app = create_app()

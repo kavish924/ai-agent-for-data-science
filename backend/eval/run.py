@@ -2,7 +2,7 @@
 
 Usage (from backend/):
     python -m eval.run                 # offline: deterministic RuleBasedLLM, no key needed
-    python -m eval.run --live          # real Gemini (GEMINI_API_KEY in the repo-root .env)
+    python -m eval.run --live          # real Gemini (API key or Vertex AI, see .env.example)
     python -m eval.run --only titanic.csv --perf-rows 0
     python -m eval.run --live --cache eval/cache --min-interval 6   # record/replay (NFR-13)
     python -m eval.run --live --cache eval/cache --replay-only      # rerun with zero API calls
@@ -58,8 +58,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):  # Windows consoles default to cp1252
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    if args.live and not settings.gemini_api_key:
-        print("--live needs GEMINI_API_KEY (in the repo-root .env)")
+    if args.live and not settings.gemini_configured:
+        print("--live needs GEMINI_API_KEY, or GEMINI_BACKEND=vertex with GOOGLE_CLOUD_PROJECT"
+              " (in the repo-root .env)")
         return 2
 
     golden = harness.load_golden(args.golden)

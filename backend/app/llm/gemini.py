@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from google import genai
 from google.genai import errors, types
 
 from .client import LLMError, LLMResponse
+
+if TYPE_CHECKING:
+    from ..config import Settings
 
 
 class GeminiClient:
@@ -15,13 +20,31 @@ class GeminiClient:
     by Pydantic + the Gate (see Spec 03 Interfaces).
     """
 
-    def __init__(self, *, api_key: str, model: str, seed: int, timeout_s: float) -> None:
+    def __init__(self, *, model: str, seed: int, timeout_s: float, api_key: str | None = None,
+                 vertex_project: str | None = None, vertex_location: str = "global") -> None:
+        """AI Studio with `api_key`, or Vertex AI with `vertex_project` (FR-PL-19).
+
+        Vertex AI authenticates with Application Default Credentials
+        (`gcloud auth application-default login` or GOOGLE_APPLICATION_CREDENTIALS).
+        """
         self.model = model
         self._seed = seed
-        self._client = genai.Client(
-            api_key=api_key,
-            http_options=types.HttpOptions(timeout=int(timeout_s * 1000)),  # milliseconds
-        )
+        http_options = types.HttpOptions(timeout=int(timeout_s * 1000))  # milliseconds
+        if vertex_project:
+            self._client = genai.Client(vertexai=True, project=vertex_project,
+                                        location=vertex_location, http_options=http_options)
+        else:
+            self._client = genai.Client(api_key=api_key, http_options=http_options)
+
+    @classmethod
+    def from_settings(cls, settings: Settings) -> GeminiClient:
+        """Build the client for the configured backend (Spec 03 FR-PL-19)."""
+        vertex = settings.gemini_backend == "vertex"
+        return cls(model=settings.gemini_model, seed=settings.random_seed,
+                   timeout_s=settings.llm_timeout_s,
+                   api_key=None if vertex else settings.gemini_api_key,
+                   vertex_project=settings.google_cloud_project if vertex else None,
+                   vertex_location=settings.google_cloud_location)
 
     def generate_json(self, *, system: str, prompt: str) -> LLMResponse:
         config = types.GenerateContentConfig(
