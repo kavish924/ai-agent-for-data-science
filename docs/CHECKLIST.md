@@ -224,7 +224,8 @@ RQ5 ablations, RQ6 cost.
 ## M10 — Deployment · branch `m10-deployment`
 
 - [x] Spec 11 drafted: FR-DP-01..23 + AC-1..15, `dp` test prefix (Status: Draft)
-- [ ] Resolve Spec 11 open questions (hosting target, access gate, Gemini backend, data location) and approve it
+- [x] Hosting target chosen: Render (web service + private service with a disk); Spec 11 FR-DP-24..29 + AC-16..18
+- [ ] Resolve Spec 11's remaining open questions (access gate, Gemini backend, Render region) and approve it
 - [ ] Update Spec 09 (`/ready`, `/health` version, `401`s) and add the `dp` rows to `traceability.md`
 - [ ] Implement per Spec 11 Tasks, tests first; CI deployment smoke green
 
