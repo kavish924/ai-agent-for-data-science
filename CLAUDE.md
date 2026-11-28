@@ -12,7 +12,7 @@ Source of truth: `docs/specs/NN-*.md`. Workflow for every behavior change:
    `09-api-contracts.md`.
 2. **Tests from ACs.** Each AC gets at least one test named `test_<prefix>_ac<N>_<what>`
    (prefixes: `up` 01, `pr` 02, `pl` 03, `rv` 04, `ex` 05, `ch` 06, `ml` 07, `rp` 08,
-   `ap` 09, `nfr` 10). Write it first and watch it fail.
+   `ap` 09, `nfr` 10, `dp` 11). Write it first and watch it fail.
 3. **Implement** until green. No code without an FR; no FR without an AC.
 4. **Trace.** Add the FR → AC → test → module row to `docs/specs/traceability.md`.
 5. **Close.** Tick the spec's `## Tasks`, add a `## Changelog` line, set `Status: Done`

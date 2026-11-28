@@ -54,6 +54,7 @@ output execute or reach raw data is out of scope by definition.
 | Report generation | `08-report-generation.md` | M6 |
 | UI polish | `04-plan-review-ui.md` | M7 |
 | Evaluation & polish | all (success metrics, PRD §9) | M8 |
+| Deployment: single-tenant hosted demo (images, compose, access gate) | `11-deployment.md` (Draft) | M10 |
 
 Order revised 2026-11-11: hardening (M0) runs before M3 and a thin UI follows M3, so the
 flow can be demoed end to end early. The PRD order is preserved otherwise.
@@ -78,7 +79,7 @@ Open PRD questions (§13) resolved by default for v1 — revisit before launch:
 | Target column | User confirms; system suggests candidates (Spec 07) |
 | Model scope | Tabular classification + regression only |
 | Data privacy | Aggregate profile only to the LLM — no sample values |
-| Deployment | Local demo only (SQLite + filesystem) |
+| Deployment | Local demo only (SQLite + filesystem). Hosted single-tenant demo proposed in Spec 11 (Draft, M10) |
 | Report format | HTML for MVP; PDF is stretch |
 | Audience | Portfolio/MVP first |
 
