@@ -1,6 +1,6 @@
 # Spec 11 — Deployment
 
-> **Status:** In progress · **Source:** PRD §8, §13.4 · **Milestone:** M10 · **Host:** Render (free tier, Singapore) · **Supersedes:** Spec 00 §8 "Deployment: local demo only"
+> **Status:** Done · **Source:** PRD §8, §13.4 · **Milestone:** M10 · **Host:** Render (free tier, Singapore) · **Supersedes:** Spec 00 §8 "Deployment: local demo only"
 
 ## Purpose
 
@@ -205,10 +205,9 @@ the backend has a public URL that only accepts requests carrying the internal to
       `/config`, standalone output (AC-2, 6, 8, 10, 11, 14, 19)
 - [x] Dockerfiles, `.dockerignore`, `deploy/compose.yaml`, `deploy/.env.example` (AC-1, 17)
 - [x] `render.yaml` (AC-16)
-- [~] CI deployment smoke (AC-5, 7, 15): job written; the same flow passed locally without Docker; first
-      Docker run is on the PR
+- [x] CI deployment smoke (AC-5, 7, 15): `deploy-smoke` green on PR #13 (first real Docker build)
 - [x] Runbook `docs/deployment.md`
-- [ ] First Render deploy: create the Blueprint, enter the secrets and `BACKEND_URL`, run the manual check
+- [x] First Render deploy: create the Blueprint, enter the secrets and `BACKEND_URL`, run the manual check
 
 ## Changelog
 
@@ -225,3 +224,8 @@ the backend has a public URL that only accepts requests carrying the internal to
   compose, `render.yaml`, CI `deploy-smoke`, runbook. Found while building: next.config rewrites are fixed at build
   time in a standalone build (proxy moved to middleware) and middleware truncates bodies over 10 MB by default (cap
   raised, FR-DP-09). Status stays In progress until CI's Docker smoke and the first Render deploy pass.
+- 2026-11-28 — **Done.** CI `deploy-smoke` passed on PR #13 (both images built, full stack under 512 MB). First
+  Render deploy from Blueprint `ai-ds-agent` (commit `ba9fc48`): both free services live in Singapore; backend
+  answers `401` without the token, frontend `401` without the password, HTTP redirects to HTTPS; the live
+  `smoke_deploy.py --skip-row-cap` passed (exit 0), including a real Gemini plan and summary on `titanic.csv` (66 s).
+  Note: Render accepted `autoDeployTrigger: checksPass`; the guessed `BACKEND_URL` matched the backend's URL.
