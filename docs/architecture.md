@@ -168,8 +168,11 @@ object storage without touching pipeline code (PRD §8).
 
 ## 6. Deployment View (MVP)
 
-- **Local demo:** single FastAPI process serving the API + built Next.js static export;
-  SQLite + local `storage/` directory; `GEMINI_API_KEY` from `.env`
+- **Local demo:** two processes: FastAPI on port 8000 and the Next.js server on port 3000,
+  which proxies `/api/v1` to it (Spec 04 FR-RV-11). Not a static export: the frontend has a
+  server route (`/samples/{name}`). SQLite + local `storage/` directory; `GEMINI_API_KEY` from `.env`
+- **Hosted demo:** specified in `docs/specs/11-deployment.md` (Draft, M10): both services as
+  containers in one compose stack, one backend worker, a persistent `/data` volume, an access gate
 - **Background jobs:** FastAPI `BackgroundTasks` (MVP); a queue (e.g., Celery/RQ/arq)
   is the upgrade path if stages need isolation or horizontal scaling
 - **Hosting later:** frontend → Vercel; backend → any container host; storage → S3-style

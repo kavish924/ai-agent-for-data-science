@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-24 · **Current branch:** `fix/vertex-backend`
+> **Last updated:** 2026-11-28 · **Current branch:** `m10-deployment`
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -23,6 +23,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
 | M7 UI polish | `m7-ui-polish` | ✅ done · in `main` (fast-forward push `3cbc717..b7febdb`, user-approved; no PR) |
 | M8 Evaluation + demo | `m8-eval-demo` | ✅ done · merged to `main` (PR #6; full live eval pending Gemini quota) |
+| M10 Deployment | `m10-deployment` | 📝 spec drafted (Spec 11, Draft); not started |
 
 ---
 
@@ -220,7 +221,16 @@ RQ5 ablations, RQ6 cost.
 - [x] `GEMINI_BACKEND=vertex` with `GOOGLE_CLOUD_PROJECT` / `GOOGLE_CLOUD_LOCATION` (default `global`), auth via ADC; `get_llm`, `eval.run --live`, `smoke_m3.py --live` and the live test accept either backend
 - [ ] Live check on Vertex AI (`pytest -m live`) once the Vertex AI API is enabled and ADC is set up
 
+## M10 — Deployment · branch `m10-deployment`
+
+- [x] Spec 11 drafted: FR-DP-01..23 + AC-1..15, `dp` test prefix (Status: Draft)
+- [ ] Resolve Spec 11 open questions (hosting target, access gate, Gemini backend, data location) and approve it
+- [ ] Update Spec 09 (`/ready`, `/health` version, `401`s) and add the `dp` rows to `traceability.md`
+- [ ] Implement per Spec 11 Tasks, tests first; CI deployment smoke green
+
 ## Known follow-ups / tech debt
+
+- [ ] Next.js rewrites time out after 30 s, but `POST /plan` can take ~190 s with retries, so slow plans are cut off in the UI today (Spec 11 FR-DP-08)
 
 - [ ] SQLite open/close per call is slow on Windows (~1 s per API flow in tests); consider WAL or a pooled connection
 - [ ] Rotating log handler keeps `app.log` open (temp-dir cleanup on Windows)
