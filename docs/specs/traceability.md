@@ -112,6 +112,7 @@
 | 09 | AC-11 | `test_ap_ac11_chart_endpoints` | `routers/execution.py` |
 | 09 | AC-12 | `test_ap_ac12_model_and_targets_endpoints` | `routers/models.py` |
 | 09 | AC-13 | `test_ap_ac13_report_and_bundle_endpoints` | `routers/reports.py` |
+| 09 | AC-14 | pending (M10) | `main.py`, `security.py` |
 | 10 | AC-1 | `test_nfr_ac1_replayed_plan_is_byte_identical` (also `test_deterministic_outputs_across_sessions`, `test_ch_ac4_png_bytes_are_deterministic`, `test_ml_ac5_scores_are_reproducible`) | `eval/harness.py` |
 | 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |
@@ -130,3 +131,22 @@
 | 10 | AC-16 | `test_nfr_ac16_base_golden_is_merged`, `test_nfr_ac16_protected_columns_and_no_binary_outliers` | `eval/corrupt.py`, `eval/build_benchmark.py` |
 | 10 | AC-17 | `test_nfr_ac17_fetch_validates_names_targets_and_hashes`, `test_nfr_ac17_manifest_requires_fields` | `eval/fetch_datasets.py`, `eval/benchmark/manifest.json` |
 | 10 | AC-18 | `test_nfr_ac18_eval_runs_on_a_generated_benchmark` | `eval/harness.py`, `eval/run.py` |
+| 11 | AC-1 | pending (M10) | — |
+| 11 | AC-2 | pending (M10) | — |
+| 11 | AC-3 | pending (M10) | — |
+| 11 | AC-4 | pending (M10) | — |
+| 11 | AC-5 | pending (M10) | — |
+| 11 | AC-6 | pending (M10) | — |
+| 11 | AC-7 | pending (M10) | — |
+| 11 | AC-8 | pending (M10) | — |
+| 11 | AC-9 | pending (M10) | — |
+| 11 | AC-10 | pending (M10) | — |
+| 11 | AC-11 | pending (M10) | — |
+| 11 | AC-12 | pending (M10) | — |
+| 11 | AC-13 | pending (M10) | — |
+| 11 | AC-14 | pending (M10) | — |
+| 11 | AC-15 | pending (M10) | — |
+| 11 | AC-16 | pending (M10) | — |
+| 11 | AC-17 | pending (M10) | — |
+| 11 | AC-18 | pending (M10) | — |
+| 11 | AC-19 | pending (M10) | — |

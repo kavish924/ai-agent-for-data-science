@@ -40,6 +40,9 @@ All paths are under the `/api/v1` prefix (normative; other docs may abbreviate).
 | FR-AP-20 | *(M5)* `GET /sessions/{id}/model` — `model_runs.json` (Spec 07). `200` · `404 model_not_ready`. |
 | FR-AP-21 | *(M5)* `GET /sessions/{id}/targets` — ranked target suggestions `[{column, problem_type, reason, changed_by_plan}]` (Spec 07 FR-ML-01/15). `200` once profiled. |
 | FR-AP-22 | *(M6)* `GET /sessions/{id}/bundle.zip` — all deliverables in one archive (Spec 08 FR-RP-15). `200 application/zip` · `404` unless `reported`. |
+| FR-AP-23 | *(M10)* `GET /health` returns `{status: "ok", version}`; `version` is `APP_VERSION`, else `RENDER_GIT_COMMIT`, else `"dev"` (Spec 11 FR-DP-04). `GET /ready` returns `200 {status: "ready"}` when the database answers and the storage root is writable, else `503` with the failed check (Spec 11 FR-DP-17). Neither needs the internal token. |
+| FR-AP-24 | *(M10)* `GET /config` — public deployment settings `{max_file_size_mb, max_rows, retention_days, storage_persistent, hosted}` and nothing else (Spec 11 FR-DP-30). `200`. |
+| FR-AP-25 | *(M10)* When `INTERNAL_API_TOKEN` is set, every route except `/health` and `/ready` needs the header `X-Internal-Token`; otherwise `401 unauthorized` with the error envelope (Spec 11 FR-DP-14). The frontend proxy adds it; browsers never send it. |
 
 ### Session state table (normative)
 
@@ -127,6 +130,8 @@ Violations return `409` with the current state in `details`.
 - **AC-13** *(M6)* `GET /report` and `GET /bundle.zip` are `404` before `POST /report`;
   after it the report is `text/html` and the bundle is a valid zip.
 
+- **AC-14** *(M10)* `/health` reports the version, `/ready` is `200` or `503`, `/config` returns exactly its five
+  fields, and with `INTERNAL_API_TOKEN` set a request without the header is `401 unauthorized` (Spec 11 AC-3, 11, 18, 19).
 ## Dependencies
 
 - Definitions depend on schemas from Specs 02, 03, 05, 07, 08; consumed by Spec 04 UI.
@@ -167,3 +172,4 @@ Violations return `409` with the current state in `details`.
 - 2026-11-12 — M6: `POST /report`, `GET /report`, `GET /bundle.zip`; `POST /model` allowed from `reported`; AC-13.
 - 2026-11-12 — M7: `GET /targets` suggestions gain `changed_by_plan`.
 - 2026-11-24 — FR-AP-03: `503 llm_not_configured` also covers the Vertex AI backend without a project (Spec 03 FR-PL-19); response shapes unchanged.
+- 2026-11-28 — M10 (Spec 11): FR-AP-23 (`/health` version, `/ready`), FR-AP-24 (`GET /config`), FR-AP-25 (internal token, `401 unauthorized`); AC-14.
