@@ -8,7 +8,8 @@ from tests.conftest import SAMPLE_CSV, upload_csv
 def test_health(client):
     response = client.get("/api/v1/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    body = response.json()
+    assert body["status"] == "ok" and set(body) == {"status", "version"}  # Spec 09 FR-AP-23
 
 
 def test_upload_and_profile_happy_path(client):

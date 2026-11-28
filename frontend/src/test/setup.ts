@@ -9,11 +9,14 @@ afterEach(() => cleanup());
 // real animation clock, so exit animations (AnimatePresence) would otherwise hang.
 MotionGlobalConfig.skipAnimations = true;
 
+// Server-side tests (middleware, route handlers) run in the node environment: no window.
+const browser = typeof window !== "undefined";
+
 // jsdom doesn't implement scrolling; Motion layout animations call it.
-window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
+if (browser) window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
 
 // jsdom lacks matchMedia, which Motion consults for reduced motion.
-if (!window.matchMedia) {
+if (browser && !window.matchMedia) {
   Object.defineProperty(window, "matchMedia", {
     value: vi.fn().mockImplementation((query: string) => ({
       matches: false,
