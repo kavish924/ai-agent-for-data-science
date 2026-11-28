@@ -147,7 +147,22 @@ const json = (method: string, body?: unknown): RequestInit => ({
   body: body === undefined ? undefined : JSON.stringify(body),
 });
 
+/** Spec 11 FR-DP-30 / Spec 09 FR-AP-24: public deployment settings. */
+export interface PublicConfig {
+  max_file_size_mb: number;
+  max_rows: number;
+  retention_days: number;
+  storage_persistent: boolean;
+  hosted: boolean;
+}
+
+/** The local defaults (Spec 01), used until /config answers or when it fails. */
+export const LOCAL_CONFIG: PublicConfig = {
+  max_file_size_mb: 25, max_rows: 100_000, retention_days: 7, storage_persistent: true, hosted: false,
+};
+
 export const api = {
+  config: () => request<PublicConfig>("/config"),
   upload(file: File): Promise<Session> {
     const form = new FormData();
     form.append("file", file);

@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useRef, useState } from "react";
-import { api, ApiError, type Session } from "@/lib/api/client";
+import { useEffect, useRef, useState } from "react";
+import { api, ApiError, LOCAL_CONFIG, type PublicConfig, type Session } from "@/lib/api/client";
 import { ErrorNote, Spinner } from "./Shell";
 
 const SAMPLES = ["titanic.csv", "housing.csv", "telco_churn.csv"] as const;
@@ -18,6 +18,21 @@ export function UploadScreen({ onUploaded }: { onUploaded: (session: Session) =>
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [limits, setLimits] = useState<PublicConfig>(LOCAL_CONFIG);
+
+  // Spec 11 FR-DP-30: show the limits this deployment really enforces.
+  useEffect(() => {
+    let active = true;
+    Promise.resolve()
+      .then(() => api.config())
+      .then((config) => {
+        if (active && config && typeof config.max_rows === "number") setLimits(config);
+      })
+      .catch(() => undefined); // keep the local defaults
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function send(file: File) {
     setBusy(`Uploading ${file.name}…`);
@@ -80,7 +95,10 @@ export function UploadScreen({ onUploaded }: { onUploaded: (session: Session) =>
           <path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
         </svg>
         <span className="text-lg font-semibold">Drop a CSV here, or browse</span>
-        <span className="text-[13px] text-muted">Up to 25 MB and 100,000 rows · any delimiter or encoding</span>
+        <span className="text-[13px] text-muted">
+          Up to {limits.max_file_size_mb.toLocaleString("en-US")} MB and{" "}
+          {limits.max_rows.toLocaleString("en-US")} rows · any delimiter or encoding
+        </span>
         <input
           id="csv-file"
           ref={input}
@@ -115,6 +133,15 @@ export function UploadScreen({ onUploaded }: { onUploaded: (session: Session) =>
         {busy && <Spinner label={busy} />}
         {error && <ErrorNote>{error}</ErrorNote>}
       </div>
+
+      {limits.hosted && (
+        // Spec 11 FR-DP-21: what happens to uploads on this server
+        <p className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-center text-[13px] leading-relaxed text-ink-soft">
+          {limits.storage_persistent
+            ? `Uploads are kept on the server for ${limits.retention_days} days, then deleted.`
+            : `Uploads are kept only temporarily: they are deleted when the server restarts or sleeps after about 15 minutes without use, and after ${limits.retention_days} days at most.`}
+        </p>
+      )}
 
       <ul className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
         {PROMISES.map(([title, body], index) => (

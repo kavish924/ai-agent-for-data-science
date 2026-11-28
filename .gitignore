@@ -21,3 +21,6 @@ graphify-out/
 # Eval benchmark data (fetched/generated; reproducible from the manifest and seeds)
 /backend/eval/benchmark/data/
 /backend/eval/benchmark/build/
+
+# Deployment secrets (Spec 11 FR-DP-10); deploy/.env.example and deploy/ci.env are tracked
+deploy/.env

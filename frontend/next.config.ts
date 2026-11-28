@@ -1,15 +1,19 @@
 import type { NextConfig } from "next";
+import { MIDDLEWARE_MAX_BODY, resolveProxyTimeout } from "./src/lib/deploy-config";
 
-// Same-origin proxy to the FastAPI backend (Spec 04 FR-RV-11): the browser only ever
-// calls /api/v1/*, so no CORS and no backend URL in client code. BACKEND_URL is
-// server-side configuration, never user input.
-const backend = process.env.BACKEND_URL ?? "http://127.0.0.1:8000";
-
+// The browser only ever calls /api/v1/* on this origin (Spec 04 FR-RV-11). The proxy to
+// the FastAPI backend lives in src/middleware.ts (Spec 11 FR-DP-14), because a standalone
+// build would fix next.config rewrites at build time and BACKEND_URL is a runtime setting.
 const nextConfig: NextConfig = {
+  // Spec 11 FR-DP-02: a self-contained server for the container image.
+  output: "standalone",
   // No next/image optimisation: avoids running sharp (see docs/CHECKLIST.md follow-ups).
   images: { unoptimized: true },
-  async rewrites() {
-    return [{ source: "/api/v1/:path*", destination: `${backend}/api/v1/:path*` }];
+  experimental: {
+    // Spec 11 FR-DP-08: rewrites otherwise give up after 30 s, before a slow plan answers.
+    proxyTimeout: resolveProxyTimeout(process.env.PROXY_TIMEOUT_MS),
+    // Spec 11 FR-DP-09: middleware would otherwise truncate uploads over 10 MB.
+    middlewareClientMaxBodySize: MIDDLEWARE_MAX_BODY,
   },
 };
 

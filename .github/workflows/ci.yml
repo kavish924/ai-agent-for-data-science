@@ -32,6 +32,43 @@ jobs:
           python scripts/smoke_m0.py
           python scripts/smoke_m3.py
 
+  # Spec 11 FR-DP-23 (AC-1, 5, 7, 15, 17): build both images, run the production compose
+  # stack with the hosted limits and 512 MB, and drive it through the frontend only.
+  deploy-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      COMPOSE: docker compose -f deploy/compose.yaml --env-file deploy/ci.env
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the stack
+        run: $COMPOSE up -d --build --wait --wait-timeout 300
+      - name: Images run as non-root, backend image holds no tests or secrets (AC-1)
+        run: |
+          test "$($COMPOSE exec -T backend id -u)" != "0"
+          test "$($COMPOSE exec -T frontend id -u)" != "0"
+          $COMPOSE exec -T backend sh -c 'test ! -e /app/tests && test ! -e /app/.env && test ! -e /app/storage'
+          ! $COMPOSE exec -T backend python -c "import pytest" 2>/dev/null
+      - name: Smoke through the public entry point (AC-7, AC-15)
+        run: python3 backend/scripts/smoke_deploy.py --base http://127.0.0.1:3000 --user ci --password ci-password --session-file /tmp/smoke_session
+      - name: Backend refuses requests without the internal token
+        run: |
+          code=$($COMPOSE exec -T backend python -c "import urllib.request,urllib.error
+          try: urllib.request.urlopen('http://127.0.0.1:8000/api/v1/config')
+          except urllib.error.HTTPError as e: print(e.code)")
+          test "$code" = "401"
+      - name: Sessions survive a backend restart (AC-5)
+        run: |
+          $COMPOSE restart backend
+          $COMPOSE up -d --wait --wait-timeout 120
+          python3 backend/scripts/smoke_deploy.py --base http://127.0.0.1:3000 --user ci --password ci-password --session-file /tmp/smoke_session --check-session
+      - name: Logs on failure
+        if: failure()
+        run: $COMPOSE logs --no-color --tail 200
+      - name: Stop
+        if: always()
+        run: $COMPOSE down -v
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

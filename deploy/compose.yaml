@@ -1,0 +1,66 @@
+# Spec 11 FR-DP-05: the deployment topology for local runs and the CI smoke.
+# Production runs on Render (render.yaml) with the same images.
+#
+#   cp deploy/.env.example deploy/.env    # then fill in the secrets
+#   docker compose -f deploy/compose.yaml --env-file deploy/.env up -d --build --wait
+#   open http://localhost:3000
+name: ai-ds-agent
+
+services:
+  backend:
+    build:
+      context: ../backend
+    image: ai-ds-agent-backend:${APP_VERSION:-dev}
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_VERSION: ${APP_VERSION:-dev}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?set INTERNAL_API_TOKEN}
+      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      GEMINI_BACKEND: ${GEMINI_BACKEND:-aistudio}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash}
+      CORS_ORIGINS: ""
+      STORAGE_PERSISTENT: "true"
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-5}
+      MAX_ROWS: ${MAX_ROWS:-20000}
+      MODEL_MAX_ROWS: ${MODEL_MAX_ROWS:-10000}
+      RETENTION_DAYS: ${RETENTION_DAYS:-7}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - data:/data # FR-DP-07: sessions survive restarts and upgrades
+    mem_limit: 512m # FR-DP-20: the same memory as Render's free instance
+    stop_grace_period: 30s # FR-DP-19
+    restart: unless-stopped
+    healthcheck: # FR-DP-17
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/ready', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    # no published port: only the frontend reaches the backend
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    image: ai-ds-agent-frontend:${APP_VERSION:-dev}
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      ACCESS_USER: ${ACCESS_USER:-demo}
+      ACCESS_PASSWORD: ${ACCESS_PASSWORD:?set ACCESS_PASSWORD}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?set INTERNAL_API_TOKEN}
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "${PUBLIC_PORT:-3000}:3000"
+    mem_limit: 512m
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+
+volumes:
+  data:
