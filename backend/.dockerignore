@@ -1,0 +1,16 @@
+# Spec 11 FR-DP-01: nothing but pyproject.toml and app/ is needed in the image.
+.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+tests/
+eval/
+scripts/
+storage/
+.env
+.env.*
+Dockerfile
+.dockerignore

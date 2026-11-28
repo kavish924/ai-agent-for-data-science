@@ -126,6 +126,14 @@ def test_dp_ac19_config_returns_exactly_the_public_settings(make_client):
     assert local.get("/api/v1/config").json()["hosted"] is False
 
 
+def test_dp_ac7_hosted_size_limit_returns_the_apps_413(make_client):
+    client = make_client(max_file_size_mb=5.0)
+    too_big = "a,b\n" + "1,2\n" * (6 * 1024 * 1024 // 4)
+    response = upload_csv(client, too_big)
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "file_too_large"
+
+
 def test_ap_ac14_meta_endpoints_and_token(make_client):
     client = make_client(app_version="v1", internal_api_token=SECRET_TOKEN)
     assert client.get("/api/v1/health").json()["version"] == "v1"

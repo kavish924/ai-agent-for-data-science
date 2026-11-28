@@ -112,7 +112,7 @@
 | 09 | AC-11 | `test_ap_ac11_chart_endpoints` | `routers/execution.py` |
 | 09 | AC-12 | `test_ap_ac12_model_and_targets_endpoints` | `routers/models.py` |
 | 09 | AC-13 | `test_ap_ac13_report_and_bundle_endpoints` | `routers/reports.py` |
-| 09 | AC-14 | pending (M10) | `main.py`, `security.py` |
+| 09 | AC-14 | `test_ap_ac14_meta_endpoints_and_token` | `main.py`, `security.py` |
 | 10 | AC-1 | `test_nfr_ac1_replayed_plan_is_byte_identical` (also `test_deterministic_outputs_across_sessions`, `test_ch_ac4_png_bytes_are_deterministic`, `test_ml_ac5_scores_are_reproducible`) | `eval/harness.py` |
 | 10 | AC-2 | `test_nfr_ac2_no_data_or_prompt_in_logs` | `services/planner.py`, `logging_setup.py` |
 | 10 | AC-3 | `test_nfr_ac3_retention_sweep_deletes_expired_sessions` | `services/retention.py` |
@@ -131,22 +131,22 @@
 | 10 | AC-16 | `test_nfr_ac16_base_golden_is_merged`, `test_nfr_ac16_protected_columns_and_no_binary_outliers` | `eval/corrupt.py`, `eval/build_benchmark.py` |
 | 10 | AC-17 | `test_nfr_ac17_fetch_validates_names_targets_and_hashes`, `test_nfr_ac17_manifest_requires_fields` | `eval/fetch_datasets.py`, `eval/benchmark/manifest.json` |
 | 10 | AC-18 | `test_nfr_ac18_eval_runs_on_a_generated_benchmark` | `eval/harness.py`, `eval/run.py` |
-| 11 | AC-1 | pending (M10) | — |
-| 11 | AC-2 | pending (M10) | — |
-| 11 | AC-3 | pending (M10) | — |
-| 11 | AC-4 | pending (M10) | — |
-| 11 | AC-5 | pending (M10) | — |
-| 11 | AC-6 | pending (M10) | — |
-| 11 | AC-7 | pending (M10) | — |
-| 11 | AC-8 | pending (M10) | — |
-| 11 | AC-9 | pending (M10) | — |
-| 11 | AC-10 | pending (M10) | — |
-| 11 | AC-11 | pending (M10) | — |
-| 11 | AC-12 | pending (M10) | — |
-| 11 | AC-13 | pending (M10) | — |
-| 11 | AC-14 | pending (M10) | — |
-| 11 | AC-15 | pending (M10) | — |
-| 11 | AC-16 | pending (M10) | — |
-| 11 | AC-17 | pending (M10) | — |
-| 11 | AC-18 | pending (M10) | — |
-| 11 | AC-19 | pending (M10) | — |
+| 11 | AC-1 | `test_dp_ac1_images_run_as_non_root_and_ship_nothing_sensitive` | `backend/Dockerfile`, `frontend/Dockerfile`, `.dockerignore` |
+| 11 | AC-2 | `test_dp_ac2_samples_dir_is_configurable`, `test_dp_ac2_default_is_the_repo_samples_folder` | `frontend: app/samples/[name]/route.ts` |
+| 11 | AC-3 | `test_dp_ac3_health_reports_version_and_ready_checks_db_and_storage`, `test_dp_ac3_ready_never_calls_the_llm` | `main.py` |
+| 11 | AC-4 | `test_dp_ac4_production_refuses_more_than_one_worker` | `config.py` |
+| 11 | AC-5 | `test_dp_ac5_compose_keeps_sessions_on_a_volume` | `deploy/compose.yaml`, `scripts/smoke_deploy.py` (CI deploy-smoke) |
+| 11 | AC-6 | `test_dp_ac6_proxy_timeout_defaults_to_five_minutes` | `frontend: lib/deploy-config.ts`, `next.config.ts` |
+| 11 | AC-7 | `test_dp_ac7_hosted_size_limit_returns_the_apps_413` | `services/ingestion.py`, `scripts/smoke_deploy.py` |
+| 11 | AC-8 | `test_dp_ac8_production_requires_token_and_llm_credentials`, `test_dp_ac8_app_refuses_to_start_when_production_is_misconfigured`, `test_dp_ac8_frontend_fails_closed_when_production_is_misconfigured` | `config.py`, `main.py`, `frontend: middleware.ts` |
+| 11 | AC-9 | `test_dp_ac9_gemini_key_is_read_from_a_file`, `test_dp_ac9_secrets_never_in_logs_or_responses` | `config.py`, `security.py` |
+| 11 | AC-10 | `test_dp_ac10_gate_requires_the_shared_password`, `test_dp_ac10_nothing_is_gated_in_development` | `frontend: middleware.ts`, `app/healthz/route.ts` |
+| 11 | AC-11 | `test_dp_ac11_internal_token_closes_the_backend`, `test_dp_ac11_proxy_adds_the_internal_token`, `test_dp_ac11_dev_proxy_goes_to_the_local_backend` | `security.py`, `frontend: middleware.ts` |
+| 11 | AC-12 | `test_dp_ac12_cors_origins_from_the_environment`, `test_dp_ac12_cors_preflight_follows_the_setting` | `config.py`, `main.py` |
+| 11 | AC-13 | `test_dp_ac13_log_file_only_when_enabled` | `main.py`, `logging_setup.py` |
+| 11 | AC-14 | `test_dp_ac14_temporary_storage_notice_when_hosted_without_a_disk`, `test_dp_ac14_retention_notice_when_hosted_with_a_disk`, `test_dp_ac14_no_notice_when_not_hosted` | `frontend: UploadScreen.tsx` |
+| 11 | AC-15 | `test_dp_ac15_ci_runs_the_deployment_smoke` | `.github/workflows/ci.yml`, `scripts/smoke_deploy.py` |
+| 11 | AC-16 | `test_dp_ac16_render_blueprint_matches_the_spec` | `render.yaml` |
+| 11 | AC-17 | `test_dp_ac17_images_listen_on_render_port` | `backend/Dockerfile`, `frontend/Dockerfile` |
+| 11 | AC-18 | `test_dp_ac18_version_resolution` | `config.py` |
+| 11 | AC-19 | `test_dp_ac19_config_returns_exactly_the_public_settings`, `test_dp_ac19_limits_come_from_the_backend`, `test_dp_ac19_local_defaults_when_config_fails` | `main.py`, `frontend: UploadScreen.tsx`, `lib/api/client.ts` |

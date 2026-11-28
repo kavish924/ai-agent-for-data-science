@@ -23,7 +23,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
 | M7 UI polish | `m7-ui-polish` | ✅ done · in `main` (fast-forward push `3cbc717..b7febdb`, user-approved; no PR) |
 | M8 Evaluation + demo | `m8-eval-demo` | ✅ done · merged to `main` (PR #6; full live eval pending Gemini quota) |
-| M10 Deployment | `m10-deployment` | 📝 spec drafted (Spec 11, Draft); not started |
+| M10 Deployment | `m10-deployment` | 🚧 implemented; CI Docker smoke and first Render deploy pending |
 
 ---
 
@@ -225,13 +225,18 @@ RQ5 ablations, RQ6 cost.
 
 - [x] Spec 11 drafted: FR-DP-01..23 + AC-1..15, `dp` test prefix (Status: Draft)
 - [x] Hosting target chosen: Render (web service + private service with a disk); Spec 11 FR-DP-24..29 + AC-16..18
-- [ ] Resolve Spec 11's remaining open questions (access gate, Gemini backend, Render region) and approve it
-- [ ] Update Spec 09 (`/ready`, `/health` version, `401`s) and add the `dp` rows to `traceability.md`
-- [ ] Implement per Spec 11 Tasks, tests first; CI deployment smoke green
+- [x] Open questions settled with the user: Render **free tier**, Singapore, shared password, AI Studio key; Spec 11 approved
+- [x] Spec 09 FR-AP-23..25 (`/health` version, `/ready`, `/config`, internal token) + AC-14; `dp` rows in `traceability.md`
+- [x] Backend + frontend implemented tests first (backend 261 tests, frontend 45); ruff, mypy, traceability (144 ACs), smoke M0/M3 green
+- [x] Runtime check of the built standalone frontend (gate, token proxy, 12 MB upload, 40 s reply): 10/10
+- [x] Production config run locally without Docker through `smoke_deploy.py` (sample + 20k-row file, 413, restart, 401): all passed
+- [x] Dockerfiles, compose, `render.yaml`, CI `deploy-smoke`, runbook `docs/deployment.md`
+- [ ] CI `deploy-smoke` green (first real Docker build; Docker isn't installed on the dev machine)
+- [ ] First Render deploy (Blueprint, secrets, `BACKEND_URL`) and `smoke_deploy.py --skip-row-cap` on the Render URL
 
 ## Known follow-ups / tech debt
 
-- [ ] Next.js rewrites time out after 30 s, but `POST /plan` can take ~190 s with retries, so slow plans are cut off in the UI today (Spec 11 FR-DP-08)
+- [x] Next.js rewrites time out after 30 s, but `POST /plan` can take ~190 s with retries, so slow plans are cut off in the UI today (Spec 11 FR-DP-08) — fixed in M10: 300 s proxy timeout
 
 - [ ] SQLite open/close per call is slow on Windows (~1 s per API flow in tests); consider WAL or a pooled connection
 - [ ] Rotating log handler keeps `app.log` open (temp-dir cleanup on Windows)

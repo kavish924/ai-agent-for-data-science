@@ -1,0 +1,19 @@
+# Build context for frontend/Dockerfile is the repo root (Spec 11 FR-DP-02/03).
+# Keep it small and free of secrets: only frontend/ sources and samples/ are needed.
+.git/
+.github/
+.claude/
+.vscode/
+.env
+.env.*
+**/node_modules/
+**/.next/
+backend/
+docs/
+deploy/
+graphify-out/
+storage/
+*.pdf
+frontend/**/*.test.ts
+frontend/**/*.test.tsx
+frontend/src/test/

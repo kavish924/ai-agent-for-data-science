@@ -8,7 +8,6 @@
  * The proxy lives here, not in next.config rewrites, because a standalone build fixes
  * rewrites at build time while BACKEND_URL is only known at runtime.
  */
-import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCAL_BACKEND_URL } from "@/lib/deploy-config";
 
@@ -25,21 +24,32 @@ function env(name: string): string | undefined {
   return value ? value : undefined;
 }
 
-/** Constant-time comparison of two strings of any length (hash both first). */
+/**
+ * Constant-time string comparison: always walks the longer string, so the time taken does
+ * not depend on where the first difference is. Plain JS, so it runs on any runtime.
+ */
 function same(a: string, b: string): boolean {
-  const digest = (s: string) => createHash("sha256").update(s, "utf8").digest();
-  return timingSafeEqual(digest(a), digest(b));
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    diff |= (a.charCodeAt(i) | 0) ^ (b.charCodeAt(i) | 0);
+  }
+  return diff === 0;
+}
+
+function decodeBasic(encoded: string): string | null {
+  try {
+    const binary = atob(encoded);
+    return new TextDecoder().decode(Uint8Array.from(binary, (c) => c.charCodeAt(0)));
+  } catch {
+    return null;
+  }
 }
 
 function authorized(request: NextRequest, user: string, password: string): boolean {
   const header = request.headers.get("authorization") ?? "";
   if (!header.startsWith("Basic ")) return false;
-  let decoded: string;
-  try {
-    decoded = Buffer.from(header.slice(6).trim(), "base64").toString("utf8");
-  } catch {
-    return false;
-  }
+  const decoded = decodeBasic(header.slice(6).trim());
+  if (decoded === null) return false;
   const colon = decoded.indexOf(":");
   if (colon < 0) return false;
   // evaluate both comparisons so timing does not reveal which one failed

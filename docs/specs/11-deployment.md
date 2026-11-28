@@ -33,7 +33,7 @@ the backend has a public URL that only accepts requests carrying the internal to
 
 | ID | Requirement |
 |---|---|
-| FR-DP-01 | **Backend image.** `backend/Dockerfile` builds a runnable image from a pinned `python:3.11-slim` base: installs the package without dev extras (`pip install .`), runs as a non-root user, and starts one uvicorn worker on `0.0.0.0:${PORT:-8000}` (FR-DP-25). No `.env`, keys, `storage/` or tests are copied into the image (a `.dockerignore` enforces it). |
+| FR-DP-01 | **Backend image.** `backend/Dockerfile` builds a runnable image from a pinned `python:3.11-slim` base: installs the runtime dependencies listed in `pyproject.toml` (no dev extras), runs from the copied source tree (so `app/templates/` ships with it), runs as a non-root user, and starts one uvicorn worker on `0.0.0.0:${PORT:-8000}` (FR-DP-25). No `.env`, keys, `storage/` or tests are copied into the image (a `.dockerignore` enforces it). |
 | FR-DP-02 | **Frontend image.** `frontend/Dockerfile` is a multi-stage build on a pinned `node:22` base: `npm ci`, `npm run build` with Next.js `output: "standalone"`, and a slim runtime stage that runs `node server.js` as a non-root user on `${PORT:-3000}`. `BACKEND_URL` and the access variables are read at runtime on the server only, never sent to the browser. |
 | FR-DP-03 | **Sample datasets in the image.** The `/samples/{name}` route reads from `SAMPLES_DIR` when set, else from `<cwd>/../samples` (today's behaviour, unchanged for dev). The frontend image copies `samples/` and sets `SAMPLES_DIR`. The served names stay the fixed whitelist (Spec 04 FR-RV-13). |
 | FR-DP-04 | **Version stamp.** `GET /api/v1/health` returns `{"status": "ok", "version": V}` where `V` is `APP_VERSION`, else Render's `RENDER_GIT_COMMIT`, else `"dev"`. A deploy therefore names exactly one commit. |
@@ -198,15 +198,16 @@ the backend has a public URL that only accepts requests carrying the internal to
 ## Tasks
 
 - [x] Approve this spec, resolve its open questions
-- [ ] Update `09-api-contracts.md` (FR-AP-23..25) and add the `dp` rows to `traceability.md`
-- [ ] Backend: version, `/ready`, `/config`, internal token, CORS, log sink, production checks, key file (AC-3, 4, 8,
+- [x] Update `09-api-contracts.md` (FR-AP-23..25) and add the `dp` rows to `traceability.md`
+- [x] Backend: version, `/ready`, `/config`, internal token, CORS, log sink, production checks, key file (AC-3, 4, 8,
       9, 11, 12, 13, 18, 19)
-- [ ] Frontend: access gate, fail-closed, `/healthz`, proxy header and timeout, samples dir, limits and notice from
+- [x] Frontend: access gate, fail-closed, `/healthz`, proxy header and timeout, samples dir, limits and notice from
       `/config`, standalone output (AC-2, 6, 8, 10, 11, 14, 19)
-- [ ] Dockerfiles, `.dockerignore`, `deploy/compose.yaml`, `deploy/.env.example` (AC-1, 17)
-- [ ] `render.yaml` (AC-16)
-- [ ] CI deployment smoke (AC-5, 7, 15)
-- [ ] Runbook `docs/deployment.md`
+- [x] Dockerfiles, `.dockerignore`, `deploy/compose.yaml`, `deploy/.env.example` (AC-1, 17)
+- [x] `render.yaml` (AC-16)
+- [~] CI deployment smoke (AC-5, 7, 15): job written; the same flow passed locally without Docker; first
+      Docker run is on the PR
+- [x] Runbook `docs/deployment.md`
 - [ ] First Render deploy: create the Blueprint, enter the secrets and `BACKEND_URL`, run the manual check
 
 ## Changelog
@@ -219,3 +220,8 @@ the backend has a public URL that only accepts requests carrying the internal to
   (FR-DP-07); hosted limits fit 512 MB (FR-DP-20); the frontend fails closed when misconfigured (FR-DP-11); new
   `GET /config` so the UI shows the real limits and the storage notice (FR-DP-30, AC-19). Caddy dropped (TLS by
   Render, compose is local/CI only).
+- 2026-11-28 — Implemented (tests first): backend settings and checks, internal token, `/ready`, `/config`;
+  frontend Node.js middleware (gate, fail-closed, token proxy), standalone build, limits and notice; Dockerfiles,
+  compose, `render.yaml`, CI `deploy-smoke`, runbook. Found while building: next.config rewrites are fixed at build
+  time in a standalone build (proxy moved to middleware) and middleware truncates bodies over 10 MB by default (cap
+  raised, FR-DP-09). Status stays In progress until CI's Docker smoke and the first Render deploy pass.
