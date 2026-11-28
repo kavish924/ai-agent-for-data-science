@@ -4,7 +4,7 @@
 > done **and verified** (tests/smoke green), add the branch name, and bump "Last updated".
 > Detailed requirements live in `docs/specs/`; this file tracks progress only.
 >
-> **Last updated:** 2026-11-28 · **Current branch:** `m10-deployment`
+> **Last updated:** 2026-11-28 · **Current branch:** `m10-close`
 
 Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 
@@ -23,7 +23,7 @@ Legend: `[x]` done · `[ ]` to do · `[~]` partly done (see note)
 | M6 Report + narration | `m6-report` | ✅ done · merged to `main` (PR #5) |
 | M7 UI polish | `m7-ui-polish` | ✅ done · in `main` (fast-forward push `3cbc717..b7febdb`, user-approved; no PR) |
 | M8 Evaluation + demo | `m8-eval-demo` | ✅ done · merged to `main` (PR #6; full live eval pending Gemini quota) |
-| M10 Deployment | `m10-deployment` | 🚧 implemented; CI Docker smoke and first Render deploy pending |
+| M10 Deployment | `m10-deployment` | ✅ done · merged to `main` (PRs #11–#13); live on Render free tier |
 
 ---
 
@@ -231,8 +231,8 @@ RQ5 ablations, RQ6 cost.
 - [x] Runtime check of the built standalone frontend (gate, token proxy, 12 MB upload, 40 s reply): 10/10
 - [x] Production config run locally without Docker through `smoke_deploy.py` (sample + 20k-row file, 413, restart, 401): all passed
 - [x] Dockerfiles, compose, `render.yaml`, CI `deploy-smoke`, runbook `docs/deployment.md`
-- [ ] CI `deploy-smoke` green (first real Docker build; Docker isn't installed on the dev machine)
-- [ ] First Render deploy (Blueprint, secrets, `BACKEND_URL`) and `smoke_deploy.py --skip-row-cap` on the Render URL
+- [x] CI `deploy-smoke` green on PR #13 (first real Docker build)
+- [x] First Render deploy (Blueprint `ai-ds-agent`, Singapore, free) and live `smoke_deploy.py --skip-row-cap`: passed with real Gemini (2026-11-28)
 
 ## Known follow-ups / tech debt
 
